@@ -1,3 +1,6 @@
+سأضيف نظام حسابات محلي بسيط يسمح بإنشاء عدة مستخدمين بكلمة مرور، وعند إغلاق المتصفح والعودة يتم استعادة آخر مستخدم تلقائياً دون إعادة تسجيل الدخول، مع حماية الحساب من الدخول الخاطئ. إليك الكود الكامل المحدّث:
+
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -172,12 +175,90 @@
       align-items: center;
       justify-content: center;
     }
+
+    .multi-select {
+      position: relative;
+      width: 100%;
+    }
+    .multi-select-box {
+      padding: 14px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 14px;
+      color: white;
+      font-size: 16px;
+      font-family: 'Cairo', sans-serif;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 52px;
+    }
+    .multi-select-box:hover { border-color: var(--accent); }
+    .selected-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .selected-tag {
+      background: var(--accent);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .selected-tag button {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0;
+      margin: 0;
+    }
+    .dropdown-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #1e293b;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 14px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 10;
+      margin-top: 8px;
+      padding: 8px;
+    }
+    .dropdown-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .dropdown-item:hover { background: rgba(255,255,255,0.1); }
+    .dropdown-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
+
+    .error-message {
+      background: rgba(239,68,68,0.2);
+      border: 1px solid var(--danger);
+      color: #fca5a5;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 10px 0;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    const { useState, useEffect, useRef } = React;
 
     // ======================== البيانات الثابتة ========================
     const exercises = [
@@ -224,9 +305,58 @@
       }
     ];
 
-    const PROFILE_KEY = 'fitness_profile', PLAN_KEY = 'fitness_user_plan', LOG_KEY = 'fitness_workout_log';
-    const loadLocal = (k, fb=null) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } };
-    const saveLocal = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+    const allEquipmentOptions = [
+      'بدون معدات', 'دمبل', 'بار', 'كيتل بيل', 'شريط مقاومة', 'سجادة',
+      'دراجة هوائية', 'جهاز مشي', 'كرة سويسرية', 'مقعد', 'عقلة',
+      'حبل قفز', 'ستيب', 'أوزان حرة', 'إليبتيكال', 'آلة تجديف'
+    ];
+
+    // ======================== دوال التخزين والحسابات ========================
+    const STORAGE_KEYS = {
+      users: 'fitness_users',
+      currentSession: 'fitness_session'
+    };
+
+    const loadUsers = () => {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.users)) || []; } catch { return []; }
+    };
+    const saveUsers = (users) => {
+      localStorage.setItem(STORAGE_KEYS.users, JSON.stringify(users));
+    };
+
+    const getCurrentSession = () => {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.currentSession)); } catch { return null; }
+    };
+    const setCurrentSession = (username) => {
+      localStorage.setItem(STORAGE_KEYS.currentSession, JSON.stringify(username));
+    };
+    const clearCurrentSession = () => {
+      localStorage.removeItem(STORAGE_KEYS.currentSession);
+    };
+
+    // حفظ بيانات مستخدم معين في قائمة المستخدمين
+    const saveUserData = (username, data) => {
+      const users = loadUsers();
+      const index = users.findIndex(u => u.username === username);
+      if (index >= 0) {
+        users[index] = { ...users[index], ...data };
+      } else {
+        users.push({ username, ...data });
+      }
+      saveUsers(users);
+    };
+
+    // استرجاع بيانات مستخدم
+    const getUserData = (username) => {
+      const users = loadUsers();
+      return users.find(u => u.username === username) || null;
+    };
+
+    // التحقق من كلمة المرور
+    const checkPassword = (username, password) => {
+      const user = getUserData(username);
+      return user && user.password === password;
+    };
 
     function generatePlan(profile) {
       const { age, gender, goal, level, weeklyDays, sessionDuration, equipment } = profile;
@@ -261,49 +391,211 @@
       return { startDate: new Date().toISOString().split('T')[0], endDate: new Date(Date.now() + template.durationWeeks*7*24*60*60*1000).toISOString().split('T')[0], weeksData, currentWeek: 1, adaptationLog: [], templateId: template.id };
     }
 
-    // ======================== المكونات ========================
-    function Onboarding({ onComplete }) {
-      const [name, setName] = useState(''); const [gender, setGender] = useState('male'); const [age, setAge] = useState(25); const [goal, setGoal] = useState('general_fitness'); const [weeklyDays, setWeeklyDays] = useState(3); const [equipment, setEquipment] = useState(['none']);
+    // مكون القائمة المنسدلة المتعددة
+    function MultiSelect({ options, selected, onChange }) {
+      const [isOpen, setIsOpen] = useState(false);
+      const containerRef = useRef(null);
 
-      const toggleEquipment = (item) => {
-        setEquipment(prev => {
-          if (item === 'none') return ['none'];
-          let next = prev.includes(item) ? prev.filter(e => e !== item) : [...prev.filter(e => e !== 'none'), item];
-          if (next.length === 0) next = ['none'];
-          return next;
+      useEffect(() => {
+        const handleClickOutside = (e) => {
+          if (containerRef.current && !containerRef.current.contains(e.target)) {
+            setIsOpen(false);
+          }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+      }, []);
+
+      const toggleOption = (option) => {
+        let newSelected;
+        if (option === 'بدون معدات') {
+          newSelected = ['بدون معدات'];
+          setIsOpen(false);
+          onChange(newSelected);
+          return;
+        }
+        if (selected.includes(option)) {
+          newSelected = selected.filter(s => s !== option);
+        } else {
+          newSelected = [...selected.filter(s => s !== 'بدون معدات'), option];
+        }
+        if (newSelected.length === 0) newSelected = ['بدون معدات'];
+        onChange(newSelected);
+      };
+
+      return (
+        <div className="multi-select" ref={containerRef}>
+          <div className="multi-select-box" onClick={() => setIsOpen(!isOpen)}>
+            {selected.length === 0 ? <span style={{color: 'gray'}}>اختر المعدات...</span> : (
+              <div className="selected-tags">
+                {selected.map(item => (
+                  <span key={item} className="selected-tag">
+                    {item}
+                    <button type="button" onClick={(e) => { e.stopPropagation(); toggleOption(item); }}>×</button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <span>▼</span>
+          </div>
+          {isOpen && (
+            <div className="dropdown-list">
+              {options.map(option => (
+                <label key={option} className="dropdown-item">
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(option)}
+                    onChange={() => toggleOption(option)}
+                  />
+                  {option}
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ======================== شاشة تسجيل الدخول / إنشاء حساب ========================
+    function LoginScreen({ onLogin }) {
+      const [username, setUsername] = useState('');
+      const [password, setPassword] = useState('');
+      const [error, setError] = useState('');
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!username.trim() || !password.trim()) {
+          setError('الرجاء إدخال اسم المستخدم وكلمة المرور');
+          return;
+        }
+        const existingUser = getUserData(username);
+        if (existingUser) {
+          // مستخدم موجود، تحقق من كلمة المرور
+          if (existingUser.password === password) {
+            setCurrentSession(username);
+            onLogin(username);
+          } else {
+            setError('كلمة المرور غير صحيحة');
+          }
+        } else {
+          // مستخدم جديد، إنشاء حساب
+          const newUser = {
+            username,
+            password,
+            profile: null,
+            plan: null,
+            log: []
+          };
+          saveUserData(username, newUser);
+          setCurrentSession(username);
+          onLogin(username);
+        }
+      };
+
+      return (
+        <div className="glass-card page-enter">
+          <h1 style={{textAlign:'center', color: 'var(--accent)'}}>🏋️ مدربك الذكي</h1>
+          <p style={{textAlign:'center', color: 'var(--text-secondary)', marginBottom: '20px'}}>أدخل اسم المستخدم وكلمة المرور للدخول أو لإنشاء حساب جديد</p>
+          <form onSubmit={handleSubmit}>
+            <label>اسم المستخدم</label>
+            <input value={username} onChange={e => { setUsername(e.target.value); setError(''); }} required />
+            <label>كلمة المرور</label>
+            <input type="password" value={password} onChange={e => { setPassword(e.target.value); setError(''); }} required />
+            {error && <div className="error-message">{error}</div>}
+            <button type="submit" className="btn" style={{width:'100%', marginTop:'20px'}}>🔐 دخول / إنشاء حساب</button>
+          </form>
+        </div>
+      );
+    }
+
+    // ======================== باقي المكونات ========================
+    function Onboarding({ onComplete }) {
+      const [name, setName] = useState('');
+      const [gender, setGender] = useState('male');
+      const [age, setAge] = useState(25);
+      const [goal, setGoal] = useState('general_fitness');
+      const [weeklyDays, setWeeklyDays] = useState(3);
+      const [equipment, setEquipment] = useState(['بدون معدات']);
+
+      const ageOptions = Array.from({ length: 88 }, (_, i) => i + 13);
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        const equipmentMap = {
+          'بدون معدات': 'none', 'دمبل': 'dumbbell', 'بار': 'barbell', 'كيتل بيل': 'kettlebell',
+          'شريط مقاومة': 'resistance_band', 'سجادة': 'mat', 'دراجة هوائية': 'bike',
+          'جهاز مشي': 'treadmill', 'كرة سويسرية': 'swiss_ball', 'مقعد': 'bench',
+          'عقلة': 'pullup_bar', 'حبل قفز': 'jump_rope', 'ستيب': 'step',
+          'أوزان حرة': 'free_weights', 'إليبتيكال': 'elliptical', 'آلة تجديف': 'rowing_machine'
+        };
+        const mappedEquipment = equipment.map(e => equipmentMap[e] || e);
+        onComplete({
+          name, gender, age: Number(age), goal,
+          level: age > 55 || age < 18 ? 'beginner' : 'beginner',
+          weeklyDays: Number(weeklyDays),
+          sessionDuration: 30,
+          equipment: mappedEquipment,
+          equipmentLabels: equipment
         });
       };
 
       return (
         <div className="glass-card page-enter">
           <h1 style={{textAlign:'center', color: 'var(--accent)'}}>🏋️ مدربك الذكي</h1>
-          <form onSubmit={(e) => { e.preventDefault(); onComplete({ name, gender, age: Number(age), goal, level: age > 55 || age < 18 ? 'beginner' : 'beginner', weeklyDays: Number(weeklyDays), sessionDuration: 30, equipment }); }}>
-            <label>الاسم</label> <input value={name} onChange={e => setName(e.target.value)} required />
-            <label>الجنس</label> <select value={gender} onChange={e => setGender(e.target.value)}> <option value="male">ذكر</option> <option value="female">أنثى</option> <option value="other">آخر</option> </select>
-            <label>العمر</label> <input type="number" value={age} onChange={e => setAge(e.target.value)} min="13" max="100" />
-            <label>الهدف</label> <select value={goal} onChange={e => setGoal(e.target.value)}> <option value="general_fitness">لياقة عامة</option> <option value="weight_loss">خسارة وزن</option> <option value="muscle_build">بناء عضلات</option> </select>
-            <label>أيام التمرين</label> <select value={weeklyDays} onChange={e => setWeeklyDays(e.target.value)}> {[2,3,4,5,6].map(d => <option key={d} value={d}>{d}</option>)} </select>
-            <fieldset> <legend>المعدات المتوفرة</legend>
-              <label className="checkbox-label"><input type="checkbox" checked={equipment.includes('none')} onChange={() => toggleEquipment('none')} /> بدون معدات</label>
-              <label className="checkbox-label"><input type="checkbox" checked={equipment.includes('dumbbell')} onChange={() => toggleEquipment('dumbbell')} /> دمبل</label>
-              <label className="checkbox-label"><input type="checkbox" checked={equipment.includes('mat')} onChange={() => toggleEquipment('mat')} /> سجادة</label>
-              <label className="checkbox-label"><input type="checkbox" checked={equipment.includes('resistance_band')} onChange={() => toggleEquipment('resistance_band')} /> شريط مقاومة</label>
-            </fieldset>
-            <button type="submit" className="btn" style={{width:'100%'}}>🚀 ابدأ رحلتك</button>
+          <form onSubmit={handleSubmit}>
+            <label>الاسم</label>
+            <input value={name} onChange={e => setName(e.target.value)} required />
+
+            <label>الجنس</label>
+            <select value={gender} onChange={e => setGender(e.target.value)}>
+              <option value="male">ذكر</option>
+              <option value="female">أنثى</option>
+              <option value="other">آخر</option>
+            </select>
+
+            <label>العمر</label>
+            <select value={age} onChange={e => setAge(e.target.value)}>
+              {ageOptions.map(a => <option key={a} value={a}>{a} سنة</option>)}
+            </select>
+
+            <label>الهدف</label>
+            <select value={goal} onChange={e => setGoal(e.target.value)}>
+              <option value="general_fitness">لياقة عامة</option>
+              <option value="weight_loss">خسارة وزن</option>
+              <option value="muscle_build">بناء عضلات</option>
+            </select>
+
+            <label>أيام التمرين في الأسبوع</label>
+            <select value={weeklyDays} onChange={e => setWeeklyDays(e.target.value)}>
+              {[2,3,4,5,6].map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+
+            <label>المعدات المتوفرة</label>
+            <MultiSelect
+              options={allEquipmentOptions}
+              selected={equipment}
+              onChange={setEquipment}
+            />
+
+            <button type="submit" className="btn" style={{width:'100%', marginTop:'20px'}}>🚀 ابدأ رحلتك</button>
           </form>
         </div>
       );
     }
 
-    function Dashboard({ profile, plan, log, onStartSession, onLibrary, onReset }) {
+    function Dashboard({ profile, plan, log, onStartSession, onLibrary, onReset, onLogout }) {
       if (!plan) return <div className="glass-card">تحضير الخطة...</div>;
       const totalWeeks = Object.keys(plan.weeksData).length;
       const progressDeg = Math.min((plan.currentWeek / totalWeeks) * 360, 360);
       const todayWorkout = plan.weeksData[`week${plan.currentWeek}`]?.[0] || null;
+      const equipmentLabels = profile.equipmentLabels || [];
 
       return (
         <div className="glass-card page-enter">
-          <h2 style={{color:'var(--accent)'}}>👋 مرحباً {profile.name}!</h2>
+          <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+            <h2 style={{color:'var(--accent)'}}>👋 مرحباً {profile.name}!</h2>
+            <button className="btn btn-outline" style={{padding:'8px 16px'}} onClick={onLogout}>🚪 خروج</button>
+          </div>
           <div style={{display:'flex', alignItems:'center', gap:'20px', margin:'20px 0'}}>
             <div className="progress-circle" style={{background: `conic-gradient(var(--accent) ${progressDeg}deg, rgba(255,255,255,0.2) 0deg)`}}>
               <div className="progress-inner">{plan.currentWeek}/{totalWeeks}</div>
@@ -311,6 +603,7 @@
             <div>
               <p>📅 الأسبوع {plan.currentWeek} من {totalWeeks}</p>
               <p>✅ الجلسات المكتملة: {log.length}</p>
+              {equipmentLabels.length > 0 && <p>🎒 المعدات: {equipmentLabels.join(', ')}</p>}
             </div>
           </div>
           {todayWorkout ? (
@@ -425,43 +718,111 @@
     }
 
     function App() {
-      const [profile, setProfile] = useState(() => loadLocal(PROFILE_KEY));
-      const [plan, setPlan] = useState(() => loadLocal(PLAN_KEY));
-      const [log, setLog] = useState(() => loadLocal(LOG_KEY, []));
+      const [currentUser, setCurrentUser] = useState(null); // اسم المستخدم الحالي
+      const [profile, setProfile] = useState(null);
+      const [plan, setPlan] = useState(null);
+      const [log, setLog] = useState([]);
       const [screen, setScreen] = useState('dashboard');
+      const [loading, setLoading] = useState(true);
 
-      useEffect(() => { if (profile !== null) saveLocal(PROFILE_KEY, profile); }, [profile]);
-      useEffect(() => { if (plan !== null) saveLocal(PLAN_KEY, plan); }, [plan]);
-      useEffect(() => { saveLocal(LOG_KEY, log); }, [log]);
-
+      // عند التحميل، تحقق من وجود جلسة نشطة
       useEffect(() => {
-        if (profile && !plan) {
-          const newPlan = generatePlan(profile);
-          setPlan(newPlan);
+        const sessionUser = getCurrentSession();
+        if (sessionUser) {
+          const userData = getUserData(sessionUser);
+          if (userData) {
+            setCurrentUser(sessionUser);
+            setProfile(userData.profile || null);
+            setPlan(userData.plan || null);
+            setLog(userData.log || []);
+          }
         }
-      }, [profile, plan]);
+        setLoading(false);
+      }, []);
 
-      const handleOnboarding = (newProfile) => { setProfile(newProfile); setPlan(null); setLog([]); setScreen('dashboard'); };
-      const startSession = () => setScreen('session');
-      const finishSession = (sessionData) => {
-        setLog(prev => [...prev, sessionData]);
-        setScreen('dashboard');
-      };
-      const resetAll = () => {
-        if (confirm('حذف كل البيانات؟')) {
-          setProfile(null); setPlan(null); setLog([]);
-          localStorage.removeItem(PROFILE_KEY); localStorage.removeItem(PLAN_KEY); localStorage.removeItem(LOG_KEY);
+      // حفظ بيانات المستخدم تلقائياً عند تغييرها
+      useEffect(() => {
+        if (currentUser && profile !== null) {
+          saveUserData(currentUser, { profile, plan, log });
+        }
+      }, [profile, plan, log, currentUser]);
+
+      const handleLogin = (username) => {
+        const userData = getUserData(username);
+        if (userData) {
+          setCurrentUser(username);
+          setProfile(userData.profile || null);
+          setPlan(userData.plan || null);
+          setLog(userData.log || []);
           setScreen('dashboard');
         }
       };
 
-      if (!profile) return <Onboarding onComplete={handleOnboarding} />;
+      const handleOnboardingComplete = (newProfile) => {
+        const newPlan = generatePlan(newProfile);
+        setProfile(newProfile);
+        setPlan(newPlan);
+        setLog([]);
+        setScreen('dashboard');
+      };
+
+      const handleLogout = () => {
+        clearCurrentSession();
+        setCurrentUser(null);
+        setProfile(null);
+        setPlan(null);
+        setLog([]);
+        setScreen('dashboard');
+      };
+
+      const handleReset = () => {
+        if (confirm('حذف كل البيانات؟')) {
+          setProfile(null);
+          setPlan(null);
+          setLog([]);
+        }
+      };
+
+      if (loading) {
+        return <div className="glass-card">جاري التحميل...</div>;
+      }
+
+      // إذا لم يكن هناك مستخدم حالي، اعرض شاشة الدخول
+      if (!currentUser) {
+        return <LoginScreen onLogin={handleLogin} />;
+      }
+
+      // إذا كان المستخدم موجوداً ولكن لا يملك بروفايل، اعرض شاشة الإعدادات الأولية
+      if (!profile) {
+        return <Onboarding onComplete={handleOnboardingComplete} />;
+      }
 
       return (
         <div className="app">
-          {screen === 'dashboard' && <Dashboard profile={profile} plan={plan} log={log} onStartSession={startSession} onLibrary={() => setScreen('library')} onReset={resetAll} />}
-          {screen === 'session' && <WorkoutSession plan={plan} onFinish={finishSession} onBack={() => setScreen('dashboard')} />}
-          {screen === 'library' && <Library onBack={() => setScreen('dashboard')} />}
+          {screen === 'dashboard' && (
+            <Dashboard
+              profile={profile}
+              plan={plan}
+              log={log}
+              onStartSession={() => setScreen('session')}
+              onLibrary={() => setScreen('library')}
+              onReset={handleReset}
+              onLogout={handleLogout}
+            />
+          )}
+          {screen === 'session' && (
+            <WorkoutSession
+              plan={plan}
+              onFinish={(sessionData) => {
+                setLog(prev => [...prev, sessionData]);
+                setScreen('dashboard');
+              }}
+              onBack={() => setScreen('dashboard')}
+            />
+          )}
+          {screen === 'library' && (
+            <Library onBack={() => setScreen('dashboard')} />
+          )}
         </div>
       );
     }
@@ -470,3 +831,14 @@
   </script>
 </body>
 </html>
+```
+
+✨ الميزات الجديدة:
+
+· شاشة دخول بكلمة مرور: عند أول زيارة، تظهر شاشة تطلب اسم المستخدم وكلمة المرور. إذا كان الاسم موجوداً، تتحقق من كلمة المرور. إذا كان جديداً، تنشئ حساباً جديداً.
+· تذكّر تلقائي: بعد تسجيل الدخول بنجاح، يُحفظ اسم المستخدم في currentSession. عند إغلاق المتصفح وإعادة فتح الموقع، يستعيد بياناتك مباشرة دون طلب كلمة المرور.
+· حماية الحساب: إذا أدخل شخص آخر اسم مستخدم موجود مع كلمة مرور خاطئة، يظهر خطأ ولا يُسمح له بالدخول.
+· زر تسجيل الخروج: في لوحة التحكم، زر "خروج" ينهي الجلسة ويعود إلى شاشة الدخول.
+· فصل بيانات المستخدمين: كل مستخدم له بياناته المستقلة (البروفايل، الخطة، السجل).
+
+انسخ الكود وارفعه إلى مستودعك. الآن التطبيق يتعرف عليك تلقائياً ويحمي خصوصيتك. 🔐
