@@ -4,9 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>مدرب اللياقة الذكي</title>
+
+  <!-- React -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; display: flex; justify-content: center; padding: 20px; }
@@ -26,12 +33,28 @@
     .actions { display: flex; gap: 10px; margin-top: 20px; }
     .actions button { flex: 1; }
     .session-finish select { margin: 10px 0; }
+    .loading { text-align: center; padding: 40px; font-size: 18px; }
   </style>
 </head>
 <body>
   <div id="root"></div>
+
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    const { useState, useEffect, useCallback } = React;
+
+    // ==================== Firebase Config (استبدلها بقيمك) ====================
+    const firebaseConfig = {
+      apiKey: "AIzaSy...",                // مفتاح API من Firebase
+      authDomain: "fitness-coach-21b40.firebaseapp.com",
+      databaseURL: "https://fitness-coach-21b40-default-rtdb.firebaseio.com",
+      projectId: "fitness-coach-21b40",
+      storageBucket: "fitness-coach-21b40.appspot.com",
+      messagingSenderId: "...",
+      appId: "..."
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
     // ======================== البيانات الثابتة ========================
     const exercises = [
@@ -110,24 +133,9 @@
       },
     ];
 
-    // ======================== دوال مساعدة للتخزين ========================
-    const PROFILE_KEY = 'fitness_profile';
-    const PLAN_KEY = 'fitness_user_plan';
-    const LOG_KEY = 'fitness_workout_log';
-
-    const loadFromStorage = (key, fallback = null) => {
-      try {
-        const item = localStorage.getItem(key);
-        return item ? JSON.parse(item) : fallback;
-      } catch { return fallback; }
-    };
-    const saveToStorage = (key, value) => localStorage.setItem(key, JSON.stringify(value));
-
-    // ======================== دالة توليد الخطة ========================
+    // ======================== دوال التوليد ========================
     function generatePlan(profile) {
       const { age, gender, goal, level, weeklyDays, sessionDuration, equipment } = profile;
-      
-      // تصفية التمارين المناسبة
       const suitableExercises = exercises.filter(ex => {
         if (ex.minAge && age < ex.minAge) return false;
         if (ex.maxAge && age > ex.maxAge) return false;
@@ -138,16 +146,10 @@
         }
         return true;
       });
-
-      // اختيار القالب المناسب
       let template = planTemplates.find(t => t.goal === goal && t.level === level);
-      if (!template) {
-        template = planTemplates.find(t => t.goal === goal) || planTemplates[0];
-      }
-
+      if (!template) template = planTemplates.find(t => t.goal === goal) || planTemplates[0];
       const weeksData = {};
       const weekKeys = Object.keys(template.weeksData).slice(0, template.durationWeeks);
-      
       weekKeys.forEach((weekKey, idx) => {
         const weekDays = [];
         const daysData = template.weeksData[weekKey];
@@ -157,22 +159,14 @@
             let ex = suitableExercises.find(e => e.id === id);
             if (!ex) {
               const original = exercises.find(e => e.id === id);
-              if (original) {
-                ex = suitableExercises.find(e => e.muscleGroup === original.muscleGroup && e.difficulty === original.difficulty);
-              }
+              if (original) ex = suitableExercises.find(e => e.muscleGroup === original.muscleGroup && e.difficulty === original.difficulty);
             }
             return ex || suitableExercises[0];
           });
-          weekDays.push({
-            exercises: exercisesForDay,
-            reps: dayTemplate.reps,
-            rest: dayTemplate.rest,
-            duration: sessionDuration
-          });
+          weekDays.push({ exercises: exercisesForDay, reps: dayTemplate.reps, rest: dayTemplate.rest, duration: sessionDuration });
         }
         weeksData[`week${idx + 1}`] = weekDays;
       });
-
       return {
         startDate: new Date().toISOString().split('T')[0],
         endDate: new Date(Date.now() + template.durationWeeks * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -182,7 +176,7 @@
       };
     }
 
-    // ======================== مكونات التطبيق ========================
+    // ======================== المكونات ========================
     function Onboarding({ onComplete }) {
       const [name, setName] = useState('');
       const [gender, setGender] = useState('male');
@@ -215,7 +209,6 @@
           sessionDuration: 30,
           equipment,
         };
-        saveToStorage(PROFILE_KEY, profile);
         onComplete(profile);
       };
 
@@ -257,7 +250,7 @@
     }
 
     function Dashboard({ profile, plan, log, onStartSession, onLibrary, onReset }) {
-      if (!plan) return <div>جاري تحضير خطتك...</div>;
+      if (!plan) return <div className="loading">جاري تحضير خطتك...</div>;
 
       const currentWeek = plan.currentWeek;
       const weekKey = `week${currentWeek}`;
@@ -367,26 +360,38 @@
     }
 
     function App() {
-      const [profile, setProfile] = useState(() => loadFromStorage(PROFILE_KEY));
-      const [plan, setPlan] = useState(() => loadFromStorage(PLAN_KEY));
-      const [log, setLog] = useState(() => loadFromStorage(LOG_KEY, []));
-      const [screen, setScreen] = useState('dashboard'); // 'dashboard', 'session', 'library'
+      const [profile, setProfile] = useState(null);
+      const [plan, setPlan] = useState(null);
+      const [log, setLog] = useState([]);
+      const [screen, setScreen] = useState('dashboard');
+      const [loading, setLoading] = useState(true);
 
+      // تحميل بيانات المستخدم من Firebase عند بدء التطبيق
       useEffect(() => {
-        if (profile && !plan) {
-          const newPlan = generatePlan(profile);
-          setPlan(newPlan);
-          saveToStorage(PLAN_KEY, newPlan);
-        }
-      }, [profile, plan]);
+        const userRef = db.ref('currentUser'); // مسار واحد لتخزين بيانات المستخدم الحالي (نفترض مستخدم واحد للجهاز)
+        userRef.once('value', (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            setProfile(data.profile || null);
+            setPlan(data.plan || null);
+            setLog(data.log || []);
+          }
+          setLoading(false);
+        });
+      }, []);
 
-      useEffect(() => { if (profile) saveToStorage(PROFILE_KEY, profile); }, [profile]);
-      useEffect(() => { if (plan) saveToStorage(PLAN_KEY, plan); }, [plan]);
-      useEffect(() => { saveToStorage(LOG_KEY, log); }, [log]);
+      // حفظ البيانات في Firebase عند أي تغيير
+      useEffect(() => {
+        if (profile !== null) {
+          db.ref('currentUser').set({ profile, plan, log });
+        }
+      }, [profile, plan, log]);
 
       const handleCompleteOnboarding = (newProfile) => {
+        const newPlan = generatePlan(newProfile);
         setProfile(newProfile);
-        setPlan(null); // trigger regeneration
+        setPlan(newPlan);
+        setLog([]);
         setScreen('dashboard');
       };
 
@@ -399,13 +404,17 @@
       const backToDashboard = () => setScreen('dashboard');
       const resetAll = () => {
         if (confirm('هل أنت متأكد من حذف جميع البيانات والبدء من جديد؟')) {
-          localStorage.clear();
           setProfile(null);
           setPlan(null);
           setLog([]);
           setScreen('dashboard');
+          db.ref('currentUser').remove(); // حذف من Firebase
         }
       };
+
+      if (loading) {
+        return <div className="loading">جاري تحميل بياناتك...</div>;
+      }
 
       if (!profile) {
         return <Onboarding onComplete={handleCompleteOnboarding} />;
