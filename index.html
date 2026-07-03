@@ -34,16 +34,8 @@
       padding: 20px;
       direction: rtl;
     }
-    #root {
-      width: 100%;
-      max-width: 600px;
-    }
-    .app {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    /* تأثير الزجاج */
+    #root { width: 100%; max-width: 600px; }
+    .app { display: flex; flex-direction: column; gap: 20px; }
     .glass-card {
       background: var(--card-bg);
       backdrop-filter: blur(12px);
@@ -54,7 +46,6 @@
       box-shadow: 0 20px 40px rgba(0,0,0,0.3);
       transition: all 0.3s ease;
     }
-    /* أزرار */
     .btn {
       background: var(--button-bg);
       color: white;
@@ -72,12 +63,7 @@
     .btn:hover { background: var(--button-hover); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(249,115,22,0.5); }
     .btn:active { transform: scale(0.96); }
     .btn:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
-    .btn-outline {
-      background: transparent;
-      border: 2px solid var(--accent);
-      color: var(--accent);
-      box-shadow: none;
-    }
+    .btn-outline { background: transparent; border: 2px solid var(--accent); color: var(--accent); box-shadow: none; }
     .btn-outline:hover { background: rgba(249,115,22,0.15); }
     .btn-danger { background: var(--danger); box-shadow: 0 4px 15px rgba(239,68,68,0.3); }
     .btn-danger:hover { background: #f87171; }
@@ -95,17 +81,11 @@
       transition: border 0.2s;
     }
     input:focus, select:focus { outline: none; border-color: var(--accent); }
-    fieldset {
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 16px;
-      padding: 16px;
-      margin: 16px 0;
-    }
+    fieldset { border: 1px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 16px; margin: 16px 0; }
     legend { color: var(--text-secondary); font-weight: 600; }
     .checkbox-label { display: flex; align-items: center; gap: 10px; color: var(--text-primary); }
     .checkbox-label input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); }
 
-    /* تمرين */
     .exercise-item {
       display: flex;
       justify-content: space-between;
@@ -115,11 +95,7 @@
       border-radius: 14px;
       margin: 8px 0;
       border: 1px solid rgba(255,255,255,0.1);
-      transition: background 0.2s;
     }
-    .exercise-item:hover { background: rgba(255,255,255,0.12); }
-
-    /* فيديو */
     .video-container {
       position: relative;
       padding-bottom: 56.25%;
@@ -131,13 +107,9 @@
     .video-container iframe {
       position: absolute;
       top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-      border-radius: 16px;
+      width: 100%; height: 100%;
+      border: 0; border-radius: 16px;
     }
-
-    /* مؤقت الراحة */
     .rest-timer {
       background: rgba(255,255,255,0.1);
       border-radius: 20px;
@@ -145,16 +117,9 @@
       text-align: center;
       margin: 20px 0;
     }
-    .timer-number {
-      font-size: 48px;
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    /* تقدم دائري بسيط */
+    .timer-number { font-size: 48px; font-weight: 700; color: var(--accent); }
     .progress-circle {
-      width: 80px;
-      height: 80px;
+      width: 80px; height: 80px;
       border-radius: 50%;
       background: conic-gradient(var(--accent) 0deg, rgba(255,255,255,0.2) 0deg);
       display: flex;
@@ -163,8 +128,7 @@
       margin: 0 auto 10px;
     }
     .progress-inner {
-      width: 64px;
-      height: 64px;
+      width: 64px; height: 64px;
       background: #1e293b;
       border-radius: 50%;
       display: flex;
@@ -172,18 +136,13 @@
       justify-content: center;
       font-weight: 700;
     }
-
-    /* حركات انتقالية */
     @keyframes fadeSlideIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .page-enter { animation: fadeSlideIn 0.4s ease forwards; }
-
-    /* Modal */
     .modal-overlay {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: rgba(0,0,0,0.8);
       display: flex;
       align-items: center;
@@ -218,9 +177,9 @@
 <body>
   <div id="root"></div>
   <script type="text/babel">
-    const { useState, useEffect, useCallback } = React;
+    const { useState, useEffect } = React;
 
-    // ======================== البيانات ========================
+    // ======================== البيانات الثابتة ========================
     const exercises = [
       { id: 1, name: 'Squats', nameAr: 'القرفصاء', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/aclHkVaku9U' },
       { id: 2, name: 'Lunges', nameAr: 'الاندفاع', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/QOVaHwm-Q6U' },
@@ -265,12 +224,10 @@
       }
     ];
 
-    // ======================== التخزين المحلي ========================
     const PROFILE_KEY = 'fitness_profile', PLAN_KEY = 'fitness_user_plan', LOG_KEY = 'fitness_workout_log';
     const loadLocal = (k, fb=null) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } };
     const saveLocal = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
 
-    // ======================== توليد الخطة ========================
     function generatePlan(profile) {
       const { age, gender, goal, level, weeklyDays, sessionDuration, equipment } = profile;
       const suitableExercises = exercises.filter(ex => {
@@ -304,7 +261,7 @@
       return { startDate: new Date().toISOString().split('T')[0], endDate: new Date(Date.now() + template.durationWeeks*7*24*60*60*1000).toISOString().split('T')[0], weeksData, currentWeek: 1, adaptationLog: [], templateId: template.id };
     }
 
-    // ======================== مكونات ========================
+    // ======================== المكونات ========================
     function Onboarding({ onComplete }) {
       const [name, setName] = useState(''); const [gender, setGender] = useState('male'); const [age, setAge] = useState(25); const [goal, setGoal] = useState('general_fitness'); const [weeklyDays, setWeeklyDays] = useState(3); const [equipment, setEquipment] = useState(['none']);
 
@@ -317,15 +274,10 @@
         });
       };
 
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        onComplete({ name, gender, age: Number(age), goal, level: age > 55 || age < 18 ? 'beginner' : 'beginner', weeklyDays: Number(weeklyDays), sessionDuration: 30, equipment });
-      };
-
       return (
         <div className="glass-card page-enter">
           <h1 style={{textAlign:'center', color: 'var(--accent)'}}>🏋️ مدربك الذكي</h1>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={(e) => { e.preventDefault(); onComplete({ name, gender, age: Number(age), goal, level: age > 55 || age < 18 ? 'beginner' : 'beginner', weeklyDays: Number(weeklyDays), sessionDuration: 30, equipment }); }}>
             <label>الاسم</label> <input value={name} onChange={e => setName(e.target.value)} required />
             <label>الجنس</label> <select value={gender} onChange={e => setGender(e.target.value)}> <option value="male">ذكر</option> <option value="female">أنثى</option> <option value="other">آخر</option> </select>
             <label>العمر</label> <input type="number" value={age} onChange={e => setAge(e.target.value)} min="13" max="100" />
@@ -346,7 +298,7 @@
     function Dashboard({ profile, plan, log, onStartSession, onLibrary, onReset }) {
       if (!plan) return <div className="glass-card">تحضير الخطة...</div>;
       const totalWeeks = Object.keys(plan.weeksData).length;
-      const progressDeg = (plan.currentWeek / totalWeeks) * 360;
+      const progressDeg = Math.min((plan.currentWeek / totalWeeks) * 360, 360);
       const todayWorkout = plan.weeksData[`week${plan.currentWeek}`]?.[0] || null;
 
       return (
@@ -386,7 +338,7 @@
       const days = plan.weeksData[currentWeekKey] || [];
       const today = days[0] || { exercises: [], reps: [], rest: 60 };
       const [step, setStep] = useState(0);
-      const [phase, setPhase] = useState('exercise'); // 'exercise' | 'rest' | 'complete'
+      const [phase, setPhase] = useState('exercise');
       const [restSeconds, setRestSeconds] = useState(today.rest);
       const [feedback, setFeedback] = useState('');
 
@@ -478,49 +430,23 @@
       const [log, setLog] = useState(() => loadLocal(LOG_KEY, []));
       const [screen, setScreen] = useState('dashboard');
 
-      useEffect(() => { saveLocal(PROFILE_KEY, profile); }, [profile]);
-      useEffect(() => { saveLocal(PLAN_KEY, plan); }, [plan]);
+      useEffect(() => { if (profile !== null) saveLocal(PROFILE_KEY, profile); }, [profile]);
+      useEffect(() => { if (plan !== null) saveLocal(PLAN_KEY, plan); }, [plan]);
       useEffect(() => { saveLocal(LOG_KEY, log); }, [log]);
 
       useEffect(() => {
         if (profile && !plan) {
           const newPlan = generatePlan(profile);
           setPlan(newPlan);
-          saveLocal(PLAN_KEY, newPlan);
         }
       }, [profile, plan]);
 
       const handleOnboarding = (newProfile) => { setProfile(newProfile); setPlan(null); setLog([]); setScreen('dashboard'); };
       const startSession = () => setScreen('session');
       const finishSession = (sessionData) => {
-        const newLog = [...log, sessionData];
-        setLog(newLog);
-
-        // تكيف بسيط: إذا انتهى الأسبوع وكانت معظم الجلسات سهلة، نزيد الشدة
-        const currentWeekKey = `week${plan.currentWeek}`;
-        const daysInWeek = plan.weeksData[currentWeekKey]?.length || 1;
-        const sessionsThisWeek = newLog.filter(l => l.date >= plan.startDate).length; // تقريبي
-        if (sessionsThisWeek >= daysInWeek && plan.currentWeek < Object.keys(plan.weeksData).length) {
-          const easyCount = newLog.filter(l => l.feedback === 'easy').length;
-          const updatedPlan = { ...plan };
-          if (easyCount >= daysInWeek * 0.8) {
-            // زيادة التكرارات بنسبة 15% للأسبوع القادم
-            const nextWeekKey = `week${plan.currentWeek + 1}`;
-            if (updatedPlan.weeksData[nextWeekKey]) {
-              updatedPlan.weeksData[nextWeekKey] = updatedPlan.weeksData[nextWeekKey].map(day => ({
-                ...day,
-                reps: day.reps.map(r => Math.floor(r * 1.15))
-              }));
-              updatedPlan.adaptationLog = [...(updatedPlan.adaptationLog || []), { week: plan.currentWeek+1, change: 'increased reps' }];
-            }
-          }
-          updatedPlan.currentWeek = plan.currentWeek + 1;
-          setPlan(updatedPlan);
-          saveLocal(PLAN_KEY, updatedPlan);
-        }
+        setLog(prev => [...prev, sessionData]);
         setScreen('dashboard');
       };
-
       const resetAll = () => {
         if (confirm('حذف كل البيانات؟')) {
           setProfile(null); setPlan(null); setLog([]);
