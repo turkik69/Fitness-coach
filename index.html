@@ -354,6 +354,103 @@
     .choice-card .lbl { font-size: 13.5px; font-weight: 700; }
     .choice-card .sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
     .choice-card.selected .sub { color: var(--lime-dim); }
+
+    /* ============ نظام المستوى والخبرة (XP) ============ */
+    .xp-bar-wrap { display: flex; align-items: center; gap: 10px; }
+    .xp-bar-track { flex: 1; height: 10px; background: var(--bg-1); border-radius: 8px; overflow: hidden; border: 1px solid var(--hairline); position: relative; }
+    .xp-bar-fill {
+      height: 100%; border-radius: 8px; background: linear-gradient(90deg, var(--lime-dim), var(--lime));
+      transition: width 0.8s cubic-bezier(0.22,1,0.36,1); position: relative; overflow: hidden;
+    }
+    .xp-bar-fill::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      background-size: 200% 100%; animation: shimmer 2.2s linear infinite;
+    }
+    .level-chip {
+      display: flex; align-items: center; gap: 6px; background: var(--surface-raised); border: 1.5px solid var(--lime);
+      border-radius: 100px; padding: 5px 12px 5px 6px; flex-shrink: 0;
+    }
+    .level-chip .lvl-num {
+      width: 26px; height: 26px; border-radius: 50%; background: var(--lime); color: #0A0C10;
+      display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-weight: 700; font-size: 12.5px;
+    }
+    .level-chip .lvl-title { font-size: 12px; font-weight: 700; color: var(--lime); }
+
+    @keyframes xpFloat {
+      0% { opacity: 0; transform: translateY(6px) scale(0.85); }
+      15% { opacity: 1; transform: translateY(0) scale(1); }
+      75% { opacity: 1; transform: translateY(-14px) scale(1); }
+      100% { opacity: 0; transform: translateY(-26px) scale(0.9); }
+    }
+    .xp-toast {
+      position: fixed; top: 18px; left: 50%; transform: translateX(-50%); z-index: 3000;
+      background: var(--surface-raised); border: 1.5px solid var(--lime); border-radius: 100px;
+      padding: 10px 20px; font-family: var(--font-mono); font-weight: 700; color: var(--lime);
+      box-shadow: 0 10px 30px var(--lime-glow); animation: xpFloat 2.2s ease forwards; font-size: 14px;
+      display: flex; align-items: center; gap: 8px; white-space: nowrap;
+    }
+
+    /* ============ رمز الشعلة (streak) ============ */
+    .streak-flame { display: flex; align-items: center; gap: 6px; }
+    .streak-flame .flame-icon { font-size: 20px; filter: drop-shadow(0 0 6px rgba(255,140,20,0.5)); }
+    .streak-flame .flame-num { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: #FFA43D; }
+
+    /* ============ شرارات (عملة) ============ */
+    .sparks-chip { display: inline-flex; align-items: center; gap: 5px; background: var(--warning-soft); border: 1px solid rgba(255,201,61,0.3); border-radius: 100px; padding: 5px 12px; font-family: var(--font-mono); font-weight: 700; color: var(--warning); font-size: 13px; }
+
+    /* ============ الشخصية الرمزية (Avatar) ============ */
+    .avatar-stage {
+      position: relative; width: 140px; height: 160px; margin: 0 auto; display: flex; align-items: flex-end; justify-content: center;
+    }
+    .avatar-glow { position: absolute; bottom: 10px; width: 90px; height: 20px; background: var(--lime); filter: blur(20px); opacity: 0.35; border-radius: 50%; }
+    .avatar-svg { position: relative; z-index: 1; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4)); }
+
+    /* ============ بطاقات الإنجاز (Badges) ============ */
+    .badge-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+    .achievement-card {
+      background: var(--bg-1); border: 1.5px solid var(--hairline); border-radius: var(--radius-sm);
+      padding: 12px 6px; text-align: center; position: relative; transition: all 0.2s ease;
+    }
+    .achievement-card.unlocked { border-color: var(--warning); background: var(--warning-soft); }
+    .achievement-card.locked { opacity: 0.4; filter: grayscale(1); }
+    .achievement-card .ac-icon { font-size: 26px; display: block; }
+    .achievement-card .ac-name { font-size: 10px; margin-top: 5px; font-weight: 700; color: var(--text-secondary); }
+    .achievement-card.unlocked .ac-name { color: var(--warning); }
+
+    /* ============ تحدي اليوم ============ */
+    .daily-challenge-card {
+      background: linear-gradient(135deg, rgba(91,140,255,0.14), rgba(201,255,61,0.06));
+      border: 1.5px solid rgba(91,140,255,0.3); border-radius: var(--radius-md); padding: 16px;
+      position: relative; overflow: hidden;
+    }
+    .daily-challenge-card::before {
+      content: '⚡'; position: absolute; left: -10px; top: -10px; font-size: 80px; opacity: 0.06; transform: rotate(-15deg);
+    }
+
+    /* ============ صندوق المكافآت (Loot box) ============ */
+    .lootbox-overlay {
+      position: fixed; inset: 0; background: rgba(6,8,12,0.92); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center; z-index: 3000; padding: 20px;
+    }
+    .lootbox-content { text-align: center; max-width: 340px; }
+    .lootbox-icon { font-size: 90px; animation: lootBounce 1.4s ease infinite; filter: drop-shadow(0 0 30px var(--lime-glow)); }
+    @keyframes lootBounce { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-14px) rotate(3deg); } }
+    .lootbox-reveal { animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+    /* ============ شخصية المدرب ============ */
+    .coach-persona-card { display: flex; align-items: center; gap: 12px; }
+    .coach-avatar-icon { width: 46px; height: 46px; border-radius: 14px; background: var(--surface-raised); border: 1px solid var(--hairline); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+
+    /* ============ لوحة الصدارة (منافسة النفس) ============ */
+    .leaderboard-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; }
+    .leaderboard-row.you { background: var(--lime-soft); border: 1px solid rgba(201,255,61,0.3); }
+    .leaderboard-rank { width: 26px; text-align: center; font-family: var(--font-mono); font-weight: 700; color: var(--text-muted); }
+    .leaderboard-row.you .leaderboard-rank { color: var(--lime); }
+
+    /* شريط تقدم خطي */
+    .linear-track { height: 6px; background: var(--bg-1); border-radius: 6px; overflow: hidden; border: 1px solid var(--hairline); }
+    .linear-fill { height: 100%; background: var(--lime); transition: width 0.4s ease; }
   </style>
 </head>
 <body>
@@ -462,6 +559,111 @@
       { value: 'jump_rope', label: 'حبل قفز', icon: '➰' },
       { value: 'free_weights', label: 'أوزان حرة', icon: '🏋️' },
     ];
+
+    // ======================== نظام المستويات والخبرة ========================
+    const levelTitles = [
+      { min: 1, max: 2, title: 'مبتدئ جاد', icon: '🌱' },
+      { min: 3, max: 5, title: 'محارب الصباح', icon: '🌅' },
+      { min: 6, max: 9, title: 'صيّاد العرق', icon: '💧' },
+      { min: 10, max: 14, title: 'قوة صاعدة', icon: '⚡' },
+      { min: 15, max: 20, title: 'محترف منضبط', icon: '🎯' },
+      { min: 21, max: 30, title: 'وحش التمرين', icon: '🔥' },
+      { min: 31, max: 45, title: 'أسطورة الحديد', icon: '🏆' },
+      { min: 46, max: 999, title: 'أسطورة PEAK', icon: '👑' },
+    ];
+    function getLevelTitle(level) {
+      return levelTitles.find(t => level >= t.min && level <= t.max) || levelTitles[0];
+    }
+    // منحنى الخبرة: كل مستوى يحتاج خبرة أكبر تدريجياً
+    function xpForLevel(level) { return Math.round(100 * Math.pow(level, 1.35)); }
+    function levelFromTotalXp(totalXp) {
+      let level = 1, remaining = totalXp;
+      while (remaining >= xpForLevel(level)) { remaining -= xpForLevel(level); level++; }
+      return { level, xpIntoLevel: remaining, xpNeeded: xpForLevel(level) };
+    }
+    const XP_PER_EXERCISE = 15;
+    const XP_PER_SESSION_COMPLETE = 40;
+    const XP_PER_STREAK_DAY = 10;
+    const XP_DAILY_CHALLENGE = 30;
+    const SPARKS_PER_LEVEL_UP = 25;
+
+    // ======================== شخصيات المدرب ========================
+    const coachPersonas = [
+      { value: 'energetic', label: 'متحمس', icon: '🔥', desc: 'حماس عالي وتشجيع مستمر' },
+      { value: 'calm', label: 'هادئ', icon: '🧘', desc: 'نبرة هادئة ومتفهمة' },
+      { value: 'strict', label: 'صارم', icon: '🎯', desc: 'مباشر وواضح بدون مجاملة' },
+    ];
+    function personaMessage(persona, kind, ctx) {
+      const messages = {
+        energetic: {
+          first: `يلا ${ctx.name}! 🔥 أول جلسة وبداية حماسية، جاهز نكسر الحدود؟`,
+          hardStreak: `أعرف إنها كانت صعبة 💪 بس هذا بالضبط اللي يبني الأبطال! خففتها شوي، يلا كمّل!`,
+          easyStreak: `واااو أداء ناري 🔥🔥 رفعت لك التحدي، أثبت لنفسك إنك تستاهل!`,
+          absence: `وينك يا بطل؟! 😤 ${ctx.days} أيام مرّت. رجعتك الآن أهم إنجاز اليوم!`,
+          consistent: `أنت آلة يا ${ctx.name}! 🚀 ${ctx.count} جلسة وما وقفت، كذا يُبنى الأساطير!`,
+          levelUp: `LEVEL UP! 🎉 صرت ${ctx.title}! العالم لسه ما شاف كل اللي عندك.`,
+        },
+        calm: {
+          first: `أهلاً ${ctx.name} 🌿 خطوة أولى بسيطة اليوم، وهذا يكفي تماماً.`,
+          hardStreak: `لاحظت إنها كانت متعبة، وهذا طبيعي جداً. خففت الحمل شوي، خذ وقتك.`,
+          easyStreak: `تقدم جميل وثابت 🙏 رفعت المستوى قليلاً، بالخطى الهادئة نوصل بعيد.`,
+          absence: `مر ${ctx.days} أيام، ولا بأس بذلك. العودة بخطوة صغيرة اليوم كافية جداً.`,
+          consistent: `${ctx.count} جلسة من الاستمرارية الهادئة يا ${ctx.name}، هذا نمو حقيقي.`,
+          levelUp: `تهانينا 🌟 وصلت لمستوى ${ctx.title}، رحلة جميلة ومستمرة.`,
+        },
+        strict: {
+          first: `${ctx.name}. أول جلسة. لا أعذار من الآن، ابدأ.`,
+          hardStreak: `كانت صعبة عليك في آخر جلستين. قلّلت الحمل. لا تتوقف.`,
+          easyStreak: `أداء جيد. رفعت الصعوبة. لا وقت للراحة على الإنجاز.`,
+          absence: `${ctx.days} أيام غياب. غير مقبول. عد الآن.`,
+          consistent: `${ctx.count} جلسة. استمر. هذا هو المطلوب بالضبط.`,
+          levelUp: `مستوى ${ctx.title}. جيد. التالي أصعب.`,
+        }
+      };
+      return messages[persona]?.[kind] || messages.energetic[kind];
+    }
+
+    // ======================== الشارات (Achievements) ========================
+    const achievementDefs = [
+      { id: 'first_session', name: 'البداية', icon: '🎬', check: (log) => log.length >= 1 },
+      { id: 'five_sessions', name: '٥ جلسات', icon: '🥉', check: (log) => log.length >= 5 },
+      { id: 'twenty_sessions', name: '٢٠ جلسة', icon: '🥈', check: (log) => log.length >= 20 },
+      { id: 'fifty_sessions', name: '٥٠ جلسة', icon: '🥇', check: (log) => log.length >= 50 },
+      { id: 'streak_3', name: 'شعلة ٣ أيام', icon: '🔥', check: (log, streak) => streak >= 3 },
+      { id: 'streak_7', name: 'شعلة أسبوع', icon: '🔥', check: (log, streak) => streak >= 7 },
+      { id: 'streak_14', name: 'شعلة أسبوعين', icon: '☄️', check: (log, streak) => streak >= 14 },
+      { id: 'week_complete', name: 'أسبوع كامل', icon: '📅', check: (log, streak, plan) => plan && plan.currentWeek >= 2 },
+      { id: 'all_easy', name: 'محترف', icon: '😎', check: (log) => log.length >= 5 && log.slice(-5).every(l => l.feedback !== 'hard') },
+      { id: 'comeback', name: 'العودة القوية', icon: '💥', check: (log) => log.length >= 2 },
+      { id: 'challenge_5', name: '٥ تحديات يومية', icon: '🎯', check: (log, streak, plan, challengesDone) => (challengesDone || 0) >= 5 },
+      { id: 'level_10', name: 'مستوى ١٠', icon: '⭐', check: (log, streak, plan, challengesDone, level) => (level || 1) >= 10 },
+    ];
+
+    // ======================== تحديات اليوم ========================
+    const dailyChallengePool = [
+      { id: 'dc1', text: '20 قرفصاء إضافية', exerciseId: 1, target: 20 },
+      { id: 'dc2', text: '15 تمرين ضغط إضافي', exerciseId: 3, target: 15 },
+      { id: 'dc3', text: '45 ثانية بلانك إضافية', exerciseId: 5, target: 45 },
+      { id: 'dc4', text: '30 قفزة تباعد', exerciseId: 8, target: 30 },
+      { id: 'dc5', text: '20 اندفاع (لانجز)', exerciseId: 2, target: 20 },
+      { id: 'dc6', text: '25 رفعة ساق', exerciseId: 15, target: 25 },
+      { id: 'dc7', text: '40 ثانية جلوس على الحائط', exerciseId: 14, target: 40 },
+      { id: 'dc8', text: '20 جسر ألوية', exerciseId: 6, target: 20 },
+    ];
+    function getTodayChallenge(username) {
+      // اختيار حتمي بناء على اليوم والمستخدم حتى يبقى نفس التحدي طول اليوم
+      const dateStr = new Date().toISOString().split('T')[0];
+      const seed = (username + dateStr).split('').reduce((a,c) => a + c.charCodeAt(0), 0);
+      return dailyChallengePool[seed % dailyChallengePool.length];
+    }
+
+    // ======================== شخصية الأفاتار المرئية (SVG) ========================
+    function getAvatarTier(level) {
+      if (level >= 25) return 'elite';
+      if (level >= 12) return 'strong';
+      if (level >= 5) return 'active';
+      return 'starter';
+    }
 
     // ======================== دوال التخزين والحسابات ========================
     const STORAGE_KEYS = { users: 'fitness_users', currentSession: 'fitness_session' };
@@ -579,6 +781,42 @@
         total += estMinutes * (ex.calPerMin || 5);
       });
       return Math.round(total);
+    }
+
+    // ---- حساب السلسلة المتتالية (streak) من السجل ----
+    function computeStreak(log) {
+      let s = 0;
+      const sorted = [...log].sort((a,b) => new Date(b.date) - new Date(a.date));
+      let lastDate = null;
+      for (const l of sorted) {
+        const d = new Date(l.date);
+        if (lastDate === null) { s = 1; lastDate = d; continue; }
+        const diffDays = Math.round((lastDate - d) / 86400000);
+        if (diffDays <= 3) { s++; lastDate = d; } else break;
+      }
+      return s;
+    }
+
+    // ---- حساب إجمالي الخبرة الكلي من السجل الكامل (حتمي دائماً، لا يعتمد على تخزين منفصل) ----
+    function computeTotalXp(log, challengesCompletedCount) {
+      let xp = 0;
+      log.forEach(session => {
+        xp += XP_PER_SESSION_COMPLETE;
+        xp += (session.exercises?.length || 0) * XP_PER_EXERCISE;
+      });
+      const streak = computeStreak(log);
+      xp += Math.min(streak, 30) * XP_PER_STREAK_DAY; // سقف معقول حتى لا تتضخم القيمة بلا حدود
+      xp += (challengesCompletedCount || 0) * XP_DAILY_CHALLENGE;
+      return xp;
+    }
+
+    // ---- الشارات المفتوحة حالياً ----
+    function getUnlockedAchievements(log, plan, challengesCompletedCount, level) {
+      const streak = computeStreak(log);
+      return achievementDefs.map(def => ({
+        ...def,
+        unlocked: def.check(log, streak, plan, challengesCompletedCount, level)
+      }));
     }
 
     // ======================== قائمة منسدلة مخصصة ========================
@@ -717,7 +955,84 @@
       );
     }
 
-    // ======================== شاشة تسجيل الدخول ========================
+    // ======================== الشخصية الرمزية (SVG Avatar) ========================
+    function Avatar({ level, size }) {
+      const tier = getAvatarTier(level);
+      const s = size || 120;
+      // ألوان وأشكال بسيطة هندسية تتطور حسب المستوى — بدون اعتماد على صور خارجية
+      const tierConfig = {
+        starter: { bodyColor: '#5B8CFF', bodyWidth: 34, glow: false, accessory: null },
+        active: { bodyColor: '#35E0A1', bodyWidth: 40, glow: false, accessory: 'band' },
+        strong: { bodyColor: '#C9FF3D', bodyWidth: 48, glow: true, accessory: 'cape' },
+        elite: { bodyColor: '#FFC93D', bodyWidth: 54, glow: true, accessory: 'crown' },
+      };
+      const cfg = tierConfig[tier];
+      return (
+        <div className="avatar-stage" style={{width: s, height: s * 1.14}}>
+          {cfg.glow && <div className="avatar-glow"></div>}
+          <svg className="avatar-svg" width={s} height={s * 1.14} viewBox="0 0 140 160">
+            {/* الظل */}
+            <ellipse cx="70" cy="150" rx="32" ry="7" fill="rgba(0,0,0,0.35)" />
+            {/* الساقين */}
+            <rect x="54" y="112" width="12" height="34" rx="5" fill="#2A2F3C" />
+            <rect x="74" y="112" width="12" height="34" rx="5" fill="#2A2F3C" />
+            {/* الجسم */}
+            <rect x={70 - cfg.bodyWidth/2} y="64" width={cfg.bodyWidth} height="54" rx="16" fill={cfg.bodyColor} />
+            {/* الذراعين */}
+            <rect x={70 - cfg.bodyWidth/2 - 12} y="70" width="12" height="36" rx="6" fill={cfg.bodyColor} opacity="0.85" />
+            <rect x={70 + cfg.bodyWidth/2} y="70" width="12" height="36" rx="6" fill={cfg.bodyColor} opacity="0.85" />
+            {/* الرأس */}
+            <circle cx="70" cy="42" r="22" fill="#F4C7A0" />
+            {/* إكسسوار حسب المستوى */}
+            {cfg.accessory === 'band' && <rect x="48" y="30" width="44" height="7" fill="#0A0C10" />}
+            {cfg.accessory === 'cape' && <path d="M 45 68 Q 70 130 95 68 L 90 66 Q 70 110 50 66 Z" fill="#FF5C7A" opacity="0.85" />}
+            {cfg.accessory === 'crown' && (
+              <path d="M 54 24 L 60 12 L 70 22 L 80 12 L 86 24 L 84 30 L 56 30 Z" fill="#FFC93D" stroke="#0A0C10" strokeWidth="1" />
+            )}
+          </svg>
+        </div>
+      );
+    }
+
+    function LevelBadge({ level }) {
+      const t = getLevelTitle(level);
+      return (
+        <div className="level-chip">
+          <span className="lvl-num">{level}</span>
+          <span className="lvl-title">{t.icon} {t.title}</span>
+        </div>
+      );
+    }
+
+    function XpBar({ xpIntoLevel, xpNeeded }) {
+      const pct = Math.min(100, Math.round((xpIntoLevel / xpNeeded) * 100));
+      return (
+        <div className="xp-bar-wrap">
+          <div className="xp-bar-track"><div className="xp-bar-fill" style={{width: `${pct}%`}}></div></div>
+          <span className="mono" style={{fontSize:'11px', color:'var(--text-muted)', flexShrink:0}}>{xpIntoLevel}/{xpNeeded}</span>
+        </div>
+      );
+    }
+
+    function StreakFlame({ streak }) {
+      if (streak <= 0) return null;
+      return (
+        <div className="streak-flame">
+          <span className="flame-icon">🔥</span>
+          <span className="flame-num">{streak}</span>
+        </div>
+      );
+    }
+
+    function XpToast({ message, onDone }) {
+      useEffect(() => {
+        const t = setTimeout(onDone, 2200);
+        return () => clearTimeout(t);
+      }, []);
+      return <div className="xp-toast">✨ {message}</div>;
+    }
+
+
     function LoginScreen({ onLogin }) {
       const [username, setUsername] = useState('');
       const [password, setPassword] = useState('');
@@ -764,10 +1079,11 @@
       const [goal, setGoal] = useState('general_fitness');
       const [weeklyDays, setWeeklyDays] = useState(3);
       const [equipment, setEquipment] = useState(['none']);
+      const [coachPersona, setCoachPersona] = useState('energetic');
       const ageOptions = Array.from({ length: 88 }, (_, i) => ({ value: i + 13, label: `${i + 13} سنة` }));
 
       const previewLevel = computeLevel(Number(age), goal);
-      const totalSteps = 3;
+      const totalSteps = 4;
 
       const handleSubmit = () => {
         const equipmentLabels = equipmentOptions.filter(o => equipment.includes(o.value)).map(o => o.label);
@@ -776,7 +1092,7 @@
           level: computeLevel(Number(age), goal),
           weeklyDays: Number(weeklyDays),
           sessionDuration: 30,
-          equipment, equipmentLabels
+          equipment, equipmentLabels, coachPersona
         });
       };
 
@@ -843,6 +1159,30 @@
 
               <div style={{display:'flex', gap:'10px', marginTop:'24px'}}>
                 <button className="btn-outline btn" style={{flex:1}} onClick={() => setStep(2)}>السابق</button>
+                <button className="btn" style={{flex:2}} onClick={() => setStep(4)}>التالي</button>
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div>
+              <h2 style={{marginBottom:'4px'}}>اختر أسلوب مدربك</h2>
+              <p style={{color:'var(--text-secondary)', fontSize:'13.5px', marginBottom:'6px'}}>كل رسالة تحفيز وتحليل أداء ستكون بهذه النبرة</p>
+              <div className="stack" style={{marginTop:'8px'}}>
+                {coachPersonas.map(p => (
+                  <div key={p.value} className={`panel coach-persona-card`} style={{cursor:'pointer', border: coachPersona === p.value ? '1.5px solid var(--lime)' : '1.5px solid var(--hairline)', background: coachPersona === p.value ? 'var(--lime-soft)' : 'var(--surface-raised)'}} onClick={() => setCoachPersona(p.value)}>
+                    <span className="coach-avatar-icon">{p.icon}</span>
+                    <div>
+                      <div style={{fontWeight:700}}>{p.label}</div>
+                      <div style={{fontSize:'12px', color:'var(--text-muted)'}}>{p.desc}</div>
+                    </div>
+                    {coachPersona === p.value && <span style={{marginRight:'auto', color:'var(--lime)', fontSize:'18px'}}>✓</span>}
+                  </div>
+                ))}
+              </div>
+
+              <div style={{display:'flex', gap:'10px', marginTop:'24px'}}>
+                <button className="btn-outline btn" style={{flex:1}} onClick={() => setStep(3)}>السابق</button>
                 <button className="btn" style={{flex:2}} onClick={handleSubmit}>🚀 ابدأ رحلتك</button>
               </div>
             </div>
@@ -853,15 +1193,16 @@
 
     // ======================== مساعدات لوحة التحكم ========================
     function coachMessage(profile, plan, log) {
-      if (log.length === 0) return { icon: '👋', text: `أهلاً ${profile.name}! هذه أول جلسة لك — ابدأ بخطوات بسيطة وسأتابع أداءك لأبني لك خطة تتكيّف معك.` };
+      const persona = profile.coachPersona || 'energetic';
+      if (log.length === 0) return { icon: '👋', text: personaMessage(persona, 'first', { name: profile.name }) };
       const last3 = log.slice(-3);
       const hardCount = last3.filter(l => l.feedback === 'hard').length;
       const easyCount = last3.filter(l => l.feedback === 'easy').length;
-      if (hardCount >= 2) return { icon: '💪', text: 'لاحظت أن التمارين الأخيرة كانت صعبة عليك. لا بأس، الخطة القادمة أخف قليلاً — الاستمرارية أهم من الشدة.' };
-      if (easyCount >= 2) return { icon: '🔥', text: 'أداء رائع ومستمر! رفعت مستوى الخطة القادمة قليلاً لتستمر بالتحدي والتقدم.' };
+      if (hardCount >= 2) return { icon: '💪', text: personaMessage(persona, 'hardStreak', {}) };
+      if (easyCount >= 2) return { icon: '🔥', text: personaMessage(persona, 'easyStreak', {}) };
       const daysSinceLast = Math.floor((Date.now() - new Date(log[log.length-1].date).getTime()) / 86400000);
-      if (daysSinceLast >= 4) return { icon: '⏰', text: `مر ${daysSinceLast} أيام منذ آخر جلسة. عودة بسيطة اليوم أفضل من الانتظار لعودة "مثالية".` };
-      return { icon: '✅', text: `استمرار ممتاز يا ${profile.name}! أكملت ${log.length} جلسة حتى الآن. واصل بنفس الوتيرة.` };
+      if (daysSinceLast >= 4) return { icon: '⏰', text: personaMessage(persona, 'absence', { days: daysSinceLast }) };
+      return { icon: '✅', text: personaMessage(persona, 'consistent', { name: profile.name, count: log.length }) };
     }
 
     function WeekDaysRow({ plan, log }) {
@@ -899,7 +1240,7 @@
     }
 
     // ======================== لوحة التحكم ========================
-    function Dashboard({ profile, plan, log, onStartSession, onLibrary, onProgress, onReset, onLogout }) {
+    function Dashboard({ profile, plan, log, challengesCompleted, onStartSession, onLibrary, onProgress, onReset, onLogout, onCompleteChallenge }) {
       if (!plan) return <div className="card">تحضير الخطة...</div>;
       const totalWeeks = Object.keys(plan.weeksData).length;
       const currentWeekKey = `week${plan.currentWeek}`;
@@ -909,47 +1250,41 @@
       const msg = coachMessage(profile, plan, log);
 
       const totalMinutes = log.length * (profile.sessionDuration || 30);
-      const streak = (() => {
-        let s = 0;
-        const sorted = [...log].sort((a,b) => new Date(b.date) - new Date(a.date));
-        let lastDate = null;
-        for (const l of sorted) {
-          const d = new Date(l.date);
-          if (lastDate === null) { s = 1; lastDate = d; continue; }
-          const diffDays = Math.round((lastDate - d) / 86400000);
-          if (diffDays <= 3) { s++; lastDate = d; } else break;
-        }
-        return s;
-      })();
+      const streak = computeStreak(log);
+
+      const totalXp = computeTotalXp(log, challengesCompleted?.length || 0);
+      const { level, xpIntoLevel, xpNeeded } = levelFromTotalXp(totalXp);
+      const sparks = Math.floor(level * SPARKS_PER_LEVEL_UP * 0.4) + (challengesCompleted?.length || 0) * 3;
 
       const daysInWeek = plan.weeksData[currentWeekKey]?.length || 1;
-      const weekProgress = Math.min(sessionsThisWeek / daysInWeek, 1);
-      const ringRadius = 52;
-      const ringCirc = 2 * Math.PI * ringRadius;
-      const ringOffset = ringCirc * (1 - weekProgress);
-
       const estCal = todayWorkout ? estimateCalories(todayWorkout.exercises.map(e => e.id), todayWorkout.reps) : 0;
+
+      const todayChallenge = getTodayChallenge(profile.name || 'user');
+      const todayStr = new Date().toISOString().split('T')[0];
+      const challengeDoneToday = (challengesCompleted || []).some(c => c.date === todayStr);
+
+      const achievements = getUnlockedAchievements(log, plan, challengesCompleted?.length || 0, level);
+      const unlockedCount = achievements.filter(a => a.unlocked).length;
 
       return (
         <div className="stack">
-          {/* ---- هيدر مع حلقة الأداء ---- */}
+          {/* ---- هيدر مع الشخصية الرمزية والمستوى ---- */}
           <div className="card page-enter">
-            <div className="row-between">
-              <div>
+            <div className="row-between" style={{alignItems:'flex-start'}}>
+              <div style={{flex:1}}>
                 <span className="eyebrow">WEEK {plan.currentWeek} / {totalWeeks}</span>
                 <h1 style={{marginTop:'2px'}}>مرحباً {profile.name}</h1>
-              </div>
-              <div className="perf-ring-wrap">
-                <svg width="128" height="128" viewBox="0 0 128 128">
-                  <circle className="perf-ring-track" cx="64" cy="64" r={ringRadius}></circle>
-                  <circle className="perf-ring-fill" cx="64" cy="64" r={ringRadius}
-                    strokeDasharray={ringCirc} strokeDashoffset={ringOffset}></circle>
-                </svg>
-                <div className="perf-ring-center">
-                  <span className="big">{sessionsThisWeek}/{daysInWeek}</span>
-                  <span className="small">هذا الأسبوع</span>
+                <div style={{display:'flex', alignItems:'center', gap:'10px', marginTop:'10px', flexWrap:'wrap'}}>
+                  <LevelBadge level={level} />
+                  <StreakFlame streak={streak} />
+                  <span className="sparks-chip">⚡ {sparks}</span>
                 </div>
               </div>
+              <Avatar level={level} size={92} />
+            </div>
+
+            <div style={{marginTop:'14px'}}>
+              <XpBar xpIntoLevel={xpIntoLevel} xpNeeded={xpNeeded} />
             </div>
 
             <div className="coach-banner">
@@ -959,8 +1294,24 @@
 
             <div className="metric-strip">
               <div className="metric-cell"><div className="num">{log.length}</div><div className="lbl">جلسات</div></div>
-              <div className="metric-cell"><div className="num">{streak}</div><div className="lbl">سلسلة نشطة</div></div>
+              <div className="metric-cell"><div className="num">{unlockedCount}/{achievementDefs.length}</div><div className="lbl">شارات</div></div>
               <div className="metric-cell"><div className="num">{totalMinutes}</div><div className="lbl">دقيقة</div></div>
+            </div>
+          </div>
+
+          {/* ---- تحدي اليوم ---- */}
+          <div className="daily-challenge-card page-enter">
+            <div className="row-between">
+              <div>
+                <span className="eyebrow" style={{color:'var(--cobalt)'}}>تحدي اليوم</span>
+                <h3 style={{marginTop:'4px'}}>{todayChallenge.text}</h3>
+                <p style={{fontSize:'12.5px', color:'var(--text-muted)', marginTop:'4px'}}>مكافأة إضافية: +{XP_DAILY_CHALLENGE} خبرة</p>
+              </div>
+              {challengeDoneToday ? (
+                <span className="badge badge-success">✓ منجز</span>
+              ) : (
+                <button className="btn btn-sm" onClick={() => onCompleteChallenge(todayChallenge)}>أنجزته</button>
+              )}
             </div>
           </div>
 
@@ -985,6 +1336,21 @@
               </div>
             )}
           </div>
+
+          {/* ---- الشارات ---- */}
+          <details className="card card-flush" style={{padding:0}}>
+            <summary style={{border:'none', borderRadius:'var(--radius-lg)'}}>🏅 شاراتك ({unlockedCount}/{achievementDefs.length})</summary>
+            <div style={{padding:'18px 22px'}}>
+              <div className="badge-grid">
+                {achievements.map(a => (
+                  <div key={a.id} className={`achievement-card ${a.unlocked ? 'unlocked' : 'locked'}`}>
+                    <span className="ac-icon">{a.icon}</span>
+                    <div className="ac-name">{a.name}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </details>
 
           {/* ---- تفاصيل إضافية ---- */}
           <details className="card card-flush" style={{padding:0}}>
@@ -1202,11 +1568,14 @@
     }
 
     // ======================== شاشة التقدم الموسعة ========================
-    function ProgressScreen({ onBack, profile, plan, log }) {
+    function ProgressScreen({ onBack, profile, plan, log, challengesCompleted }) {
       if (!plan) return null;
       const totalWeeks = Object.keys(plan.weeksData).length;
       const totalSessionsPlanned = Object.values(plan.weeksData).reduce((sum, w) => sum + w.length, 0);
       const completionPct = Math.round((log.length / totalSessionsPlanned) * 100);
+
+      const totalXp = computeTotalXp(log, challengesCompleted?.length || 0);
+      const { level } = levelFromTotalXp(totalXp);
 
       const feedbackCounts = { easy: 0, just_right: 0, hard: 0 };
       log.forEach(l => { if (feedbackCounts[l.feedback] !== undefined) feedbackCounts[l.feedback]++; });
@@ -1221,6 +1590,17 @@
       const topMuscles = Object.entries(muscleFocus).sort((a,b) => b[1]-a[1]).slice(0,5);
       const maxMuscleCount = topMuscles.length > 0 ? topMuscles[0][1] : 1;
 
+      // ---- منافسة النفس: جلسات هذا الأسبوع مقابل أفضل أسبوع سابق ----
+      const sessionsByWeek = {};
+      log.forEach(l => { sessionsByWeek[l.week] = (sessionsByWeek[l.week] || 0) + 1; });
+      const currentWeekSessions = sessionsByWeek[plan.currentWeek] || 0;
+      const otherWeeks = Object.entries(sessionsByWeek).filter(([w]) => Number(w) !== plan.currentWeek);
+      const bestPreviousWeek = otherWeeks.length > 0 ? Math.max(...otherWeeks.map(([,c]) => c)) : 0;
+      const leaderboardRows = [
+        { label: `أفضل أسبوع سابق`, value: bestPreviousWeek, isYou: false },
+        { label: `الأسبوع الحالي`, value: currentWeekSessions, isYou: true },
+      ].sort((a,b) => b.value - a.value);
+
       return (
         <div className="card page-enter">
           <div className="row-between" style={{marginBottom:'14px'}}>
@@ -1229,11 +1609,34 @@
           </div>
           <h2 style={{marginBottom:'16px'}}>تقدمك الكامل</h2>
 
+          <div style={{display:'flex', alignItems:'center', gap:'14px', marginBottom:'16px'}}>
+            <Avatar level={level} size={70} />
+            <div>
+              <LevelBadge level={level} />
+              <p style={{fontSize:'12px', color:'var(--text-muted)', marginTop:'6px'}} className="mono">{totalXp} XP إجمالي</p>
+            </div>
+          </div>
+
           <div className="metric-strip" style={{marginBottom:'16px'}}>
             <div className="metric-cell"><div className="num">{completionPct}%</div><div className="lbl">إنجاز الخطة</div></div>
             <div className="metric-cell"><div className="num">{log.length}</div><div className="lbl">من {totalSessionsPlanned} جلسة</div></div>
             <div className="metric-cell"><div className="num">{plan.currentWeek}</div><div className="lbl">من {totalWeeks} أسابيع</div></div>
           </div>
+
+          {bestPreviousWeek > 0 && (
+            <div style={{marginBottom:'16px'}}>
+              <label style={{marginTop:0}}>🏁 منافسة نفسك: هذا الأسبوع مقابل أفضل أسبوع</label>
+              <div className="panel">
+                {leaderboardRows.map((row, i) => (
+                  <div key={row.label} className={`leaderboard-row ${row.isYou ? 'you' : ''}`}>
+                    <span className="leaderboard-rank">{i === 0 ? '🥇' : '🥈'}</span>
+                    <span style={{flex:1, fontSize:'13.5px'}}>{row.label}</span>
+                    <span className="mono" style={{fontWeight:700}}>{row.value} جلسة</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <label style={{marginTop:0}}>توزيع الشدة</label>
           <div style={{display:'flex', gap:'8px', marginBottom:'8px'}}>
@@ -1286,8 +1689,11 @@
       const [profile, setProfile] = useState(null);
       const [plan, setPlan] = useState(null);
       const [log, setLog] = useState([]);
+      const [challengesCompleted, setChallengesCompleted] = useState([]);
       const [screen, setScreen] = useState('dashboard');
       const [loading, setLoading] = useState(true);
+      const [xpToast, setXpToast] = useState(null);
+      const [lootBox, setLootBox] = useState(null); // { opened: bool }
 
       useEffect(() => {
         const sessionUser = getCurrentSession();
@@ -1298,14 +1704,15 @@
             setProfile(userData.profile || null);
             setPlan(userData.plan || null);
             setLog(userData.log || []);
+            setChallengesCompleted(userData.challengesCompleted || []);
           }
         }
         setLoading(false);
       }, []);
 
       useEffect(() => {
-        if (currentUser && profile !== null) saveUserData(currentUser, { profile, plan, log });
-      }, [profile, plan, log, currentUser]);
+        if (currentUser && profile !== null) saveUserData(currentUser, { profile, plan, log, challengesCompleted });
+      }, [profile, plan, log, challengesCompleted, currentUser]);
 
       const handleLogin = (username) => {
         const userData = getUserData(username);
@@ -1314,6 +1721,7 @@
           setProfile(userData.profile || null);
           setPlan(userData.plan || null);
           setLog(userData.log || []);
+          setChallengesCompleted(userData.challengesCompleted || []);
           setScreen('dashboard');
         }
       };
@@ -1323,25 +1731,61 @@
         setProfile(newProfile);
         setPlan(newPlan);
         setLog([]);
+        setChallengesCompleted([]);
         setScreen('dashboard');
       };
 
       const handleLogout = () => {
         clearCurrentSession();
-        setCurrentUser(null); setProfile(null); setPlan(null); setLog([]); setScreen('dashboard');
+        setCurrentUser(null); setProfile(null); setPlan(null); setLog([]); setChallengesCompleted([]); setScreen('dashboard');
       };
 
       const handleReset = () => {
-        if (confirm('حذف كل البيانات؟')) { setProfile(null); setPlan(null); setLog([]); }
+        if (confirm('حذف كل البيانات؟')) { setProfile(null); setPlan(null); setLog([]); setChallengesCompleted([]); }
+      };
+
+      const handleCompleteChallenge = (challenge) => {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const already = challengesCompleted.some(c => c.date === todayStr);
+        if (already) return;
+        const beforeLevel = levelFromTotalXp(computeTotalXp(log, challengesCompleted.length)).level;
+        const newChallenges = [...challengesCompleted, { date: todayStr, challengeId: challenge.id }];
+        setChallengesCompleted(newChallenges);
+        const afterLevel = levelFromTotalXp(computeTotalXp(log, newChallenges.length)).level;
+        setXpToast(`+${XP_DAILY_CHALLENGE} خبرة — تحدي منجز!`);
+        if (afterLevel > beforeLevel) {
+          setTimeout(() => {
+            const title = getLevelTitle(afterLevel).title;
+            setXpToast(personaMessage(profile?.coachPersona || 'energetic', 'levelUp', { title }));
+          }, 2300);
+        }
       };
 
       const handleSessionFinish = (sessionData) => {
+        const beforeLevel = levelFromTotalXp(computeTotalXp(log, challengesCompleted.length)).level;
         const newLog = [...log, sessionData];
         setLog(newLog);
         const { plan: adaptedPlan } = adaptPlan(plan, newLog);
         const advancedPlan = maybeAdvanceWeek(adaptedPlan, newLog);
+
+        const weekJustCompleted = advancedPlan.currentWeek > plan.currentWeek;
+
         setPlan(advancedPlan);
         setScreen('dashboard');
+
+        const sessionXp = XP_PER_SESSION_COMPLETE + (sessionData.exercises?.length || 0) * XP_PER_EXERCISE;
+        setXpToast(`+${sessionXp} خبرة — أحسنت!`);
+
+        const afterLevel = levelFromTotalXp(computeTotalXp(newLog, challengesCompleted.length)).level;
+        if (afterLevel > beforeLevel) {
+          setTimeout(() => {
+            const title = getLevelTitle(afterLevel).title;
+            setXpToast(personaMessage(profile?.coachPersona || 'energetic', 'levelUp', { title }));
+          }, 2300);
+        }
+        if (weekJustCompleted) {
+          setTimeout(() => setLootBox({ opened: false }), afterLevel > beforeLevel ? 4600 : 2300);
+        }
       };
 
       if (loading) return <div style={{display:'flex', justifyContent:'center', alignItems:'center', height:'100%'}}><div className="card">جاري التحميل...</div></div>;
@@ -1350,18 +1794,42 @@
 
       return (
         <div className="app">
+          {xpToast && <XpToast message={xpToast} onDone={() => setXpToast(null)} />}
+          {lootBox && (
+            <div className="lootbox-overlay" onClick={() => lootBox.opened && setLootBox(null)}>
+              <div className="lootbox-content">
+                {!lootBox.opened ? (
+                  <>
+                    <div className="lootbox-icon">🎁</div>
+                    <h2 style={{marginTop:'16px'}}>أسبوع كامل مكتمل!</h2>
+                    <p style={{color:'var(--text-secondary)', marginTop:'8px', fontSize:'14px'}}>فتحت صندوق مكافآت الأسبوع</p>
+                    <button className="btn" style={{marginTop:'20px'}} onClick={() => setLootBox({ opened: true })}>افتح الصندوق 🎉</button>
+                  </>
+                ) : (
+                  <div className="lootbox-reveal">
+                    <div style={{fontSize:'64px'}}>⚡</div>
+                    <h2 style={{marginTop:'12px', color:'var(--lime)'}}>+{Math.round(SPARKS_PER_LEVEL_UP * 1.5)} شرارة</h2>
+                    <p style={{color:'var(--text-secondary)', marginTop:'8px', fontSize:'14px'}}>استمر بنفس القوة للأسبوع القادم!</p>
+                    <button className="btn btn-outline" style={{marginTop:'20px'}} onClick={() => setLootBox(null)}>متابعة</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {screen === 'dashboard' && (
-            <Dashboard profile={profile} plan={plan} log={log}
+            <Dashboard profile={profile} plan={plan} log={log} challengesCompleted={challengesCompleted}
               onStartSession={() => setScreen('session')}
               onLibrary={() => setScreen('library')}
               onProgress={() => setScreen('progress')}
-              onReset={handleReset} onLogout={handleLogout} />
+              onReset={handleReset} onLogout={handleLogout}
+              onCompleteChallenge={handleCompleteChallenge} />
           )}
           {screen === 'session' && (
             <WorkoutSession plan={plan} log={log} onFinish={handleSessionFinish} onBack={() => setScreen('dashboard')} />
           )}
           {screen === 'library' && <Library onBack={() => setScreen('dashboard')} profile={profile} />}
-          {screen === 'progress' && <ProgressScreen onBack={() => setScreen('dashboard')} profile={profile} plan={plan} log={log} />}
+          {screen === 'progress' && <ProgressScreen onBack={() => setScreen('dashboard')} profile={profile} plan={plan} log={log} challengesCompleted={challengesCompleted} />}
 
           {screen !== 'session' && (
             <div className="tab-bar">
