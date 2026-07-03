@@ -65,6 +65,36 @@
     #root { width: 100%; display: flex; justify-content: center; }
     .app { width: 100%; max-width: 860px; padding: 16px 16px 32px; display: flex; flex-direction: column; gap: 14px; }
 
+    /* ============ وضع أفقي (landscape): استغلال عرض الشاشة بدل عمود ضيق ============ */
+    @media (orientation: landscape) {
+      .app { max-width: 1180px; padding: 14px 24px 24px; }
+      .stack { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+      .stack > .card:first-child,
+      .stack > .daily-challenge-card { grid-column: 1 / -1; }
+      .choice-grid { grid-template-columns: repeat(4, 1fr); }
+      .metric-strip { grid-template-columns: repeat(3, 1fr); }
+      .badge-grid { grid-template-columns: repeat(6, 1fr); }
+      .tab-bar { max-width: 480px; margin-inline: auto; }
+      .video-container { max-width: 640px; margin-inline: auto; }
+      .modal-content { max-width: 900px; }
+    }
+    @media (orientation: landscape) and (max-height: 480px) {
+      .app { padding-top: 8px; gap: 10px; }
+      .card { padding: 14px 18px; }
+      h1 { font-size: 24px; }
+      .avatar-stage, .perf-ring-wrap { transform: scale(0.8); }
+    }
+
+    /* تلميح لطيف يقترح تدوير الجهاز عند الدخول لجلسة تمرين بوضع عمودي على شاشات صغيرة */
+    .rotate-hint {
+      display: none; align-items: center; gap: 10px; background: var(--cobalt-soft);
+      border: 1px solid rgba(91,140,255,0.3); border-radius: var(--radius-sm); padding: 10px 14px;
+      font-size: 12.5px; color: var(--cobalt); margin-bottom: 12px;
+    }
+    @media (orientation: portrait) and (max-width: 480px) {
+      .rotate-hint.show-portrait { display: flex; }
+    }
+
     ::selection { background: var(--lime); color: #0A0C10; }
     ::-webkit-scrollbar { width: 7px; height: 7px; }
     ::-webkit-scrollbar-thumb { background: var(--hairline-bright); border-radius: 10px; }
@@ -460,26 +490,26 @@
 
     // ======================== البيانات الثابتة ========================
     const exercises = [
-      { id: 1, name: 'Squats', nameAr: 'القرفصاء', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/otzWCWpuW-A', demoStart: 20, calPerMin: 8 },
-      { id: 2, name: 'Lunges', nameAr: 'الاندفاع', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/WzONHuAe6BY', demoStart: 15, calPerMin: 7 },
-      { id: 3, name: 'Push-ups', nameAr: 'تمارين الضغط', muscleGroup: 'chest', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/IODxDxX7oi4', demoStart: 10, calPerMin: 7 },
-      { id: 4, name: 'Knee Push-ups', nameAr: 'ضغط الركبة', muscleGroup: 'chest', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/IODxDxX7oi4', demoStart: 10, calPerMin: 5 },
-      { id: 5, name: 'Plank', nameAr: 'اللوح الخشبي', muscleGroup: 'core', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/pSHjTRCQxIw', demoStart: 15, calPerMin: 4 },
-      { id: 6, name: 'Glute Bridge', nameAr: 'جسر الألوية', muscleGroup: 'glutes', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/tl6xvm4-Qk0', demoStart: 20, calPerMin: 5 },
-      { id: 7, name: 'Standing Calf Raises', nameAr: 'رفع السمانة واقفاً', muscleGroup: 'calves', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/gYSUwWaWQMg', demoStart: 0, calPerMin: 4 },
-      { id: 8, name: 'Jumping Jacks', nameAr: 'حركة القفز والتباعد', muscleGroup: 'cardio', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 60, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/c4DAnQ6DtF8', demoStart: 0, calPerMin: 10 },
-      { id: 9, name: 'High Knees', nameAr: 'الركب العالية', muscleGroup: 'cardio', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 60, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/8opcQdC-V-U', demoStart: 0, calPerMin: 11 },
-      { id: 10, name: 'Dumbbell Shoulder Press', nameAr: 'ضغط الكتف بالدمبل', muscleGroup: 'shoulders', difficulty: 'intermediate', equipment: ['dumbbell'], minAge: 16, maxAge: 80, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/qEwKCR5JCog', demoStart: 15, calPerMin: 6 },
-      { id: 11, name: 'Dumbbell Row', nameAr: 'سحب الدمبل', muscleGroup: 'back', difficulty: 'intermediate', equipment: ['dumbbell'], minAge: 16, maxAge: 80, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/roCP6wCXPqo', demoStart: 15, calPerMin: 6 },
-      { id: 12, name: 'Dumbbell Squat', nameAr: 'قرفصاء بالدمبل', muscleGroup: 'legs', difficulty: 'intermediate', equipment: ['dumbbell'], minAge: 16, maxAge: 80, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/otzWCWpuW-A', demoStart: 20, calPerMin: 9 },
-      { id: 13, name: 'Bicycle Crunches', nameAr: 'بطن الدراجة', muscleGroup: 'core', difficulty: 'intermediate', equipment: ['none'], minAge: 13, maxAge: 80, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/9FGilxCbdz8', demoStart: 10, calPerMin: 6 },
-      { id: 14, name: 'Wall Sit', nameAr: 'الجلوس على الحائط', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/y-wV4VenR3w', demoStart: 10, calPerMin: 5 },
-      { id: 15, name: 'Leg Raises', nameAr: 'رفع الساقين', muscleGroup: 'core', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/JB2oyawG9KI', demoStart: 10, calPerMin: 5 },
-      { id: 16, name: 'Chair Squats', nameAr: 'قرفصاء الكرسي', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 60, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/gB-xwUdFtgk', demoStart: 0, calPerMin: 4 },
-      { id: 17, name: 'Standing Side Leg Raise', nameAr: 'رفع الساق جانباً', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/dK_n5KZ6YJI', demoStart: 0, calPerMin: 4 },
-      { id: 18, name: 'Yoga Child’s Pose', nameAr: 'وضعية الطفل', muscleGroup: 'stretching', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/2MJGg-dUKh0', demoStart: 0, calPerMin: 2 },
-      { id: 19, name: 'Cat-Cow Stretch', nameAr: 'تمدد القطة والبقرة', muscleGroup: 'stretching', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/kqnua4rHVVA', demoStart: 0, calPerMin: 2 },
-      { id: 20, name: 'Kegel Exercises', nameAr: 'تمارين قاع الحوض', muscleGroup: 'pelvic', difficulty: 'beginner', equipment: ['none'], minAge: 18, maxAge: 100, genderPreference: 'female', videoUrl: 'https://www.youtube.com/embed/10GgQ5IfcMk', demoStart: 0, calPerMin: 2 },
+      { id: 1, name: 'Squats', nameAr: 'القرفصاء', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/otzWCWpuW-A', demoStart: 20, calPerMin: 8, motionType: 'squat' },
+      { id: 2, name: 'Lunges', nameAr: 'الاندفاع', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/WzONHuAe6BY', demoStart: 15, calPerMin: 7, motionType: 'lunge' },
+      { id: 3, name: 'Push-ups', nameAr: 'تمارين الضغط', muscleGroup: 'chest', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/IODxDxX7oi4', demoStart: 10, calPerMin: 7, motionType: 'pushup' },
+      { id: 4, name: 'Knee Push-ups', nameAr: 'ضغط الركبة', muscleGroup: 'chest', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/IODxDxX7oi4', demoStart: 10, calPerMin: 5, motionType: 'pushup' },
+      { id: 5, name: 'Plank', nameAr: 'اللوح الخشبي', muscleGroup: 'core', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/pSHjTRCQxIw', demoStart: 15, calPerMin: 4, motionType: 'plank' },
+      { id: 6, name: 'Glute Bridge', nameAr: 'جسر الألوية', muscleGroup: 'glutes', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/tl6xvm4-Qk0', demoStart: 20, calPerMin: 5, motionType: 'bridge' },
+      { id: 7, name: 'Standing Calf Raises', nameAr: 'رفع السمانة واقفاً', muscleGroup: 'calves', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/gYSUwWaWQMg', demoStart: 0, calPerMin: 4, motionType: 'calfraise' },
+      { id: 8, name: 'Jumping Jacks', nameAr: 'حركة القفز والتباعد', muscleGroup: 'cardio', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 60, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/c4DAnQ6DtF8', demoStart: 0, calPerMin: 10, motionType: 'jumpingjack' },
+      { id: 9, name: 'High Knees', nameAr: 'الركب العالية', muscleGroup: 'cardio', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 60, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/8opcQdC-V-U', demoStart: 0, calPerMin: 11, motionType: 'highknees' },
+      { id: 10, name: 'Dumbbell Shoulder Press', nameAr: 'ضغط الكتف بالدمبل', muscleGroup: 'shoulders', difficulty: 'intermediate', equipment: ['dumbbell'], minAge: 16, maxAge: 80, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/qEwKCR5JCog', demoStart: 15, calPerMin: 6, motionType: 'shoulderpress' },
+      { id: 11, name: 'Dumbbell Row', nameAr: 'سحب الدمبل', muscleGroup: 'back', difficulty: 'intermediate', equipment: ['dumbbell'], minAge: 16, maxAge: 80, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/roCP6wCXPqo', demoStart: 15, calPerMin: 6, motionType: 'row' },
+      { id: 12, name: 'Dumbbell Squat', nameAr: 'قرفصاء بالدمبل', muscleGroup: 'legs', difficulty: 'intermediate', equipment: ['dumbbell'], minAge: 16, maxAge: 80, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/otzWCWpuW-A', demoStart: 20, calPerMin: 9, motionType: 'squat' },
+      { id: 13, name: 'Bicycle Crunches', nameAr: 'بطن الدراجة', muscleGroup: 'core', difficulty: 'intermediate', equipment: ['none'], minAge: 13, maxAge: 80, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/9FGilxCbdz8', demoStart: 10, calPerMin: 6, motionType: 'crunch' },
+      { id: 14, name: 'Wall Sit', nameAr: 'الجلوس على الحائط', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/y-wV4VenR3w', demoStart: 10, calPerMin: 5, motionType: 'wallsit' },
+      { id: 15, name: 'Leg Raises', nameAr: 'رفع الساقين', muscleGroup: 'core', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/JB2oyawG9KI', demoStart: 10, calPerMin: 5, motionType: 'legraise' },
+      { id: 16, name: 'Chair Squats', nameAr: 'قرفصاء الكرسي', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 60, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/gB-xwUdFtgk', demoStart: 0, calPerMin: 4, motionType: 'squat' },
+      { id: 17, name: 'Standing Side Leg Raise', nameAr: 'رفع الساق جانباً', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/dK_n5KZ6YJI', demoStart: 0, calPerMin: 4, motionType: 'sideleg' },
+      { id: 18, name: 'Yoga Child’s Pose', nameAr: 'وضعية الطفل', muscleGroup: 'stretching', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/2MJGg-dUKh0', demoStart: 0, calPerMin: 2, motionType: 'stretch' },
+      { id: 19, name: 'Cat-Cow Stretch', nameAr: 'تمدد القطة والبقرة', muscleGroup: 'stretching', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/kqnua4rHVVA', demoStart: 0, calPerMin: 2, motionType: 'catcow' },
+      { id: 20, name: 'Kegel Exercises', nameAr: 'تمارين قاع الحوض', muscleGroup: 'pelvic', difficulty: 'beginner', equipment: ['none'], minAge: 18, maxAge: 100, genderPreference: 'female', videoUrl: 'https://www.youtube.com/embed/10GgQ5IfcMk', demoStart: 0, calPerMin: 2, motionType: 'plank' },
     ];
 
     const muscleGroupLabels = {
@@ -906,7 +936,7 @@
       );
     }
 
-    // ======================== مشغل فيديو ذكي ========================
+    // ======================== مشغل فيديو حقيقي: تشغيل فوري بدون مقدمة ========================
     function SmartVideo({ videoUrl, title, startSeconds, autoPlay }) {
       const [failed, setFailed] = useState(false);
       const buildSrc = () => {
@@ -1240,7 +1270,7 @@
     }
 
     // ======================== لوحة التحكم ========================
-    function Dashboard({ profile, plan, log, challengesCompleted, onStartSession, onLibrary, onProgress, onReset, onLogout, onCompleteChallenge }) {
+    function Dashboard({ profile, plan, log, challengesCompleted, onStartSession, onLibrary, onProgress, onReset, onLogout, onCompleteChallenge, isFullscreen, onToggleLandscape }) {
       if (!plan) return <div className="card">تحضير الخطة...</div>;
       const totalWeeks = Object.keys(plan.weeksData).length;
       const currentWeekKey = `week${plan.currentWeek}`;
@@ -1270,6 +1300,11 @@
         <div className="stack">
           {/* ---- هيدر مع الشخصية الرمزية والمستوى ---- */}
           <div className="card page-enter">
+            <div className="rotate-hint show-portrait">
+              <span>📱↔️</span>
+              <span>دوّري جهازك أو اضغطي الزر لعرض أوسع بالوضع الأفقي</span>
+              <button className="btn-icon" style={{marginRight:'auto', width:'32px', height:'32px', fontSize:'13px'}} onClick={onToggleLandscape}>{isFullscreen ? '⤢' : '⛶'}</button>
+            </div>
             <div className="row-between" style={{alignItems:'flex-start'}}>
               <div style={{flex:1}}>
                 <span className="eyebrow">WEEK {plan.currentWeek} / {totalWeeks}</span>
@@ -1694,6 +1729,36 @@
       const [loading, setLoading] = useState(true);
       const [xpToast, setXpToast] = useState(null);
       const [lootBox, setLootBox] = useState(null); // { opened: bool }
+      const [isFullscreen, setIsFullscreen] = useState(false);
+
+      // ---- محاولة قفل الوضع الأفقي: يعمل فقط بعد الدخول في وضع ملء الشاشة (قيد من المتصفحات نفسها) ----
+      const enterLandscapeMode = useCallback(() => {
+        const el = document.documentElement;
+        const request = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
+        if (request) {
+          request.call(el).then(() => {
+            setIsFullscreen(true);
+            if (window.screen && window.screen.orientation && window.screen.orientation.lock) {
+              window.screen.orientation.lock('landscape').catch(() => {});
+            }
+          }).catch(() => {});
+        }
+      }, []);
+
+      const exitLandscapeMode = useCallback(() => {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
+        }
+        if (window.screen.orientation && window.screen.orientation.unlock) {
+          try { window.screen.orientation.unlock(); } catch (e) {}
+        }
+      }, []);
+
+      useEffect(() => {
+        const onFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+        document.addEventListener('fullscreenchange', onFsChange);
+        return () => document.removeEventListener('fullscreenchange', onFsChange);
+      }, []);
 
       useEffect(() => {
         const sessionUser = getCurrentSession();
@@ -1823,7 +1888,9 @@
               onLibrary={() => setScreen('library')}
               onProgress={() => setScreen('progress')}
               onReset={handleReset} onLogout={handleLogout}
-              onCompleteChallenge={handleCompleteChallenge} />
+              onCompleteChallenge={handleCompleteChallenge}
+              isFullscreen={isFullscreen}
+              onToggleLandscape={isFullscreen ? exitLandscapeMode : enterLandscapeMode} />
           )}
           {screen === 'session' && (
             <WorkoutSession plan={plan} log={log} onFinish={handleSessionFinish} onBack={() => setScreen('dashboard')} />
