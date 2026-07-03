@@ -3,260 +3,357 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>مدرب اللياقة الذكي</title>
+  <title>PEAK — مدربك الذكي</title>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-      --card-bg: rgba(255,255,255,0.08);
-      --card-bg-solid: #1e293b;
-      --card-border: rgba(255,255,255,0.15);
-      --text-primary: #f1f5f9;
-      --text-secondary: #cbd5e1;
-      --text-muted: #94a3b8;
-      --accent: #f97316;
-      --accent-hover: #fb923c;
-      --accent-soft: rgba(249,115,22,0.15);
-      --success: #22c55e;
-      --success-soft: rgba(34,197,94,0.15);
-      --warning: #eab308;
-      --warning-soft: rgba(234,179,8,0.15);
-      --danger: #ef4444;
-      --danger-soft: rgba(239,68,68,0.15);
-      --info: #38bdf8;
-      --button-bg: rgba(249,115,22,0.9);
-      --button-hover: #fb923c;
+      /* ---- سطح اللون: غرافيت عميق بدل الأزرق الداكن التقليدي ---- */
+      --bg-0: #0A0C10;
+      --bg-1: #12151C;
+      --surface: #171B24;
+      --surface-raised: #1D222D;
+      --hairline: #262B38;
+      --hairline-bright: #363D4E;
+
+      --text-primary: #F4F6FA;
+      --text-secondary: #9CA5B8;
+      --text-muted: #616B80;
+
+      /* ---- ليمون كهربائي: هوية الأداء بدل البرتقالي المعتاد ---- */
+      --lime: #C9FF3D;
+      --lime-dim: #9CD62A;
+      --lime-soft: rgba(201,255,61,0.12);
+      --lime-glow: rgba(201,255,61,0.35);
+
+      --cobalt: #5B8CFF;
+      --cobalt-soft: rgba(91,140,255,0.14);
+
+      --success: #35E0A1;
+      --success-soft: rgba(53,224,161,0.14);
+      --warning: #FFC93D;
+      --warning-soft: rgba(255,201,61,0.14);
+      --danger: #FF5C7A;
+      --danger-soft: rgba(255,92,122,0.14);
+
+      --font-display: 'Barlow Condensed', 'Cairo', sans-serif;
+      --font-body: 'Cairo', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --shadow-elev: 0 24px 48px rgba(0,0,0,0.45);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body, #root { height: 100%; width: 100%; overflow-x: hidden; }
     body {
-      font-family: 'Cairo', sans-serif;
-      background: var(--bg-gradient);
+      font-family: var(--font-body);
+      background: var(--bg-0);
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,255,61,0.06), transparent),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(91,140,255,0.05), transparent);
+      background-attachment: fixed;
       color: var(--text-primary);
       display: flex;
       justify-content: center;
-      align-items: flex-start;
       direction: rtl;
       min-height: 100vh;
     }
-    #root { width: 100%; max-width: 100%; display: flex; justify-content: center; }
-    .app { width: 100%; max-width: 820px; padding: 20px; display: flex; flex-direction: column; gap: 18px; }
-    .glass-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--card-border);
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-      transition: all 0.3s ease;
+    #root { width: 100%; display: flex; justify-content: center; }
+    .app { width: 100%; max-width: 860px; padding: 16px 16px 32px; display: flex; flex-direction: column; gap: 14px; }
+
+    ::selection { background: var(--lime); color: #0A0C10; }
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-thumb { background: var(--hairline-bright); border-radius: 10px; }
+    :focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+
+    /* ============ بنية البطاقات ============ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: 22px;
       width: 100%;
     }
+    .card-flush { padding: 0; overflow: hidden; }
+    .panel {
+      background: var(--surface-raised);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing: 0.2px; }
+    h1 { font-size: 32px; }
+    h2 { font-size: 24px; }
+    h3 { font-size: 19px; }
+    .eyebrow {
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--lime); font-weight: 500;
+    }
+    .mono { font-family: var(--font-mono); }
+
+    /* ============ أزرار ============ */
     .btn {
-      background: var(--button-bg);
-      color: white;
+      background: var(--lime);
+      color: #0A0C10;
       border: none;
-      padding: 14px 24px;
-      border-radius: 16px;
+      padding: 15px 24px;
+      border-radius: var(--radius-sm);
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
-      transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
-      font-family: 'Cairo', sans-serif;
-      letter-spacing: 0.5px;
-      box-shadow: 0 4px 15px rgba(249,115,22,0.3);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      font-family: var(--font-body);
+      box-shadow: 0 0 0 0 var(--lime-glow);
     }
-    .btn:hover { background: var(--button-hover); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(249,115,22,0.5); }
-    .btn:active { transform: scale(0.96); }
-    .btn:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none; }
-    .btn-outline { background: transparent; border: 2px solid var(--accent); color: var(--accent); box-shadow: none; }
-    .btn-outline:hover { background: rgba(249,115,22,0.15); }
-    .btn-danger { background: var(--danger); box-shadow: 0 4px 15px rgba(239,68,68,0.3); }
-    .btn-danger:hover { background: #f87171; }
-    .btn-sm { padding: 8px 16px; font-size: 14px; border-radius: 12px; }
-    label { display: block; margin: 16px 0 6px; font-weight: 600; color: var(--text-secondary); }
-    input, select {
-      width: 100%;
-      padding: 14px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 14px;
-      color: white;
-      font-size: 16px;
-      font-family: 'Cairo', sans-serif;
-      transition: border 0.2s;
+    .btn:hover { background: #D7FF6B; box-shadow: 0 8px 28px var(--lime-glow); transform: translateY(-1px); }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { background: var(--hairline-bright); color: var(--text-muted); cursor: not-allowed; box-shadow: none; transform: none; }
+    .btn-outline { background: transparent; border: 1.5px solid var(--hairline-bright); color: var(--text-primary); }
+    .btn-outline:hover { border-color: var(--lime); background: var(--lime-soft); box-shadow: none; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #FF7B93; box-shadow: 0 8px 28px rgba(255,92,122,0.35); }
+    .btn-ghost { background: var(--surface-raised); color: var(--text-secondary); border: 1px solid var(--hairline); }
+    .btn-ghost:hover { color: var(--text-primary); border-color: var(--hairline-bright); box-shadow: none; }
+    .btn-sm { padding: 9px 16px; font-size: 13.5px; border-radius: 9px; }
+    .btn-icon {
+      width: 42px; height: 42px; border-radius: var(--radius-sm); background: var(--surface-raised);
+      border: 1px solid var(--hairline); color: var(--text-secondary); display: flex; align-items: center;
+      justify-content: center; cursor: pointer; font-size: 17px; flex-shrink: 0; transition: all 0.15s ease;
     }
-    input:focus, select:focus { outline: none; border-color: var(--accent); }
-    fieldset { border: 1px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 16px; margin: 16px 0; }
-    legend { color: var(--text-secondary); font-weight: 600; padding: 0 8px; }
-    .checkbox-label { display: flex; align-items: center; gap: 10px; color: var(--text-primary); }
-    .checkbox-label input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); }
-    .exercise-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(255,255,255,0.06);
-      padding: 12px 16px;
-      border-radius: 14px;
+    .btn-icon:hover { border-color: var(--lime); color: var(--lime); }
+
+    /* ============ نماذج الإدخال ============ */
+    label { display: block; margin: 18px 0 7px; font-weight: 600; color: var(--text-secondary); font-size: 14px; }
+    label:first-child { margin-top: 0; }
+    input[type="text"], input[type="password"] {
+      width: 100%; padding: 15px 16px; background: var(--bg-1); border: 1.5px solid var(--hairline);
+      border-radius: var(--radius-sm); color: var(--text-primary); font-size: 16px; font-family: var(--font-body);
+      transition: border 0.15s ease;
+    }
+    input:focus { outline: none; border-color: var(--lime); }
+
+    /* ---- قائمة منسدلة مخصصة احترافية ---- */
+    .select-field { position: relative; width: 100%; }
+    .select-trigger {
+      width: 100%; padding: 15px 16px; background: var(--bg-1); border: 1.5px solid var(--hairline);
+      border-radius: var(--radius-sm); color: var(--text-primary); font-size: 15.5px; font-family: var(--font-body);
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: border 0.15s ease;
+      min-height: 54px;
+    }
+    .select-trigger:hover { border-color: var(--hairline-bright); }
+    .select-trigger.open { border-color: var(--lime); }
+    .select-trigger .value-wrap { display: flex; align-items: center; gap: 10px; }
+    .select-trigger .value-icon { font-size: 18px; }
+    .select-trigger .chev { color: var(--text-muted); font-size: 12px; transition: transform 0.2s ease; }
+    .select-trigger.open .chev { transform: rotate(180deg); color: var(--lime); }
+    .select-menu {
+      position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--surface-raised);
+      border: 1px solid var(--hairline-bright); border-radius: var(--radius-md); box-shadow: var(--shadow-elev);
+      z-index: 40; max-height: 320px; overflow-y: auto; padding: 6px;
+      animation: menuIn 0.15s ease;
+    }
+    @keyframes menuIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+    .select-option {
+      padding: 12px 14px; border-radius: 10px; cursor: pointer; display: flex; align-items: center;
+      justify-content: space-between; gap: 10px; transition: background 0.12s ease;
+    }
+    .select-option:hover { background: var(--bg-1); }
+    .select-option.selected { background: var(--lime-soft); color: var(--lime); }
+    .select-option .opt-main { display: flex; align-items: center; gap: 10px; }
+    .select-option .opt-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .select-option.selected .opt-desc { color: var(--lime-dim); }
+    .select-option .opt-check { font-size: 13px; color: var(--lime); opacity: 0; }
+    .select-option.selected .opt-check { opacity: 1; }
+    .select-option input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--lime); flex-shrink: 0; }
+
+    fieldset { border: none; padding: 0; margin: 0; }
+
+    /* ============ عناصر مركبة ============ */
+    .row-between { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .stack { display: flex; flex-direction: column; gap: 12px; }
+
+    .exercise-row {
+      background: var(--surface-raised);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
       margin: 8px 0;
-      border: 1px solid rgba(255,255,255,0.1);
-      flex-wrap: wrap;
-      transition: background 0.2s, border-color 0.2s;
+      transition: border-color 0.2s ease, background 0.2s ease;
     }
-    .exercise-item.done { border-color: var(--success); background: var(--success-soft); }
+    .exercise-row.done { border-color: var(--success); background: var(--success-soft); }
+    .exercise-row .num { font-family: var(--font-mono); color: var(--text-muted); font-size: 13px; margin-left: 8px; }
+
     .video-container {
-      position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
-      overflow: hidden;
-      border-radius: 16px;
-      margin: 16px 0;
-      background: rgba(0,0,0,0.3);
+      position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
+      border-radius: var(--radius-sm); margin: 14px 0; background: #000;
+      border: 1px solid var(--hairline);
     }
-    .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; border-radius: 16px; }
+    .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
     .video-fallback {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 12px; background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; text-align: center;
+      gap: 12px; background: var(--bg-1); padding: 20px; text-align: center;
     }
-    .video-fallback .icon { font-size: 32px; }
-    .video-fallback p { font-size: 13.5px; color: var(--text-muted); max-width: 280px; }
-    .rest-timer { background: rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; text-align: center; margin: 20px 0; }
-    .timer-number { font-size: 48px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
-    .progress-circle {
-      width: 80px; height: 80px; border-radius: 50%;
-      background: conic-gradient(var(--accent) 0deg, rgba(255,255,255,0.2) 0deg);
-      display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;
-      flex-shrink: 0;
-      transition: background 0.6s ease;
-    }
-    .progress-inner { width: 64px; height: 64px; background: #1e293b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
-    @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes popIn { 0% { transform: scale(0.6); opacity: 0; } 70% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
-    @keyframes checkPulse { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); } 70% { box-shadow: 0 0 0 12px rgba(34,197,94,0); } 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); } }
-    .page-enter { animation: fadeSlideIn 0.4s ease forwards; }
-    .pop-in { animation: popIn 0.4s ease forwards; }
-    .pulse-once { animation: checkPulse 0.7s ease; }
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.9);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 2000; padding: 20px;
-    }
-    .modal-content {
-      background: #1e293b; border-radius: 24px; padding: 24px; width: 100%; max-width: 800px;
-      position: relative; animation: fadeSlideIn 0.3s ease; max-height: 90vh; overflow-y: auto;
-    }
-    .modal-close {
-      position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.2); border: none;
-      color: white; font-size: 24px; border-radius: 50%; width: 40px; height: 40px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; z-index: 10;
-    }
-    .multi-select { position: relative; width: 100%; }
-    .multi-select-box {
-      padding: 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 14px; color: white; font-size: 16px; font-family: 'Cairo', sans-serif; cursor: pointer;
-      display: flex; justify-content: space-between; align-items: center; min-height: 52px;
-    }
-    .multi-select-box:hover { border-color: var(--accent); }
-    .selected-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-    .selected-tag { background: var(--accent); color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; display: flex; align-items: center; gap: 4px; }
-    .selected-tag button { background: none; border: none; color: white; cursor: pointer; font-size: 14px; padding: 0; margin: 0; }
-    .dropdown-list {
-      position: absolute; top: 100%; left: 0; right: 0; background: #1e293b;
-      border: 1px solid rgba(255,255,255,0.2); border-radius: 14px; max-height: 200px;
-      overflow-y: auto; z-index: 10; margin-top: 8px; padding: 8px;
-    }
-    .dropdown-item { padding: 10px 14px; cursor: pointer; border-radius: 10px; display: flex; align-items: center; gap: 10px; }
-    .dropdown-item:hover { background: rgba(255,255,255,0.1); }
-    .dropdown-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
-    .error-message { background: rgba(239,68,68,0.2); border: 1px solid var(--danger); color: #fca5a5; padding: 10px; border-radius: 10px; margin: 10px 0; font-size: 14px; }
-    .video-link { color: var(--accent); text-decoration: underline; cursor: pointer; font-size: 14px; }
-    .fullscreen-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); font-size: 18px; padding: 8px 12px; border-radius: 12px; cursor: pointer; }
+    .video-fallback .icon { font-size: 30px; }
+    .video-fallback p { font-size: 13px; color: var(--text-muted); max-width: 260px; }
 
-    /* ---- New: smart UI elements ---- */
-    .coach-banner {
-      display: flex; align-items: flex-start; gap: 12px;
-      background: linear-gradient(120deg, rgba(249,115,22,0.18), rgba(249,115,22,0.05));
-      border: 1px solid rgba(249,115,22,0.35);
-      border-radius: 18px;
-      padding: 14px 16px;
-      margin-bottom: 16px;
+    .video-toggle-btn {
+      background: var(--cobalt-soft); border: 1px solid rgba(91,140,255,0.35); color: var(--cobalt);
+      width: 36px; height: 36px; border-radius: 10px; font-size: 15px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s;
     }
-    .coach-banner .icon { font-size: 26px; line-height: 1; flex-shrink: 0; }
-    .coach-banner .text { font-size: 14.5px; color: var(--text-primary); line-height: 1.6; }
-    .coach-banner .text strong { color: var(--accent-hover); }
+    .video-toggle-btn:hover { background: rgba(91,140,255,0.25); }
 
-    .badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700;
-    }
-    .badge-success { background: var(--success-soft); color: #4ade80; }
-    .badge-warning { background: var(--warning-soft); color: #fde047; }
-    .badge-info { background: rgba(56,189,248,0.15); color: #7dd3fc; }
-    .badge-muted { background: rgba(255,255,255,0.08); color: var(--text-muted); }
+    /* ============ حلقة الأداء (Signature element) ============ */
+    .perf-ring-wrap { position: relative; width: 128px; height: 128px; flex-shrink: 0; }
+    .perf-ring-wrap svg { transform: rotate(-90deg); }
+    .perf-ring-track { fill: none; stroke: var(--hairline); stroke-width: 8; }
+    .perf-ring-fill { fill: none; stroke: var(--lime); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.8s cubic-bezier(0.22,1,0.36,1); filter: drop-shadow(0 0 6px var(--lime-glow)); }
+    .perf-ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .perf-ring-center .big { font-family: var(--font-display); font-size: 30px; font-weight: 700; line-height: 1; }
+    .perf-ring-center .small { font-size: 10.5px; color: var(--text-muted); font-family: var(--font-mono); letter-spacing: 0.5px; margin-top: 3px; }
 
-    .week-days-row { display: flex; gap: 8px; margin: 14px 0; flex-wrap: wrap; }
+    /* ============ شبكة الإحصائيات ============ */
+    .metric-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--hairline); border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--hairline); }
+    .metric-cell { background: var(--surface-raised); padding: 16px 10px; text-align: center; }
+    .metric-cell .num { font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--lime); }
+    .metric-cell .lbl { font-size: 11px; color: var(--text-muted); margin-top: 3px; font-weight: 600; }
+
+    /* ============ شارات ============ */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 100px; font-size: 11.5px; font-weight: 700; font-family: var(--font-mono); letter-spacing: 0.3px; }
+    .badge-lime { background: var(--lime-soft); color: var(--lime); }
+    .badge-cobalt { background: var(--cobalt-soft); color: var(--cobalt); }
+    .badge-success { background: var(--success-soft); color: var(--success); }
+    .badge-warning { background: var(--warning-soft); color: var(--warning); }
+    .badge-danger { background: var(--danger-soft); color: var(--danger); }
+    .badge-muted { background: var(--hairline); color: var(--text-secondary); }
+
+    /* ============ شرائط أيام الأسبوع ============ */
+    .week-days-row { display: flex; gap: 7px; margin: 12px 0; flex-wrap: wrap; }
     .day-pill {
-      width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 700; background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.15);
+      width: 38px; height: 38px; border-radius: 11px; display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; font-family: var(--font-mono); background: var(--bg-1); border: 1.5px solid var(--hairline);
       color: var(--text-muted); flex-shrink: 0; transition: all 0.25s ease;
     }
-    .day-pill.done { background: var(--success); border-color: var(--success); color: white; }
-    .day-pill.today { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .day-pill.done { background: var(--success); border-color: var(--success); color: #06251A; }
+    .day-pill.today { border-color: var(--lime); color: var(--lime); box-shadow: 0 0 0 3px var(--lime-soft); }
 
-    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0; }
-    .stat-box { background: rgba(255,255,255,0.06); border-radius: 14px; padding: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.08); }
-    .stat-box .num { font-size: 22px; font-weight: 800; color: var(--accent); }
-    .stat-box .lbl { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
-
-    .chart-wrap { margin: 16px 0; }
-    .bar-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
-    .bar-label { width: 56px; font-size: 12px; color: var(--text-muted); flex-shrink: 0; text-align: left; }
-    .bar-track { flex: 1; height: 16px; background: rgba(255,255,255,0.06); border-radius: 10px; overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 10px; transition: width 0.6s ease; }
-    .bar-fill.easy { background: var(--info); }
+    /* ============ رسم بياني بسيط ============ */
+    .bar-row { display: flex; align-items: center; gap: 10px; margin: 7px 0; }
+    .bar-label { width: 52px; font-size: 11px; color: var(--text-muted); flex-shrink: 0; font-family: var(--font-mono); }
+    .bar-track { flex: 1; height: 14px; background: var(--bg-1); border-radius: 8px; overflow: hidden; border: 1px solid var(--hairline); }
+    .bar-fill { height: 100%; transition: width 0.6s ease; }
+    .bar-fill.easy { background: var(--cobalt); }
     .bar-fill.just_right { background: var(--success); }
     .bar-fill.hard { background: var(--danger); }
 
+    /* ============ بانر المدرب ============ */
+    .coach-banner {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: linear-gradient(120deg, var(--lime-soft), transparent);
+      border: 1px solid rgba(201,255,61,0.25);
+      border-radius: var(--radius-md);
+      padding: 15px 16px; margin-bottom: 14px;
+    }
+    .coach-banner .icon { font-size: 24px; line-height: 1; flex-shrink: 0; }
+    .coach-banner .text { font-size: 14px; line-height: 1.65; color: var(--text-primary); }
+    .coach-banner .text strong { color: var(--lime); }
+
     .adapt-note {
-      font-size: 12.5px; color: var(--text-muted); background: rgba(255,255,255,0.05);
-      border-radius: 10px; padding: 8px 10px; margin-top: 6px; display: flex; gap: 6px; align-items: flex-start;
+      font-size: 12.5px; color: var(--text-secondary); background: var(--cobalt-soft);
+      border: 1px solid rgba(91,140,255,0.2); border-radius: 12px; padding: 10px 12px; margin-top: 10px;
+      display: flex; gap: 8px; align-items: flex-start;
     }
 
-    .set-check {
-      width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25);
-      display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px;
-      color: var(--text-muted); flex-shrink: 0; transition: all 0.2s ease; user-select: none;
-    }
-    .set-check.checked { background: var(--success); border-color: var(--success); color: white; }
-
-    .suggestion-chip {
-      display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 14px;
-      background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.3); color: #7dd3fc;
-      font-size: 13.5px; cursor: pointer; margin: 4px 6px 4px 0; transition: background 0.2s;
-    }
-    .suggestion-chip:hover { background: rgba(56,189,248,0.2); }
-
+    /* ============ فلاتر شرائح ============ */
     .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
     .filter-chip {
-      padding: 7px 14px; border-radius: 20px; font-size: 13px; cursor: pointer;
-      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: var(--text-secondary);
-      transition: all 0.2s;
+      padding: 9px 16px; border-radius: 100px; font-size: 13px; cursor: pointer; font-weight: 600;
+      background: var(--surface-raised); border: 1px solid var(--hairline); color: var(--text-secondary);
+      transition: all 0.15s ease;
     }
-    .filter-chip.active { background: var(--accent); border-color: var(--accent); color: white; font-weight: 700; }
+    .filter-chip.active { background: var(--lime); border-color: var(--lime); color: #0A0C10; }
 
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+    .suggestion-chip {
+      display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 12px;
+      background: var(--cobalt-soft); border: 1px solid rgba(91,140,255,0.3); color: var(--cobalt);
+      font-size: 13px; cursor: pointer; margin: 4px 6px 4px 0; font-weight: 600; transition: background 0.15s;
+    }
+    .suggestion-chip:hover { background: rgba(91,140,255,0.24); }
 
-    details summary { list-style: none; padding: 10px 14px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+    /* ============ تايمر الراحة ============ */
+    .rest-timer { background: var(--bg-1); border: 1px solid var(--hairline); border-radius: var(--radius-lg); padding: 28px 20px; text-align: center; margin: 18px 0; }
+    .timer-number { font-family: var(--font-display); font-size: 64px; font-weight: 700; color: var(--lime); font-variant-numeric: tabular-nums; line-height: 1; text-shadow: 0 0 24px var(--lime-glow); }
+
+    /* ============ التبويبات السفلية ============ */
+    .tab-bar {
+      position: sticky; bottom: 12px; display: flex; gap: 6px; background: var(--surface);
+      border: 1px solid var(--hairline-bright); border-radius: 18px; padding: 6px; box-shadow: var(--shadow-elev);
+      margin-top: 4px;
+    }
+    .tab-btn {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 6px;
+      border-radius: 13px; cursor: pointer; color: var(--text-muted); font-size: 11px; font-weight: 700;
+      transition: all 0.15s ease; background: transparent; border: none; font-family: var(--font-body);
+    }
+    .tab-btn .tab-icon { font-size: 19px; }
+    .tab-btn.active { background: var(--lime-soft); color: var(--lime); }
+
+    /* ============ رسوم متحركة ============ */
+    @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes popIn { 0% { transform: scale(0.6); opacity: 0; } 70% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes checkPulse { 0% { box-shadow: 0 0 0 0 rgba(53,224,161,0.5); } 70% { box-shadow: 0 0 0 12px rgba(53,224,161,0); } 100% { box-shadow: 0 0 0 0 rgba(53,224,161,0); } }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    .page-enter { animation: fadeSlideIn 0.35s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .pop-in { animation: popIn 0.4s ease forwards; }
+    .pulse-once { animation: checkPulse 0.7s ease; }
+    @media (prefers-reduced-motion: reduce) { .page-enter, .pop-in { animation: none; } }
+
+    /* ============ نوافذ منبثقة ============ */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(6,8,12,0.88); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 18px;
+    }
+    .modal-content {
+      background: var(--surface); border: 1px solid var(--hairline-bright); border-radius: var(--radius-lg);
+      padding: 22px; width: 100%; max-width: 760px; position: relative; animation: fadeSlideIn 0.25s ease;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-close {
+      position: absolute; top: 14px; left: 14px; background: var(--surface-raised); border: 1px solid var(--hairline);
+      color: var(--text-primary); font-size: 18px; border-radius: 50%; width: 38px; height: 38px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; z-index: 10;
+    }
+
+    .error-message { background: var(--danger-soft); border: 1px solid var(--danger); color: #FF9FB2; padding: 11px 14px; border-radius: 11px; margin: 12px 0; font-size: 13.5px; }
+
+    details summary { list-style: none; padding: 12px 15px; background: var(--surface-raised); border-radius: var(--radius-sm); border: 1px solid var(--hairline); cursor: pointer; user-select: none; }
     details summary::-webkit-details-marker { display: none; }
     details summary::after { content: '▾'; float: left; color: var(--text-muted); transition: transform 0.2s; }
     details[open] summary::after { transform: rotate(180deg); }
-    details[open] summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: 0; }
+    details[open] summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+
+    /* شريط تقدم خطي */
+    .linear-track { height: 6px; background: var(--bg-1); border-radius: 6px; overflow: hidden; border: 1px solid var(--hairline); }
+    .linear-fill { height: 100%; background: var(--lime); transition: width 0.4s ease; }
+
+    /* بطاقة اختيار كبيرة (لصفحة الإعداد) */
+    .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+    .choice-card {
+      background: var(--bg-1); border: 1.5px solid var(--hairline); border-radius: var(--radius-sm);
+      padding: 16px 14px; cursor: pointer; transition: all 0.15s ease; text-align: center;
+    }
+    .choice-card:hover { border-color: var(--hairline-bright); }
+    .choice-card.selected { border-color: var(--lime); background: var(--lime-soft); }
+    .choice-card .ic { font-size: 24px; display: block; margin-bottom: 6px; }
+    .choice-card .lbl { font-size: 13.5px; font-weight: 700; }
+    .choice-card .sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+    .choice-card.selected .sub { color: var(--lime-dim); }
   </style>
 </head>
 <body>
@@ -266,33 +363,50 @@
 
     // ======================== البيانات الثابتة ========================
     const exercises = [
-      { id: 1, name: 'Squats', nameAr: 'القرفصاء', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/otzWCWpuW-A' },
-      { id: 2, name: 'Lunges', nameAr: 'الاندفاع', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/WzONHuAe6BY' },
-      { id: 3, name: 'Push-ups', nameAr: 'تمارين الضغط', muscleGroup: 'chest', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/IODxDxX7oi4' },
-      { id: 4, name: 'Knee Push-ups', nameAr: 'ضغط الركبة', muscleGroup: 'chest', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/IODxDxX7oi4' },
-      { id: 5, name: 'Plank', nameAr: 'اللوح الخشبي', muscleGroup: 'core', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/pSHjTRCQxIw' },
-      { id: 6, name: 'Glute Bridge', nameAr: 'جسر الألوية', muscleGroup: 'glutes', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/tl6xvm4-Qk0' },
-      { id: 7, name: 'Standing Calf Raises', nameAr: 'رفع السمانة واقفاً', muscleGroup: 'calves', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/gYSUwWaWQMg' },
-      { id: 8, name: 'Jumping Jacks', nameAr: 'حركة القفز والتباعد', muscleGroup: 'cardio', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 60, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/c4DAnQ6DtF8' },
-      { id: 9, name: 'High Knees', nameAr: 'الركب العالية', muscleGroup: 'cardio', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 60, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/8opcQdC-V-U' },
-      { id: 10, name: 'Dumbbell Shoulder Press', nameAr: 'ضغط الكتف بالدمبل', muscleGroup: 'shoulders', difficulty: 'intermediate', equipment: ['dumbbell'], minAge: 16, maxAge: 80, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/qEwKCR5JCog' },
-      { id: 11, name: 'Dumbbell Row', nameAr: 'سحب الدمبل', muscleGroup: 'back', difficulty: 'intermediate', equipment: ['dumbbell'], minAge: 16, maxAge: 80, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/roCP6wCXPqo' },
-      { id: 12, name: 'Dumbbell Squat', nameAr: 'قرفصاء بالدمبل', muscleGroup: 'legs', difficulty: 'intermediate', equipment: ['dumbbell'], minAge: 16, maxAge: 80, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/otzWCWpuW-A' },
-      { id: 13, name: 'Bicycle Crunches', nameAr: 'بطن الدراجة', muscleGroup: 'core', difficulty: 'intermediate', equipment: ['none'], minAge: 13, maxAge: 80, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/9FGilxCbdz8' },
-      { id: 14, name: 'Wall Sit', nameAr: 'الجلوس على الحائط', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/y-wV4VenR3w' },
-      { id: 15, name: 'Leg Raises', nameAr: 'رفع الساقين', muscleGroup: 'core', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/JB2oyawG9KI' },
-      { id: 16, name: 'Chair Squats', nameAr: 'قرفصاء الكرسي', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 60, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/gB-xwUdFtgk' },
-      { id: 17, name: 'Standing Side Leg Raise', nameAr: 'رفع الساق جانباً', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/dK_n5KZ6YJI' },
-      { id: 18, name: 'Yoga Child’s Pose', nameAr: 'وضعية الطفل', muscleGroup: 'stretching', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/2MJGg-dUKh0' },
-      { id: 19, name: 'Cat-Cow Stretch', nameAr: 'تمدد القطة والبقرة', muscleGroup: 'stretching', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/kqnua4rHVVA' },
-      { id: 20, name: 'Kegel Exercises', nameAr: 'تمارين قاع الحوض', muscleGroup: 'pelvic', difficulty: 'beginner', equipment: ['none'], minAge: 18, maxAge: 100, genderPreference: 'female', videoUrl: 'https://www.youtube.com/embed/10GgQ5IfcMk' },
+      { id: 1, name: 'Squats', nameAr: 'القرفصاء', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/otzWCWpuW-A', demoStart: 20, calPerMin: 8 },
+      { id: 2, name: 'Lunges', nameAr: 'الاندفاع', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/WzONHuAe6BY', demoStart: 15, calPerMin: 7 },
+      { id: 3, name: 'Push-ups', nameAr: 'تمارين الضغط', muscleGroup: 'chest', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/IODxDxX7oi4', demoStart: 10, calPerMin: 7 },
+      { id: 4, name: 'Knee Push-ups', nameAr: 'ضغط الركبة', muscleGroup: 'chest', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/IODxDxX7oi4', demoStart: 10, calPerMin: 5 },
+      { id: 5, name: 'Plank', nameAr: 'اللوح الخشبي', muscleGroup: 'core', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/pSHjTRCQxIw', demoStart: 15, calPerMin: 4 },
+      { id: 6, name: 'Glute Bridge', nameAr: 'جسر الألوية', muscleGroup: 'glutes', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/tl6xvm4-Qk0', demoStart: 20, calPerMin: 5 },
+      { id: 7, name: 'Standing Calf Raises', nameAr: 'رفع السمانة واقفاً', muscleGroup: 'calves', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/gYSUwWaWQMg', demoStart: 0, calPerMin: 4 },
+      { id: 8, name: 'Jumping Jacks', nameAr: 'حركة القفز والتباعد', muscleGroup: 'cardio', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 60, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/c4DAnQ6DtF8', demoStart: 0, calPerMin: 10 },
+      { id: 9, name: 'High Knees', nameAr: 'الركب العالية', muscleGroup: 'cardio', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 60, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/8opcQdC-V-U', demoStart: 0, calPerMin: 11 },
+      { id: 10, name: 'Dumbbell Shoulder Press', nameAr: 'ضغط الكتف بالدمبل', muscleGroup: 'shoulders', difficulty: 'intermediate', equipment: ['dumbbell'], minAge: 16, maxAge: 80, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/qEwKCR5JCog', demoStart: 15, calPerMin: 6 },
+      { id: 11, name: 'Dumbbell Row', nameAr: 'سحب الدمبل', muscleGroup: 'back', difficulty: 'intermediate', equipment: ['dumbbell'], minAge: 16, maxAge: 80, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/roCP6wCXPqo', demoStart: 15, calPerMin: 6 },
+      { id: 12, name: 'Dumbbell Squat', nameAr: 'قرفصاء بالدمبل', muscleGroup: 'legs', difficulty: 'intermediate', equipment: ['dumbbell'], minAge: 16, maxAge: 80, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/otzWCWpuW-A', demoStart: 20, calPerMin: 9 },
+      { id: 13, name: 'Bicycle Crunches', nameAr: 'بطن الدراجة', muscleGroup: 'core', difficulty: 'intermediate', equipment: ['none'], minAge: 13, maxAge: 80, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/9FGilxCbdz8', demoStart: 10, calPerMin: 6 },
+      { id: 14, name: 'Wall Sit', nameAr: 'الجلوس على الحائط', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/y-wV4VenR3w', demoStart: 10, calPerMin: 5 },
+      { id: 15, name: 'Leg Raises', nameAr: 'رفع الساقين', muscleGroup: 'core', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/JB2oyawG9KI', demoStart: 10, calPerMin: 5 },
+      { id: 16, name: 'Chair Squats', nameAr: 'قرفصاء الكرسي', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 60, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/gB-xwUdFtgk', demoStart: 0, calPerMin: 4 },
+      { id: 17, name: 'Standing Side Leg Raise', nameAr: 'رفع الساق جانباً', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/dK_n5KZ6YJI', demoStart: 0, calPerMin: 4 },
+      { id: 18, name: 'Yoga Child’s Pose', nameAr: 'وضعية الطفل', muscleGroup: 'stretching', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/2MJGg-dUKh0', demoStart: 0, calPerMin: 2 },
+      { id: 19, name: 'Cat-Cow Stretch', nameAr: 'تمدد القطة والبقرة', muscleGroup: 'stretching', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/kqnua4rHVVA', demoStart: 0, calPerMin: 2 },
+      { id: 20, name: 'Kegel Exercises', nameAr: 'تمارين قاع الحوض', muscleGroup: 'pelvic', difficulty: 'beginner', equipment: ['none'], minAge: 18, maxAge: 100, genderPreference: 'female', videoUrl: 'https://www.youtube.com/embed/10GgQ5IfcMk', demoStart: 0, calPerMin: 2 },
     ];
 
     const muscleGroupLabels = {
       legs: 'أرجل', chest: 'صدر', core: 'بطن', glutes: 'ألوية', calves: 'سمانة',
       cardio: 'كارديو', shoulders: 'أكتاف', back: 'ظهر', stretching: 'إطالة', pelvic: 'قاع الحوض'
     };
+    const muscleGroupIcons = {
+      legs: '🦵', chest: '🫁', core: '🔥', glutes: '🍑', calves: '🦶',
+      cardio: '❤️', shoulders: '💪', back: '🔙', stretching: '🧘', pelvic: '⭕'
+    };
     const difficultyLabels = { beginner: 'مبتدئ', intermediate: 'متوسط', advanced: 'متقدم' };
+
+    const goalOptions = [
+      { value: 'general_fitness', label: 'لياقة عامة', icon: '⚡', desc: 'توازن شامل بين القوة والتحمل' },
+      { value: 'weight_loss', label: 'خسارة وزن', icon: '🔥', desc: 'حرق أعلى وتمارين كارديو مكثفة' },
+      { value: 'muscle_build', label: 'بناء عضلات', icon: '💪', desc: 'تدريب مقاومة وزيادة تدريجية' },
+      { value: 'endurance', label: 'تحمّل وقدرة', icon: '🏃', desc: 'جلسات أطول وراحة أقصر' },
+    ];
+
+    const genderOptions = [
+      { value: 'male', label: 'ذكر', icon: '♂️' },
+      { value: 'female', label: 'أنثى', icon: '♀️' },
+      { value: 'other', label: 'آخر', icon: '⚪' },
+    ];
 
     const planTemplates = [
       {
@@ -312,18 +426,45 @@
           week3: [ { exerciseIds: [10,11,12,13], reps: [14,14,12,20], rest: 35 }, { exerciseIds: [10,11,6,5], reps: [14,14,15,45], rest: 35 } ],
           week4: [ { exerciseIds: [10,11,12,13], reps: [16,16,14,25], rest: 30 }, { exerciseIds: [10,11,3,5], reps: [16,16,12,50], rest: 30 } ],
         }
+      },
+      {
+        id: 3, name: 'Cardio Burn', goal: 'weight_loss', level: 'beginner', durationWeeks: 4,
+        weeksData: {
+          week1: [ { exerciseIds: [8,9,1,13,5], reps: [30,30,15,20,30], rest: 40 }, { exerciseIds: [9,2,13,8,15], reps: [30,10,20,30,12], rest: 40 } ],
+          week2: [ { exerciseIds: [8,9,1,13,5], reps: [35,35,18,25,35], rest: 35 }, { exerciseIds: [9,2,13,8,15], reps: [35,12,25,35,14], rest: 35 } ],
+          week3: [ { exerciseIds: [8,9,3,13,5], reps: [40,40,12,30,40], rest: 30 }, { exerciseIds: [9,2,13,8,15], reps: [40,14,30,40,16], rest: 30 } ],
+          week4: [ { exerciseIds: [8,9,3,13,5], reps: [45,45,14,35,45], rest: 25 }, { exerciseIds: [9,2,13,8,15], reps: [45,16,35,45,18], rest: 25 } ],
+        }
+      },
+      {
+        id: 4, name: 'Endurance Circuit', goal: 'endurance', level: 'beginner', durationWeeks: 4,
+        weeksData: {
+          week1: [ { exerciseIds: [1,3,8,5,9,2], reps: [15,12,40,40,40,12], rest: 30 }, { exerciseIds: [6,15,9,1,13,5], reps: [15,12,40,15,25,40], rest: 30 } ],
+          week2: [ { exerciseIds: [1,3,8,5,9,2], reps: [18,14,45,45,45,14], rest: 25 }, { exerciseIds: [6,15,9,1,13,5], reps: [18,14,45,18,28,45], rest: 25 } ],
+          week3: [ { exerciseIds: [1,3,8,5,9,2], reps: [20,16,50,50,50,16], rest: 20 }, { exerciseIds: [6,15,9,1,13,5], reps: [20,16,50,20,30,50], rest: 20 } ],
+          week4: [ { exerciseIds: [1,3,8,5,9,2], reps: [25,18,55,55,55,18], rest: 20 }, { exerciseIds: [6,15,9,1,13,5], reps: [25,18,55,22,35,55], rest: 20 } ],
+        }
       }
     ];
 
-    const allEquipmentOptions = [
-      'بدون معدات', 'دمبل', 'بار', 'كيتل بيل', 'شريط مقاومة', 'سجادة',
-      'دراجة هوائية', 'جهاز مشي', 'كرة سويسرية', 'مقعد', 'عقلة',
-      'حبل قفز', 'ستيب', 'أوزان حرة', 'إليبتيكال', 'آلة تجديف'
+    const equipmentOptions = [
+      { value: 'none', label: 'بدون معدات', icon: '🧍' },
+      { value: 'dumbbell', label: 'دمبل', icon: '🏋️' },
+      { value: 'barbell', label: 'بار', icon: '🏋️‍♂️' },
+      { value: 'kettlebell', label: 'كيتل بيل', icon: '🔔' },
+      { value: 'resistance_band', label: 'شريط مقاومة', icon: '➰' },
+      { value: 'mat', label: 'سجادة', icon: '🟩' },
+      { value: 'bike', label: 'دراجة هوائية', icon: '🚴' },
+      { value: 'treadmill', label: 'جهاز مشي', icon: '🏃' },
+      { value: 'swiss_ball', label: 'كرة سويسرية', icon: '⚽' },
+      { value: 'bench', label: 'مقعد', icon: '🪑' },
+      { value: 'pullup_bar', label: 'عقلة', icon: '➖' },
+      { value: 'jump_rope', label: 'حبل قفز', icon: '➰' },
+      { value: 'free_weights', label: 'أوزان حرة', icon: '🏋️' },
     ];
 
     // ======================== دوال التخزين والحسابات ========================
     const STORAGE_KEYS = { users: 'fitness_users', currentSession: 'fitness_session' };
-
     const loadUsers = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.users)) || []; } catch { return []; } };
     const saveUsers = (users) => { localStorage.setItem(STORAGE_KEYS.users, JSON.stringify(users)); };
     const getCurrentSession = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.currentSession)); } catch { return null; } };
@@ -338,7 +479,6 @@
     };
     const getUserData = (username) => loadUsers().find(u => u.username === username) || null;
 
-    // ---- تحديد المستوى الفعلي بناء على العمر والهدف (كان ثابتاً على beginner سابقاً) ----
     function computeLevel(age, goal) {
       if (age < 16) return 'beginner';
       if (age >= 55) return 'beginner';
@@ -387,11 +527,9 @@
       };
     }
 
-    // ---- منطق التكيّف: يقرأ آخر جلستين ويعدّل التكرارات/الأسبوع القادم ----
     function adaptPlan(plan, log) {
       const recent = log.slice(-2).map(l => l.feedback);
       if (recent.length < 2) return { plan, note: null };
-
       const bothHard = recent.every(f => f === 'hard');
       const bothEasy = recent.every(f => f === 'easy');
       if (!bothHard && !bothEasy) return { plan, note: null };
@@ -402,7 +540,7 @@
 
       weekKeys.forEach(wk => {
         const weekNum = parseInt(wk.replace('week', ''));
-        if (weekNum < newPlan.currentWeek) return; // لا تعدل الأسابيع الماضية
+        if (weekNum < newPlan.currentWeek) return;
         newPlan.weeksData[wk].forEach(day => {
           day.reps = day.reps.map(r => Math.max(5, Math.round(r * factor)));
           if (bothHard) day.rest = Math.min(90, Math.round(day.rest * 1.15));
@@ -419,7 +557,6 @@
       return { plan: newPlan, note };
     }
 
-    // ---- التقدم للأسبوع التالي عند إكمال كل أيام الأسبوع الحالي ----
     function maybeAdvanceWeek(plan, log) {
       const currentWeekKey = `week${plan.currentWeek}`;
       const daysInWeek = plan.weeksData[currentWeekKey]?.length || 0;
@@ -431,95 +568,151 @@
       return plan;
     }
 
-    // ---- مشغل فيديو ذكي: يعرض الفيديو، وإذا فشل يعرض رابط بديل موثوق للبحث في يوتيوب ----
-    function SmartVideo({ videoUrl, title, height }) {
-      const [failed, setFailed] = useState(false);
-      const [loaded, setLoaded] = useState(false);
-      const timeoutRef = useRef(null);
+    function estimateCalories(exerciseIds, repsArr) {
+      // تقدير تقريبي: كل تمرين نفترض له مدة قصيرة بناء على نوع العدة/الزمن
+      let total = 0;
+      exerciseIds.forEach((id, idx) => {
+        const ex = exercises.find(e => e.id === id);
+        if (!ex) return;
+        const reps = repsArr[idx] || 10;
+        const estMinutes = reps > 25 ? reps / 30 : reps / 12; // تمارين زمنية vs عدّية تقريباً
+        total += estMinutes * (ex.calPerMin || 5);
+      });
+      return Math.round(total);
+    }
 
+    // ======================== قائمة منسدلة مخصصة ========================
+    function SelectField({ value, options, onChange, placeholder, renderIcon }) {
+      const [isOpen, setIsOpen] = useState(false);
+      const ref = useRef(null);
       useEffect(() => {
-        setFailed(false);
-        setLoaded(false);
-        // إذا لم يُبلغ الفيديو بالتحميل خلال مهلة معقولة، نفترض فشله ونعرض البديل
-        timeoutRef.current = setTimeout(() => setLoaded(prev => prev || true), 4000);
-        return () => clearTimeout(timeoutRef.current);
-      }, [videoUrl]);
-
-      const searchQuery = encodeURIComponent(`${title} exercise tutorial how to`);
-      const fallbackSearchUrl = `https://www.youtube.com/results?search_query=${searchQuery}`;
-
+        const onClickOutside = (e) => { if (ref.current && !ref.current.contains(e.target)) setIsOpen(false); };
+        document.addEventListener('mousedown', onClickOutside);
+        return () => document.removeEventListener('mousedown', onClickOutside);
+      }, []);
+      const selected = options.find(o => o.value === value);
       return (
-        <div className="video-container" style={height ? { paddingBottom: 0, height } : {}}>
-          {!failed && (
-            <iframe
-              src={videoUrl}
-              title={title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              onError={() => setFailed(true)}
-            ></iframe>
-          )}
-          {failed && (
-            <div className="video-fallback">
-              <span className="icon">🎬</span>
-              <p>تعذّر تشغيل الفيديو مباشرة هنا</p>
-              <a className="btn btn-sm" href={fallbackSearchUrl} target="_blank" rel="noopener noreferrer">
-                ▶️ افتح على يوتيوب
-              </a>
+        <div className="select-field" ref={ref}>
+          <div className={`select-trigger ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen(v => !v)}>
+            <span className="value-wrap">
+              {selected?.icon && <span className="value-icon">{selected.icon}</span>}
+              <span>{selected ? selected.label : (placeholder || 'اختر...')}</span>
+            </span>
+            <span className="chev">▾</span>
+          </div>
+          {isOpen && (
+            <div className="select-menu">
+              {options.map(opt => (
+                <div
+                  key={opt.value}
+                  className={`select-option ${value === opt.value ? 'selected' : ''}`}
+                  onClick={() => { onChange(opt.value); setIsOpen(false); }}
+                >
+                  <div className="opt-main">
+                    {opt.icon && <span style={{fontSize:'17px'}}>{opt.icon}</span>}
+                    <div>
+                      <div>{opt.label}</div>
+                      {opt.desc && <div className="opt-desc">{opt.desc}</div>}
+                    </div>
+                  </div>
+                  <span className="opt-check">✓</span>
+                </div>
+              ))}
             </div>
           )}
         </div>
       );
     }
 
-    function MultiSelect({ options, selected, onChange }) {
+    function MultiSelectField({ value, options, onChange, placeholder }) {
       const [isOpen, setIsOpen] = useState(false);
-      const containerRef = useRef(null);
+      const ref = useRef(null);
       useEffect(() => {
-        const handleClickOutside = (e) => {
-          if (containerRef.current && !containerRef.current.contains(e.target)) setIsOpen(false);
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        const onClickOutside = (e) => { if (ref.current && !ref.current.contains(e.target)) setIsOpen(false); };
+        document.addEventListener('mousedown', onClickOutside);
+        return () => document.removeEventListener('mousedown', onClickOutside);
       }, []);
-      const toggleOption = (option) => {
-        let newSelected;
-        if (option === 'بدون معدات') {
-          newSelected = ['بدون معدات'];
-          setIsOpen(false);
-          onChange(newSelected);
-          return;
-        }
-        if (selected.includes(option)) newSelected = selected.filter(s => s !== option);
-        else newSelected = [...selected.filter(s => s !== 'بدون معدات'), option];
-        if (newSelected.length === 0) newSelected = ['بدون معدات'];
-        onChange(newSelected);
+      const toggle = (val) => {
+        if (val === 'none') { onChange(['none']); setIsOpen(false); return; }
+        let next;
+        if (value.includes(val)) next = value.filter(v => v !== val);
+        else next = [...value.filter(v => v !== 'none'), val];
+        if (next.length === 0) next = ['none'];
+        onChange(next);
       };
+      const selectedLabels = options.filter(o => value.includes(o.value)).map(o => o.label);
       return (
-        <div className="multi-select" ref={containerRef}>
-          <div className="multi-select-box" onClick={() => setIsOpen(!isOpen)}>
-            {selected.length === 0 ? <span style={{color: 'gray'}}>اختر المعدات...</span> : (
-              <div className="selected-tags">
-                {selected.map(item => (
-                  <span key={item} className="selected-tag">
-                    {item}
-                    <button type="button" onClick={(e) => { e.stopPropagation(); toggleOption(item); }}>×</button>
-                  </span>
-                ))}
-              </div>
-            )}
-            <span>▼</span>
+        <div className="select-field" ref={ref}>
+          <div className={`select-trigger ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen(v => !v)} style={{minHeight:'54px', height:'auto'}}>
+            <span className="value-wrap" style={{flexWrap:'wrap'}}>
+              {selectedLabels.length === 0 ? <span style={{color:'var(--text-muted)'}}>{placeholder}</span> : selectedLabels.map(l => (
+                <span key={l} className="badge badge-lime" style={{fontFamily:'var(--font-body)'}}>{l}</span>
+              ))}
+            </span>
+            <span className="chev">▾</span>
           </div>
           {isOpen && (
-            <div className="dropdown-list">
-              {options.map(option => (
-                <label key={option} className="dropdown-item">
-                  <input type="checkbox" checked={selected.includes(option)} onChange={() => toggleOption(option)} />
-                  {option}
-                </label>
+            <div className="select-menu">
+              {options.map(opt => (
+                <div key={opt.value} className={`select-option ${value.includes(opt.value) ? 'selected' : ''}`} onClick={() => toggle(opt.value)}>
+                  <div className="opt-main">
+                    <input type="checkbox" checked={value.includes(opt.value)} onChange={() => {}} />
+                    <span style={{fontSize:'16px'}}>{opt.icon}</span>
+                    <span>{opt.label}</span>
+                  </div>
+                </div>
               ))}
             </div>
           )}
+        </div>
+      );
+    }
+
+    // ======================== مشغل فيديو ذكي ========================
+    function SmartVideo({ videoUrl, title, startSeconds, autoPlay }) {
+      const [failed, setFailed] = useState(false);
+      const buildSrc = () => {
+        const params = new URLSearchParams();
+        params.set('rel', '0');
+        params.set('modestbranding', '1');
+        if (startSeconds) params.set('start', String(startSeconds));
+        if (autoPlay) { params.set('autoplay', '1'); params.set('mute', '1'); }
+        return `${videoUrl}?${params.toString()}`;
+      };
+      const searchQuery = encodeURIComponent(`${title} exercise tutorial how to`);
+      const fallbackSearchUrl = `https://www.youtube.com/results?search_query=${searchQuery}`;
+      return (
+        <div className="video-container">
+          {!failed && (
+            <iframe src={buildSrc()} title={title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen onError={() => setFailed(true)}></iframe>
+          )}
+          {failed && (
+            <div className="video-fallback">
+              <span className="icon">🎬</span>
+              <p>تعذّر تشغيل الفيديو مباشرة هنا</p>
+              <a className="btn btn-sm" href={fallbackSearchUrl} target="_blank" rel="noopener noreferrer">▶️ افتح على يوتيوب</a>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function TodayExerciseRow({ ex, reps, idx, isDone }) {
+      const [showVideo, setShowVideo] = useState(false);
+      return (
+        <div className={`exercise-row ${isDone ? 'done' : ''}`}>
+          <div className="row-between">
+            <span><span className="num">{String(idx+1).padStart(2,'0')}</span>{ex.nameAr || ex.name}</span>
+            <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
+              <span className="badge badge-muted">{reps ? `${reps} عدة` : 'حسب الزمن'}</span>
+              <button className="video-toggle-btn" onClick={() => setShowVideo(v => !v)} title="فيديو توضيحي مباشر" aria-label="فيديو توضيحي">
+                {showVideo ? '✕' : '🎥'}
+              </button>
+            </div>
+          </div>
+          {showVideo && <SmartVideo videoUrl={ex.videoUrl} title={ex.nameAr || ex.name} startSeconds={ex.demoStart || 0} autoPlay={true} />}
         </div>
       );
     }
@@ -544,16 +737,19 @@
         }
       };
       return (
-        <div className="glass-card page-enter">
-          <h1 style={{textAlign:'center', color: 'var(--accent)'}}>🏋️ مدربك الذكي</h1>
-          <p style={{textAlign:'center', color: 'var(--text-secondary)', marginBottom: '20px'}}>أدخل اسم المستخدم وكلمة المرور للدخول أو لإنشاء حساب جديد</p>
+        <div className="card page-enter">
+          <div style={{textAlign:'center', marginBottom:'8px'}}>
+            <span className="eyebrow">PERFORMANCE COACHING</span>
+            <h1 style={{color:'var(--lime)', marginTop:'4px'}}>PEAK</h1>
+            <p style={{color:'var(--text-secondary)', marginTop:'8px', fontSize:'14.5px'}}>سجّل الدخول أو أنشئ حساباً جديداً للبدء</p>
+          </div>
           <form onSubmit={handleSubmit}>
             <label>اسم المستخدم</label>
-            <input value={username} onChange={e => { setUsername(e.target.value); setError(''); }} required />
+            <input type="text" value={username} onChange={e => { setUsername(e.target.value); setError(''); }} required />
             <label>كلمة المرور</label>
             <input type="password" value={password} onChange={e => { setPassword(e.target.value); setError(''); }} required />
             {error && <div className="error-message">{error}</div>}
-            <button type="submit" className="btn" style={{width:'100%', marginTop:'20px'}}>🔐 دخول / إنشاء حساب</button>
+            <button type="submit" className="btn" style={{width:'100%', marginTop:'22px'}}>دخول / إنشاء حساب</button>
           </form>
         </div>
       );
@@ -561,96 +757,110 @@
 
     // ======================== الإعداد الأولي ========================
     function Onboarding({ onComplete }) {
+      const [step, setStep] = useState(1);
       const [name, setName] = useState('');
       const [gender, setGender] = useState('male');
       const [age, setAge] = useState(25);
       const [goal, setGoal] = useState('general_fitness');
       const [weeklyDays, setWeeklyDays] = useState(3);
-      const [equipment, setEquipment] = useState(['بدون معدات']);
-      const ageOptions = Array.from({ length: 88 }, (_, i) => i + 13);
+      const [equipment, setEquipment] = useState(['none']);
+      const ageOptions = Array.from({ length: 88 }, (_, i) => ({ value: i + 13, label: `${i + 13} سنة` }));
 
       const previewLevel = computeLevel(Number(age), goal);
+      const totalSteps = 3;
 
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        const equipmentMap = {
-          'بدون معدات': 'none', 'دمبل': 'dumbbell', 'بار': 'barbell', 'كيتل بيل': 'kettlebell',
-          'شريط مقاومة': 'resistance_band', 'سجادة': 'mat', 'دراجة هوائية': 'bike',
-          'جهاز مشي': 'treadmill', 'كرة سويسرية': 'swiss_ball', 'مقعد': 'bench',
-          'عقلة': 'pullup_bar', 'حبل قفز': 'jump_rope', 'ستيب': 'step',
-          'أوزان حرة': 'free_weights', 'إليبتيكال': 'elliptical', 'آلة تجديف': 'rowing_machine'
-        };
-        const mappedEquipment = equipment.map(e => equipmentMap[e] || e);
+      const handleSubmit = () => {
+        const equipmentLabels = equipmentOptions.filter(o => equipment.includes(o.value)).map(o => o.label);
         onComplete({
-          name, gender, age: Number(age), goal,
+          name: name || 'بطل', gender, age: Number(age), goal,
           level: computeLevel(Number(age), goal),
           weeklyDays: Number(weeklyDays),
           sessionDuration: 30,
-          equipment: mappedEquipment,
-          equipmentLabels: equipment
+          equipment, equipmentLabels
         });
       };
 
       return (
-        <div className="glass-card page-enter">
-          <h1 style={{textAlign:'center', color: 'var(--accent)'}}>🏋️ مدربك الذكي</h1>
-          <div className="coach-banner">
-            <span className="icon">🤖</span>
-            <span className="text">أجب على بعض الأسئلة وسأبني لك خطة تتكيّف تلقائياً مع أدائك أسبوعاً بعد أسبوع.</span>
+        <div className="card page-enter">
+          <div className="row-between" style={{marginBottom:'6px'}}>
+            <span className="eyebrow">STEP {step} / {totalSteps}</span>
+            <span className="eyebrow" style={{color:'var(--text-muted)'}}>{difficultyLabels[previewLevel]}</span>
           </div>
-          <form onSubmit={handleSubmit}>
-            <label>الاسم</label>
-            <input value={name} onChange={e => setName(e.target.value)} required />
-            <label>الجنس</label>
-            <select value={gender} onChange={e => setGender(e.target.value)}>
-              <option value="male">ذكر</option>
-              <option value="female">أنثى</option>
-              <option value="other">آخر</option>
-            </select>
-            <label>العمر</label>
-            <select value={age} onChange={e => setAge(e.target.value)}>
-              {ageOptions.map(a => <option key={a} value={a}>{a} سنة</option>)}
-            </select>
-            <label>الهدف</label>
-            <select value={goal} onChange={e => setGoal(e.target.value)}>
-              <option value="general_fitness">لياقة عامة</option>
-              <option value="weight_loss">خسارة وزن</option>
-              <option value="muscle_build">بناء عضلات</option>
-            </select>
-            <label>أيام التمرين في الأسبوع</label>
-            <select value={weeklyDays} onChange={e => setWeeklyDays(e.target.value)}>
-              {[2,3,4,5,6].map(d => <option key={d} value={d}>{d}</option>)}
-            </select>
-            <label>المعدات المتوفرة</label>
-            <MultiSelect options={allEquipmentOptions} selected={equipment} onChange={setEquipment} />
-            <div className="adapt-note">
-              <span>📊</span>
-              <span>المستوى المقترح بناءً على بياناتك: <strong style={{color:'var(--accent-hover)'}}>{difficultyLabels[previewLevel]}</strong> — سيتغيّر تلقائياً إذا لاحظت تقدمك.</span>
+          <div className="linear-track" style={{marginBottom:'20px'}}>
+            <div className="linear-fill" style={{width: `${(step/totalSteps)*100}%`}}></div>
+          </div>
+
+          {step === 1 && (
+            <div>
+              <h2 style={{marginBottom:'4px'}}>من أنت؟</h2>
+              <p style={{color:'var(--text-secondary)', fontSize:'13.5px', marginBottom:'6px'}}>معلومات أساسية لبناء خطة تناسبك</p>
+              <label>الاسم</label>
+              <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="اكتب اسمك" />
+              <label>الجنس</label>
+              <SelectField value={gender} options={genderOptions} onChange={setGender} />
+              <label>العمر</label>
+              <SelectField value={age} options={ageOptions} onChange={v => setAge(v)} />
+              <button className="btn" style={{width:'100%', marginTop:'24px'}} onClick={() => setStep(2)} disabled={!name.trim()}>التالي</button>
             </div>
-            <button type="submit" className="btn" style={{width:'100%', marginTop:'20px'}}>🚀 ابدأ رحلتك</button>
-          </form>
+          )}
+
+          {step === 2 && (
+            <div>
+              <h2 style={{marginBottom:'4px'}}>ما هو هدفك؟</h2>
+              <p style={{color:'var(--text-secondary)', fontSize:'13.5px', marginBottom:'6px'}}>سيحدد هذا نوع خطتك التدريبية</p>
+              <div className="choice-grid">
+                {goalOptions.map(g => (
+                  <div key={g.value} className={`choice-card ${goal === g.value ? 'selected' : ''}`} onClick={() => setGoal(g.value)}>
+                    <span className="ic">{g.icon}</span>
+                    <div className="lbl">{g.label}</div>
+                    <div className="sub">{g.desc}</div>
+                  </div>
+                ))}
+              </div>
+              <label>أيام التمرين في الأسبوع</label>
+              <SelectField
+                value={weeklyDays}
+                options={[2,3,4,5,6].map(d => ({ value: d, label: `${d} أيام في الأسبوع`, icon: '📅' }))}
+                onChange={v => setWeeklyDays(v)}
+              />
+              <div style={{display:'flex', gap:'10px', marginTop:'24px'}}>
+                <button className="btn-outline btn" style={{flex:1}} onClick={() => setStep(1)}>السابق</button>
+                <button className="btn" style={{flex:2}} onClick={() => setStep(3)}>التالي</button>
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div>
+              <h2 style={{marginBottom:'4px'}}>ما المعدات المتوفرة لديك؟</h2>
+              <p style={{color:'var(--text-secondary)', fontSize:'13.5px', marginBottom:'6px'}}>يمكنك اختيار أكثر من خيار</p>
+              <MultiSelectField value={equipment} options={equipmentOptions} onChange={setEquipment} placeholder="اختر المعدات..." />
+
+              <div className="adapt-note" style={{marginTop:'18px'}}>
+                <span>📊</span>
+                <span>المستوى المقترح بناءً على بياناتك: <strong style={{color:'var(--lime)'}}>{difficultyLabels[previewLevel]}</strong> — سيتغيّر تلقائياً حسب أدائك.</span>
+              </div>
+
+              <div style={{display:'flex', gap:'10px', marginTop:'24px'}}>
+                <button className="btn-outline btn" style={{flex:1}} onClick={() => setStep(2)}>السابق</button>
+                <button className="btn" style={{flex:2}} onClick={handleSubmit}>🚀 ابدأ رحلتك</button>
+              </div>
+            </div>
+          )}
         </div>
       );
     }
 
-    // ======================== لوحة تحكم ذكية ========================
+    // ======================== مساعدات لوحة التحكم ========================
     function coachMessage(profile, plan, log) {
-      if (log.length === 0) {
-        return { icon: '👋', text: `أهلاً ${profile.name}! هذه أول جلسة لك — ابدأ بخطوات بسيطة وسأتابع أداءك لأبني لك خطة تتكيّف معك.` };
-      }
+      if (log.length === 0) return { icon: '👋', text: `أهلاً ${profile.name}! هذه أول جلسة لك — ابدأ بخطوات بسيطة وسأتابع أداءك لأبني لك خطة تتكيّف معك.` };
       const last3 = log.slice(-3);
       const hardCount = last3.filter(l => l.feedback === 'hard').length;
       const easyCount = last3.filter(l => l.feedback === 'easy').length;
-      if (hardCount >= 2) {
-        return { icon: '💪', text: 'لاحظت أن التمارين الأخيرة كانت صعبة عليك. لا بأس، الخطة القادمة أخف قليلاً — الاستمرارية أهم من الشدة.' };
-      }
-      if (easyCount >= 2) {
-        return { icon: '🔥', text: 'أداء رائع ومستمر! رفعت مستوى الخطة القادمة قليلاً لتستمر بالتحدي والتقدم.' };
-      }
+      if (hardCount >= 2) return { icon: '💪', text: 'لاحظت أن التمارين الأخيرة كانت صعبة عليك. لا بأس، الخطة القادمة أخف قليلاً — الاستمرارية أهم من الشدة.' };
+      if (easyCount >= 2) return { icon: '🔥', text: 'أداء رائع ومستمر! رفعت مستوى الخطة القادمة قليلاً لتستمر بالتحدي والتقدم.' };
       const daysSinceLast = Math.floor((Date.now() - new Date(log[log.length-1].date).getTime()) / 86400000);
-      if (daysSinceLast >= 4) {
-        return { icon: '⏰', text: `مر ${daysSinceLast} أيام منذ آخر جلسة. عودة بسيطة اليوم أفضل من الانتظار لعودة "مثالية".` };
-      }
+      if (daysSinceLast >= 4) return { icon: '⏰', text: `مر ${daysSinceLast} أيام منذ آخر جلسة. عودة بسيطة اليوم أفضل من الانتظار لعودة "مثالية".` };
       return { icon: '✅', text: `استمرار ممتاز يا ${profile.name}! أكملت ${log.length} جلسة حتى الآن. واصل بنفس الوتيرة.` };
     }
 
@@ -663,11 +873,7 @@
           {Array.from({ length: daysInWeek }, (_, i) => {
             const isDone = i < sessionsThisWeek;
             const isToday = i === sessionsThisWeek;
-            return (
-              <div key={i} className={`day-pill ${isDone ? 'done' : ''} ${isToday && !isDone ? 'today' : ''}`}>
-                {isDone ? '✓' : i + 1}
-              </div>
-            );
+            return <div key={i} className={`day-pill ${isDone ? 'done' : ''} ${isToday && !isDone ? 'today' : ''}`}>{isDone ? '✓' : i + 1}</div>;
           })}
         </div>
       );
@@ -679,25 +885,23 @@
       const feedbackVal = { easy: 33, just_right: 66, hard: 100 };
       const feedbackLabelShort = { easy: 'سهل', just_right: 'مناسب', hard: 'صعب' };
       return (
-        <div className="chart-wrap">
+        <div>
           <label style={{marginTop:0}}>📈 مستوى الشدة في آخر الجلسات</label>
           {recent.map((l, idx) => (
             <div className="bar-row" key={idx}>
               <span className="bar-label">{new Date(l.date).toLocaleDateString('ar-OM', { day:'numeric', month:'short' })}</span>
-              <div className="bar-track">
-                <div className={`bar-fill ${l.feedback}`} style={{ width: `${feedbackVal[l.feedback] || 50}%` }}></div>
-              </div>
-              <span style={{fontSize:'11px', color:'var(--text-muted)', width:'42px'}}>{feedbackLabelShort[l.feedback] || '-'}</span>
+              <div className="bar-track"><div className={`bar-fill ${l.feedback}`} style={{ width: `${feedbackVal[l.feedback] || 50}%` }}></div></div>
+              <span style={{fontSize:'11px', color:'var(--text-muted)', width:'42px', fontFamily:'var(--font-mono)'}}>{feedbackLabelShort[l.feedback] || '-'}</span>
             </div>
           ))}
         </div>
       );
     }
 
-    function Dashboard({ profile, plan, log, onStartSession, onLibrary, onReset, onLogout, onFullscreen, isFullscreen }) {
-      if (!plan) return <div className="glass-card">تحضير الخطة...</div>;
+    // ======================== لوحة التحكم ========================
+    function Dashboard({ profile, plan, log, onStartSession, onLibrary, onProgress, onReset, onLogout }) {
+      if (!plan) return <div className="card">تحضير الخطة...</div>;
       const totalWeeks = Object.keys(plan.weeksData).length;
-      const progressDeg = Math.min((plan.currentWeek / totalWeeks) * 360, 360);
       const currentWeekKey = `week${plan.currentWeek}`;
       const sessionsThisWeek = log.filter(l => l.week === plan.currentWeek).length;
       const todayWorkout = plan.weeksData[currentWeekKey]?.[sessionsThisWeek] || null;
@@ -718,90 +922,104 @@
         return s;
       })();
 
+      const daysInWeek = plan.weeksData[currentWeekKey]?.length || 1;
+      const weekProgress = Math.min(sessionsThisWeek / daysInWeek, 1);
+      const ringRadius = 52;
+      const ringCirc = 2 * Math.PI * ringRadius;
+      const ringOffset = ringCirc * (1 - weekProgress);
+
+      const estCal = todayWorkout ? estimateCalories(todayWorkout.exercises.map(e => e.id), todayWorkout.reps) : 0;
+
       return (
-        <div className="glass-card page-enter">
-          <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:'10px'}}>
-            <h2 style={{color:'var(--accent)', fontSize:'20px'}}>👋 مرحباً {profile.name}</h2>
-            <div style={{display:'flex', gap:'8px'}}>
-              <button className="fullscreen-btn" onClick={onFullscreen} title={isFullscreen ? 'إنهاء ملء الشاشة' : 'ملء الشاشة'}>
-                {isFullscreen ? '🗕' : '⛶'}
-              </button>
-              <button className="btn btn-outline btn-sm" onClick={onLogout}>خروج</button>
+        <div className="stack">
+          {/* ---- هيدر مع حلقة الأداء ---- */}
+          <div className="card page-enter">
+            <div className="row-between">
+              <div>
+                <span className="eyebrow">WEEK {plan.currentWeek} / {totalWeeks}</span>
+                <h1 style={{marginTop:'2px'}}>مرحباً {profile.name}</h1>
+              </div>
+              <div className="perf-ring-wrap">
+                <svg width="128" height="128" viewBox="0 0 128 128">
+                  <circle className="perf-ring-track" cx="64" cy="64" r={ringRadius}></circle>
+                  <circle className="perf-ring-fill" cx="64" cy="64" r={ringRadius}
+                    strokeDasharray={ringCirc} strokeDashoffset={ringOffset}></circle>
+                </svg>
+                <div className="perf-ring-center">
+                  <span className="big">{sessionsThisWeek}/{daysInWeek}</span>
+                  <span className="small">هذا الأسبوع</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="coach-banner">
+              <span className="icon">{msg.icon}</span>
+              <span className="text">{msg.text}</span>
+            </div>
+
+            <div className="metric-strip">
+              <div className="metric-cell"><div className="num">{log.length}</div><div className="lbl">جلسات</div></div>
+              <div className="metric-cell"><div className="num">{streak}</div><div className="lbl">سلسلة نشطة</div></div>
+              <div className="metric-cell"><div className="num">{totalMinutes}</div><div className="lbl">دقيقة</div></div>
             </div>
           </div>
 
-          {/* ---- تمرين اليوم: أول شيء يراه المستخدم ---- */}
-          {todayWorkout ? (
-            <div style={{marginTop:'14px'}}>
-              <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'10px'}}>
-                <h3 style={{fontSize:'17px'}}>تمرين اليوم</h3>
-                <span className="badge badge-info">الأسبوع {plan.currentWeek} من {totalWeeks}</span>
-              </div>
-              {todayWorkout.exercises.map((ex, idx) => (
-                <div key={ex.id} className="exercise-item">
-                  <span>{ex.nameAr || ex.name}</span>
-                  <span className="badge badge-muted">{todayWorkout.reps[idx] ? `${todayWorkout.reps[idx]} عدة` : 'حسب الزمن'}</span>
+          {/* ---- تمرين اليوم ---- */}
+          <div className="card page-enter">
+            {todayWorkout ? (
+              <div>
+                <div className="row-between" style={{marginBottom:'12px'}}>
+                  <h2>تمرين اليوم</h2>
+                  {estCal > 0 && <span className="badge badge-cobalt">🔥 ~{estCal} سعرة</span>}
                 </div>
-              ))}
-              <button className="btn" style={{width:'100%', marginTop:'14px'}} onClick={onStartSession}>▶️ ابدأ الجلسة</button>
-            </div>
-          ) : (
-            <div style={{marginTop:'14px', textAlign:'center'}}>
-              <p style={{fontSize:'32px'}}>🎉</p>
-              <p>أكملت كل جلسات هذا الأسبوع! عد غداً لمتابعة الخطة.</p>
-            </div>
-          )}
-
-          {/* ---- تفاصيل إضافية: مطوية افتراضياً لتبسيط الشاشة الرئيسية ---- */}
-          <details style={{marginTop:'16px'}}>
-            <summary style={{cursor:'pointer', color:'var(--text-secondary)', fontSize:'14px', fontWeight:600, userSelect:'none'}}>
-              📊 تفاصيل التقدم والإحصائيات
-            </summary>
-            <div style={{marginTop:'14px'}}>
-              <div className="coach-banner">
-                <span className="icon">{msg.icon}</span>
-                <span className="text">{msg.text}</span>
+                {todayWorkout.exercises.map((ex, idx) => (
+                  <TodayExerciseRow key={ex.id} ex={ex} reps={todayWorkout.reps[idx]} idx={idx} isDone={false} />
+                ))}
+                <button className="btn" style={{width:'100%', marginTop:'16px'}} onClick={onStartSession}>▶️ ابدأ الجلسة</button>
               </div>
-
-              <div style={{display:'flex', alignItems:'center', gap:'16px', margin:'14px 0', flexWrap:'wrap'}}>
-                <div className="progress-circle" style={{background: `conic-gradient(var(--accent) ${progressDeg}deg, rgba(255,255,255,0.2) 0deg)`}}>
-                  <div className="progress-inner">{plan.currentWeek}/{totalWeeks}</div>
-                </div>
-                <div>
-                  <p>📅 الأسبوع {plan.currentWeek} من {totalWeeks}</p>
-                  {equipmentLabels.length > 0 && <p style={{marginTop:'4px', fontSize:'13.5px', color:'var(--text-muted)'}}>🎒 {equipmentLabels.join('، ')}</p>}
-                </div>
+            ) : (
+              <div style={{textAlign:'center', padding:'12px 0'}}>
+                <p style={{fontSize:'36px'}}>🎉</p>
+                <h3 style={{marginTop:'6px'}}>أكملت كل جلسات هذا الأسبوع</h3>
+                <p style={{color:'var(--text-secondary)', fontSize:'13.5px', marginTop:'4px'}}>عد غداً لمتابعة الخطة والانتقال للأسبوع القادم.</p>
               </div>
+            )}
+          </div>
 
-              <div className="stat-grid">
-                <div className="stat-box"><div className="num">{log.length}</div><div className="lbl">جلسات مكتملة</div></div>
-                <div className="stat-box"><div className="num">{streak}</div><div className="lbl">سلسلة نشطة</div></div>
-                <div className="stat-box"><div className="num">{totalMinutes}</div><div className="lbl">دقيقة تدريب</div></div>
-              </div>
-
-              <label style={{marginTop:'8px'}}>أيام هذا الأسبوع</label>
+          {/* ---- تفاصيل إضافية ---- */}
+          <details className="card card-flush" style={{padding:0}}>
+            <summary style={{border:'none', borderRadius:'var(--radius-lg)'}}>📊 تفاصيل التقدم والإحصائيات</summary>
+            <div style={{padding:'18px 22px'}}>
+              <label style={{marginTop:0}}>أيام هذا الأسبوع</label>
               <WeekDaysRow plan={plan} log={log} />
-
+              {equipmentLabels.length > 0 && (
+                <div style={{marginTop:'10px'}}>
+                  <label>معداتك</label>
+                  <div style={{display:'flex', gap:'6px', flexWrap:'wrap'}}>
+                    {equipmentLabels.map(l => <span key={l} className="badge badge-muted">{l}</span>)}
+                  </div>
+                </div>
+              )}
               {plan.adaptationLog && plan.adaptationLog.length > 0 && (
                 <div className="adapt-note">
                   <span>🧠</span>
                   <span>{plan.adaptationLog[plan.adaptationLog.length - 1].note}</span>
                 </div>
               )}
-
-              <ProgressChart log={log} />
+              <div style={{marginTop:'14px'}}><ProgressChart log={log} /></div>
             </div>
           </details>
 
-          <div style={{display:'flex', gap:'12px', marginTop:'16px', flexWrap:'wrap'}}>
-            <button className="btn btn-outline" style={{flex:1, minWidth:'120px'}} onClick={onLibrary}>📚 المكتبة</button>
-            <button className="btn btn-danger" style={{flex:1, minWidth:'120px'}} onClick={onReset}>🗑️ إعادة</button>
+          <div style={{display:'flex', gap:'10px'}}>
+            <button className="btn btn-ghost" style={{flex:1}} onClick={onLibrary}>📚 المكتبة</button>
+            <button className="btn btn-ghost" style={{flex:1}} onClick={onProgress}>📈 التقدم</button>
+            <button className="btn btn-icon" onClick={onLogout} title="خروج">🚪</button>
           </div>
         </div>
       );
     }
 
-    // ======================== جلسة التمرين مع عداد ذكي ========================
+    // ======================== جلسة التمرين ========================
     function WorkoutSession({ plan, log, onFinish, onBack }) {
       const currentWeekKey = `week${plan.currentWeek}`;
       const days = plan.weeksData[currentWeekKey] || [];
@@ -832,12 +1050,7 @@
       };
 
       const finishSession = () => {
-        onFinish({
-          date: new Date().toISOString().split('T')[0],
-          week: plan.currentWeek,
-          exercises: today.exercises.map(ex => ex.id),
-          feedback
-        });
+        onFinish({ date: new Date().toISOString().split('T')[0], week: plan.currentWeek, exercises: today.exercises.map(ex => ex.id), feedback });
       };
 
       const totalSteps = today.exercises.length;
@@ -845,23 +1058,22 @@
 
       if (phase === 'complete') {
         return (
-          <div className="glass-card page-enter">
+          <div className="card page-enter">
             <div style={{textAlign:'center'}}>
               <p style={{fontSize:'48px'}} className="pop-in">🎉</p>
-              <h3>أحسنت! الجلسة اكتملت</h3>
+              <h2 style={{marginTop:'8px'}}>أحسنت! الجلسة اكتملت</h2>
             </div>
             <label>كيف كانت الشدة؟</label>
-            <select value={feedback} onChange={e => setFeedback(e.target.value)}>
-              <option value="">اختر...</option>
-              <option value="easy">سهل</option>
-              <option value="just_right">مناسب</option>
-              <option value="hard">صعب</option>
-            </select>
-            <div className="adapt-note">
-              <span>🧠</span>
-              <span>تقييمك يساعدني على تعديل التكرارات ووقت الراحة تلقائياً في الجلسات القادمة.</span>
+            <div className="choice-grid" style={{gridTemplateColumns:'1fr 1fr 1fr'}}>
+              {[{v:'easy', l:'سهل', i:'😌'},{v:'just_right', l:'مناسب', i:'👍'},{v:'hard', l:'صعب', i:'🥵'}].map(f => (
+                <div key={f.v} className={`choice-card ${feedback === f.v ? 'selected' : ''}`} onClick={() => setFeedback(f.v)}>
+                  <span className="ic">{f.i}</span>
+                  <div className="lbl">{f.l}</div>
+                </div>
+              ))}
             </div>
-            <button className="btn" style={{width:'100%', marginTop:'12px'}} disabled={!feedback} onClick={finishSession}>💾 حفظ وإنهاء</button>
+            <div className="adapt-note"><span>🧠</span><span>تقييمك يساعدني على تعديل التكرارات ووقت الراحة تلقائياً في الجلسات القادمة.</span></div>
+            <button className="btn" style={{width:'100%', marginTop:'14px'}} disabled={!feedback} onClick={finishSession}>💾 حفظ وإنهاء</button>
             <button className="btn btn-outline" style={{width:'100%', marginTop:'10px'}} onClick={onBack}>رجوع دون حفظ</button>
           </div>
         );
@@ -870,45 +1082,43 @@
       const currentEx = today.exercises[step];
 
       return (
-        <div className="glass-card page-enter">
-          <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px'}}>
-            <span className="badge badge-info">تمرين {step + 1} من {totalSteps}</span>
-            <div className="bar-track" style={{width:'50%'}}>
-              <div className="bar-fill just_right" style={{width:`${overallProgress}%`}}></div>
-            </div>
+        <div className="card page-enter">
+          <div className="row-between" style={{marginBottom:'10px'}}>
+            <span className="badge badge-cobalt">تمرين {step + 1} / {totalSteps}</span>
+            <div className="linear-track" style={{width:'50%'}}><div className="linear-fill" style={{width:`${overallProgress}%`}}></div></div>
           </div>
           {phase === 'exercise' && currentEx && (
             <>
-              <h3>🏃 {currentEx.nameAr || currentEx.name}</h3>
-              <SmartVideo videoUrl={currentEx.videoUrl} title={currentEx.nameAr || currentEx.name} />
-              <p>التكرارات: <strong>{today.reps[step] || 'حسب الإحساس'}</strong></p>
-              <button className={`btn ${justCompleted ? 'pulse-once' : ''}`} style={{width:'100%', marginTop:'10px'}} onClick={goToRest}>✅ تم الإنتهاء، راحة</button>
+              <h2>{currentEx.nameAr || currentEx.name}</h2>
+              <SmartVideo videoUrl={currentEx.videoUrl} title={currentEx.nameAr || currentEx.name} startSeconds={currentEx.demoStart || 0} autoPlay={true} />
+              <p style={{fontSize:'15px'}}>التكرارات: <strong className="mono" style={{color:'var(--lime)'}}>{today.reps[step] || 'حسب الإحساس'}</strong></p>
+              <button className={`btn ${justCompleted ? 'pulse-once' : ''}`} style={{width:'100%', marginTop:'12px'}} onClick={goToRest}>✅ تم الإنتهاء، راحة</button>
             </>
           )}
           {phase === 'rest' && (
             <div className="rest-timer">
-              <h3>⏳ راحة</h3>
+              <span className="eyebrow">راحة</span>
               <div className="timer-number">{restSeconds}</div>
-              <p style={{color:'var(--text-muted)'}}>ثانية</p>
+              <p style={{color:'var(--text-muted)', fontSize:'13px', marginTop:'4px'}}>ثانية</p>
               {step + 1 < today.exercises.length && (
-                <p style={{marginTop:'8px', fontSize:'13.5px', color:'var(--text-secondary)'}}>التالي: {today.exercises[step+1].nameAr || today.exercises[step+1].name}</p>
+                <p style={{marginTop:'10px', fontSize:'13.5px', color:'var(--text-secondary)'}}>التالي: {today.exercises[step+1].nameAr || today.exercises[step+1].name}</p>
               )}
-              <button className="btn" style={{width:'100%', marginTop:'10px'}} onClick={() => setRestSeconds(0)}>⏩ تخطي الراحة</button>
+              <button className="btn btn-outline" style={{width:'100%', marginTop:'14px'}} onClick={() => setRestSeconds(0)}>⏩ تخطي الراحة</button>
             </div>
           )}
-          <button className="btn btn-outline" style={{width:'100%', marginTop:'12px'}} onClick={onBack}>🚪 إنهاء مبكراً</button>
+          <button className="btn btn-ghost" style={{width:'100%', marginTop:'12px'}} onClick={onBack}>إنهاء مبكراً</button>
         </div>
       );
     }
 
-    // ======================== المكتبة مع فلاتر ذكية ========================
+    // ======================== المكتبة ========================
     function Library({ onBack, profile }) {
       const [selectedVideo, setSelectedVideo] = useState(null);
-      const [selectedExName, setSelectedExName] = useState('');
       const [filterGroup, setFilterGroup] = useState('all');
+      const [search, setSearch] = useState('');
 
-      const openVideo = (url, name) => { setSelectedVideo(url); setSelectedExName(name); };
-      const closeVideo = () => { setSelectedVideo(null); setSelectedExName(''); };
+      const openVideo = (ex) => setSelectedVideo(ex);
+      const closeVideo = () => setSelectedVideo(null);
 
       const relevantExercises = useMemo(() => {
         return exercises.filter(ex => {
@@ -921,45 +1131,55 @@
         });
       }, [profile]);
 
-      const groups = useMemo(() => {
-        const set = new Set(relevantExercises.map(e => e.muscleGroup));
-        return ['all', ...Array.from(set)];
-      }, [relevantExercises]);
+      const groups = useMemo(() => ['all', ...Array.from(new Set(relevantExercises.map(e => e.muscleGroup)))], [relevantExercises]);
 
-      const filtered = filterGroup === 'all' ? relevantExercises : relevantExercises.filter(e => e.muscleGroup === filterGroup);
+      const filtered = relevantExercises.filter(e => {
+        const matchesGroup = filterGroup === 'all' || e.muscleGroup === filterGroup;
+        const matchesSearch = !search.trim() || (e.nameAr || e.name).includes(search.trim());
+        return matchesGroup && matchesSearch;
+      });
 
-      const alternativesFor = (ex) => {
-        return relevantExercises.filter(e => e.id !== ex.id && e.muscleGroup === ex.muscleGroup).slice(0, 2);
-      };
+      const alternativesFor = (ex) => relevantExercises.filter(e => e.id !== ex.id && e.muscleGroup === ex.muscleGroup).slice(0, 2);
 
       return (
-        <div className="glass-card page-enter">
-          <button className="btn btn-outline btn-sm" style={{marginBottom:'16px'}} onClick={onBack}>⬅️ رجوع</button>
-          <h2>📚 مكتبة التمارين</h2>
-          <p style={{color:'var(--text-muted)', fontSize:'13.5px', margin:'6px 0 14px'}}>
-            {profile ? 'مفلترة حسب عمرك وجنسك تلقائياً' : 'كل التمارين المتاحة'}
+        <div className="card page-enter">
+          <div className="row-between" style={{marginBottom:'14px'}}>
+            <button className="btn-icon" onClick={onBack}>➡️</button>
+            <span className="eyebrow">EXERCISE LIBRARY</span>
+          </div>
+          <h2 style={{marginBottom:'4px'}}>مكتبة التمارين</h2>
+          <p style={{color:'var(--text-muted)', fontSize:'13px', marginBottom:'14px'}}>
+            {profile ? 'مفلترة حسب عمرك وجنسك تلقائياً' : 'كل التمارين المتاحة'} · {filtered.length} تمرين
           </p>
+          <input type="text" placeholder="🔍 ابحث عن تمرين..." value={search} onChange={e => setSearch(e.target.value)} style={{marginBottom:'14px'}} />
           <div className="filter-row">
             {groups.map(g => (
               <span key={g} className={`filter-chip ${filterGroup === g ? 'active' : ''}`} onClick={() => setFilterGroup(g)}>
-                {g === 'all' ? 'الكل' : (muscleGroupLabels[g] || g)}
+                {g === 'all' ? 'الكل' : `${muscleGroupIcons[g] || ''} ${muscleGroupLabels[g] || g}`}
               </span>
             ))}
           </div>
+          {filtered.length === 0 && (
+            <p style={{textAlign:'center', color:'var(--text-muted)', padding:'20px 0'}}>لا توجد نتائج مطابقة</p>
+          )}
           {filtered.map(ex => (
-            <div key={ex.id} className="exercise-item" style={{flexDirection:'column', alignItems:'flex-start'}}>
-              <div style={{display:'flex', justifyContent:'space-between', width:'100%', alignItems:'center', flexWrap:'wrap', gap:'6px'}}>
-                <strong>{ex.nameAr || ex.name}</strong>
-                <span className="badge badge-info">{muscleGroupLabels[ex.muscleGroup] || ex.muscleGroup}</span>
+            <div key={ex.id} className="panel" style={{marginBottom:'10px'}}>
+              <div className="row-between">
+                <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
+                  <span style={{fontSize:'18px'}}>{muscleGroupIcons[ex.muscleGroup]}</span>
+                  <div>
+                    <strong>{ex.nameAr || ex.name}</strong>
+                    <div style={{fontSize:'11.5px', color:'var(--text-muted)', marginTop:'2px'}}>
+                      {muscleGroupLabels[ex.muscleGroup]} · {difficultyLabels[ex.difficulty]}
+                    </div>
+                  </div>
+                </div>
+                <button className="btn-icon" onClick={() => openVideo(ex)} title="شاهد الفيديو">🎥</button>
               </div>
-              <small style={{color:'var(--text-muted)'}}>المستوى: {difficultyLabels[ex.difficulty] || ex.difficulty}</small>
-              <button className="btn btn-sm" style={{marginTop:'8px'}} onClick={() => openVideo(ex.videoUrl, ex.nameAr || ex.name)}>▶️ شاهد الفيديو</button>
               {alternativesFor(ex).length > 0 && (
-                <div style={{marginTop:'8px'}}>
+                <div style={{marginTop:'10px'}}>
                   {alternativesFor(ex).map(alt => (
-                    <span key={alt.id} className="suggestion-chip" onClick={() => openVideo(alt.videoUrl, alt.nameAr || alt.name)}>
-                      🔄 بديل: {alt.nameAr || alt.name}
-                    </span>
+                    <span key={alt.id} className="suggestion-chip" onClick={() => openVideo(alt)}>🔄 {alt.nameAr || alt.name}</span>
                   ))}
                 </div>
               )}
@@ -968,13 +1188,93 @@
           {selectedVideo && (
             <div className="modal-overlay" onClick={closeVideo}>
               <div className="modal-content" onClick={e => e.stopPropagation()}>
-                <button className="modal-close" onClick={closeVideo}>✖️</button>
-                <h3 style={{marginBottom:'10px'}}>{selectedExName}</h3>
-                <SmartVideo videoUrl={selectedVideo} title={selectedExName} />
-                <div style={{marginTop: '12px', textAlign: 'center'}}>
+                <button className="modal-close" onClick={closeVideo}>✕</button>
+                <h3 style={{marginBottom:'10px'}}>{selectedVideo.nameAr || selectedVideo.name}</h3>
+                <SmartVideo videoUrl={selectedVideo.videoUrl} title={selectedVideo.nameAr || selectedVideo.name} startSeconds={selectedVideo.demoStart || 0} autoPlay={true} />
+                <div style={{marginTop: '14px', textAlign: 'center'}}>
                   <button className="btn btn-outline" onClick={closeVideo}>إغلاق</button>
                 </div>
               </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ======================== شاشة التقدم الموسعة ========================
+    function ProgressScreen({ onBack, profile, plan, log }) {
+      if (!plan) return null;
+      const totalWeeks = Object.keys(plan.weeksData).length;
+      const totalSessionsPlanned = Object.values(plan.weeksData).reduce((sum, w) => sum + w.length, 0);
+      const completionPct = Math.round((log.length / totalSessionsPlanned) * 100);
+
+      const feedbackCounts = { easy: 0, just_right: 0, hard: 0 };
+      log.forEach(l => { if (feedbackCounts[l.feedback] !== undefined) feedbackCounts[l.feedback]++; });
+
+      const muscleFocus = {};
+      log.forEach(l => {
+        l.exercises.forEach(id => {
+          const ex = exercises.find(e => e.id === id);
+          if (ex) muscleFocus[ex.muscleGroup] = (muscleFocus[ex.muscleGroup] || 0) + 1;
+        });
+      });
+      const topMuscles = Object.entries(muscleFocus).sort((a,b) => b[1]-a[1]).slice(0,5);
+      const maxMuscleCount = topMuscles.length > 0 ? topMuscles[0][1] : 1;
+
+      return (
+        <div className="card page-enter">
+          <div className="row-between" style={{marginBottom:'14px'}}>
+            <button className="btn-icon" onClick={onBack}>➡️</button>
+            <span className="eyebrow">PROGRESS OVERVIEW</span>
+          </div>
+          <h2 style={{marginBottom:'16px'}}>تقدمك الكامل</h2>
+
+          <div className="metric-strip" style={{marginBottom:'16px'}}>
+            <div className="metric-cell"><div className="num">{completionPct}%</div><div className="lbl">إنجاز الخطة</div></div>
+            <div className="metric-cell"><div className="num">{log.length}</div><div className="lbl">من {totalSessionsPlanned} جلسة</div></div>
+            <div className="metric-cell"><div className="num">{plan.currentWeek}</div><div className="lbl">من {totalWeeks} أسابيع</div></div>
+          </div>
+
+          <label style={{marginTop:0}}>توزيع الشدة</label>
+          <div style={{display:'flex', gap:'8px', marginBottom:'8px'}}>
+            <div className="panel" style={{flex:1, textAlign:'center'}}>
+              <div className="mono" style={{fontSize:'22px', color:'var(--cobalt)', fontWeight:700}}>{feedbackCounts.easy}</div>
+              <div style={{fontSize:'11px', color:'var(--text-muted)'}}>سهل</div>
+            </div>
+            <div className="panel" style={{flex:1, textAlign:'center'}}>
+              <div className="mono" style={{fontSize:'22px', color:'var(--success)', fontWeight:700}}>{feedbackCounts.just_right}</div>
+              <div style={{fontSize:'11px', color:'var(--text-muted)'}}>مناسب</div>
+            </div>
+            <div className="panel" style={{flex:1, textAlign:'center'}}>
+              <div className="mono" style={{fontSize:'22px', color:'var(--danger)', fontWeight:700}}>{feedbackCounts.hard}</div>
+              <div style={{fontSize:'11px', color:'var(--text-muted)'}}>صعب</div>
+            </div>
+          </div>
+
+          {topMuscles.length > 0 && (
+            <div style={{marginTop:'16px'}}>
+              <label style={{marginTop:0}}>أكثر المجموعات العضلية تدريباً</label>
+              {topMuscles.map(([group, count]) => (
+                <div className="bar-row" key={group}>
+                  <span className="bar-label">{muscleGroupIcons[group]} {muscleGroupLabels[group] || group}</span>
+                  <div className="bar-track"><div className="bar-fill just_right" style={{width: `${(count/maxMuscleCount)*100}%`}}></div></div>
+                  <span style={{fontSize:'11px', color:'var(--text-muted)', width:'24px', fontFamily:'var(--font-mono)'}}>{count}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div style={{marginTop:'18px'}}><ProgressChart log={log} /></div>
+
+          {plan.adaptationLog && plan.adaptationLog.length > 0 && (
+            <div style={{marginTop:'16px'}}>
+              <label style={{marginTop:0}}>سجل التكيّف</label>
+              {plan.adaptationLog.slice().reverse().map((a, i) => (
+                <div key={i} className="adapt-note" style={{marginTop: i === 0 ? 0 : '8px'}}>
+                  <span>{a.type === 'increase' ? '⬆️' : '⬇️'}</span>
+                  <span>{a.note} <span className="mono" style={{color:'var(--text-muted)', fontSize:'11px'}}>· {a.date}</span></span>
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -988,21 +1288,6 @@
       const [log, setLog] = useState([]);
       const [screen, setScreen] = useState('dashboard');
       const [loading, setLoading] = useState(true);
-      const [isFullscreen, setIsFullscreen] = useState(false);
-
-      const toggleFullscreen = useCallback(() => {
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen().then(() => setIsFullscreen(true)).catch(err => console.warn(err));
-        } else {
-          if (document.exitFullscreen) document.exitFullscreen().then(() => setIsFullscreen(false));
-        }
-      }, []);
-
-      useEffect(() => {
-        const handleFullscreenChange = () => setIsFullscreen(!!document.fullscreenElement);
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      }, []);
 
       useEffect(() => {
         const sessionUser = getCurrentSession();
@@ -1019,9 +1304,7 @@
       }, []);
 
       useEffect(() => {
-        if (currentUser && profile !== null) {
-          saveUserData(currentUser, { profile, plan, log });
-        }
+        if (currentUser && profile !== null) saveUserData(currentUser, { profile, plan, log });
       }, [profile, plan, log, currentUser]);
 
       const handleLogin = (username) => {
@@ -1045,73 +1328,53 @@
 
       const handleLogout = () => {
         clearCurrentSession();
-        setCurrentUser(null);
-        setProfile(null);
-        setPlan(null);
-        setLog([]);
-        setScreen('dashboard');
+        setCurrentUser(null); setProfile(null); setPlan(null); setLog([]); setScreen('dashboard');
       };
 
       const handleReset = () => {
-        if (confirm('حذف كل البيانات؟')) {
-          setProfile(null);
-          setPlan(null);
-          setLog([]);
-        }
+        if (confirm('حذف كل البيانات؟')) { setProfile(null); setPlan(null); setLog([]); }
       };
 
       const handleSessionFinish = (sessionData) => {
         const newLog = [...log, sessionData];
         setLog(newLog);
-        // تطبيق منطق التكيف بناء على آخر جلستين
         const { plan: adaptedPlan } = adaptPlan(plan, newLog);
-        // التقدم للأسبوع التالي إذا اكتملت كل أيام الأسبوع الحالي
         const advancedPlan = maybeAdvanceWeek(adaptedPlan, newLog);
         setPlan(advancedPlan);
         setScreen('dashboard');
       };
 
-      if (loading) {
-        return (
-          <div style={{display:'flex', justifyContent:'center', alignItems:'center', height:'100%'}}>
-            <div className="glass-card">جاري التحميل...</div>
-          </div>
-        );
-      }
-
-      if (!currentUser) {
-        return <div className="app"><LoginScreen onLogin={handleLogin} /></div>;
-      }
-
-      if (!profile) {
-        return <div className="app"><Onboarding onComplete={handleOnboardingComplete} /></div>;
-      }
+      if (loading) return <div style={{display:'flex', justifyContent:'center', alignItems:'center', height:'100%'}}><div className="card">جاري التحميل...</div></div>;
+      if (!currentUser) return <div className="app"><LoginScreen onLogin={handleLogin} /></div>;
+      if (!profile) return <div className="app"><Onboarding onComplete={handleOnboardingComplete} /></div>;
 
       return (
         <div className="app">
           {screen === 'dashboard' && (
-            <Dashboard
-              profile={profile}
-              plan={plan}
-              log={log}
+            <Dashboard profile={profile} plan={plan} log={log}
               onStartSession={() => setScreen('session')}
               onLibrary={() => setScreen('library')}
-              onReset={handleReset}
-              onLogout={handleLogout}
-              onFullscreen={toggleFullscreen}
-              isFullscreen={isFullscreen}
-            />
+              onProgress={() => setScreen('progress')}
+              onReset={handleReset} onLogout={handleLogout} />
           )}
           {screen === 'session' && (
-            <WorkoutSession
-              plan={plan}
-              log={log}
-              onFinish={handleSessionFinish}
-              onBack={() => setScreen('dashboard')}
-            />
+            <WorkoutSession plan={plan} log={log} onFinish={handleSessionFinish} onBack={() => setScreen('dashboard')} />
           )}
-          {screen === 'library' && (
-            <Library onBack={() => setScreen('dashboard')} profile={profile} />
+          {screen === 'library' && <Library onBack={() => setScreen('dashboard')} profile={profile} />}
+          {screen === 'progress' && <ProgressScreen onBack={() => setScreen('dashboard')} profile={profile} plan={plan} log={log} />}
+
+          {screen !== 'session' && (
+            <div className="tab-bar">
+              <button className={`tab-btn ${screen === 'dashboard' ? 'active' : ''}`} onClick={() => setScreen('dashboard')}>
+                <span className="tab-icon">🏠</span>الرئيسية
+              </button>
+              <button className={`tab-btn ${screen === 'library' ? 'active' : ''}`} onClick={() => setScreen('library')}>
+                <span className="tab-icon">📚</span>المكتبة
+              </button>
+              <button className={`tab-btn ${screen === 'progress' ? 'active' : ''}`} onClick={() => setScreen('progress')}>
+                <span className="tab-icon">📈</span>التقدم
+              </button>
+            </div>
           )}
         </div>
       );
