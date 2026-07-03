@@ -3,31 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>مدرب اللياقة الذكي - Fullscreen</title>
+  <title>مدرب اللياقة الذكي</title>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
       --card-bg: rgba(255,255,255,0.08);
+      --card-bg-solid: #1e293b;
       --card-border: rgba(255,255,255,0.15);
       --text-primary: #f1f5f9;
       --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
       --accent: #f97316;
       --accent-hover: #fb923c;
+      --accent-soft: rgba(249,115,22,0.15);
       --success: #22c55e;
+      --success-soft: rgba(34,197,94,0.15);
+      --warning: #eab308;
+      --warning-soft: rgba(234,179,8,0.15);
       --danger: #ef4444;
+      --danger-soft: rgba(239,68,68,0.15);
+      --info: #38bdf8;
       --button-bg: rgba(249,115,22,0.9);
       --button-hover: #fb923c;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body, #root {
-      height: 100%;
-      width: 100%;
-      overflow-x: hidden;
-    }
+    html, body, #root { height: 100%; width: 100%; overflow-x: hidden; }
     body {
       font-family: 'Cairo', sans-serif;
       background: var(--bg-gradient);
@@ -36,21 +40,10 @@
       justify-content: center;
       align-items: flex-start;
       direction: rtl;
+      min-height: 100vh;
     }
-    #root {
-      width: 100%;
-      max-width: 100%;
-      display: flex;
-      justify-content: center;
-    }
-    .app {
-      width: 100%;
-      max-width: 800px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
+    #root { width: 100%; max-width: 100%; display: flex; justify-content: center; }
+    .app { width: 100%; max-width: 820px; padding: 20px; display: flex; flex-direction: column; gap: 18px; }
     .glass-card {
       background: var(--card-bg);
       backdrop-filter: blur(12px);
@@ -78,12 +71,12 @@
     }
     .btn:hover { background: var(--button-hover); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(249,115,22,0.5); }
     .btn:active { transform: scale(0.96); }
-    .btn:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
+    .btn:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none; }
     .btn-outline { background: transparent; border: 2px solid var(--accent); color: var(--accent); box-shadow: none; }
     .btn-outline:hover { background: rgba(249,115,22,0.15); }
     .btn-danger { background: var(--danger); box-shadow: 0 4px 15px rgba(239,68,68,0.3); }
     .btn-danger:hover { background: #f87171; }
-
+    .btn-sm { padding: 8px 16px; font-size: 14px; border-radius: 12px; }
     label { display: block; margin: 16px 0 6px; font-weight: 600; color: var(--text-secondary); }
     input, select {
       width: 100%;
@@ -98,10 +91,9 @@
     }
     input:focus, select:focus { outline: none; border-color: var(--accent); }
     fieldset { border: 1px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 16px; margin: 16px 0; }
-    legend { color: var(--text-secondary); font-weight: 600; }
+    legend { color: var(--text-secondary); font-weight: 600; padding: 0 8px; }
     .checkbox-label { display: flex; align-items: center; gap: 10px; color: var(--text-primary); }
     .checkbox-label input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); }
-
     .exercise-item {
       display: flex;
       justify-content: space-between;
@@ -112,7 +104,9 @@
       margin: 8px 0;
       border: 1px solid rgba(255,255,255,0.1);
       flex-wrap: wrap;
+      transition: background 0.2s, border-color 0.2s;
     }
+    .exercise-item.done { border-color: var(--success); background: var(--success-soft); }
     .video-container {
       position: relative;
       padding-bottom: 56.25%;
@@ -121,179 +115,140 @@
       border-radius: 16px;
       margin: 16px 0;
     }
-    .video-container iframe {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      border: 0; border-radius: 16px;
-    }
-    .rest-timer {
-      background: rgba(255,255,255,0.1);
-      border-radius: 20px;
-      padding: 20px;
-      text-align: center;
-      margin: 20px 0;
-    }
-    .timer-number { font-size: 48px; font-weight: 700; color: var(--accent); }
+    .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; border-radius: 16px; }
+    .rest-timer { background: rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; text-align: center; margin: 20px 0; }
+    .timer-number { font-size: 48px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
     .progress-circle {
-      width: 80px; height: 80px;
-      border-radius: 50%;
+      width: 80px; height: 80px; border-radius: 50%;
       background: conic-gradient(var(--accent) 0deg, rgba(255,255,255,0.2) 0deg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 10px;
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;
+      flex-shrink: 0;
+      transition: background 0.6s ease;
     }
-    .progress-inner {
-      width: 64px; height: 64px;
-      background: #1e293b;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-    }
-    @keyframes fadeSlideIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .progress-inner { width: 64px; height: 64px; background: #1e293b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+    @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes popIn { 0% { transform: scale(0.6); opacity: 0; } 70% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes checkPulse { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); } 70% { box-shadow: 0 0 0 12px rgba(34,197,94,0); } 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); } }
     .page-enter { animation: fadeSlideIn 0.4s ease forwards; }
-    /* Modal overlay */
+    .pop-in { animation: popIn 0.4s ease forwards; }
+    .pulse-once { animation: checkPulse 0.7s ease; }
     .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-      padding: 20px;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 2000; padding: 20px;
     }
     .modal-content {
-      background: #1e293b;
-      border-radius: 24px;
-      padding: 24px;
-      width: 100%;
-      max-width: 800px;
-      position: relative;
-      animation: fadeSlideIn 0.3s ease;
-      max-height: 90vh;
-      overflow-y: auto;
+      background: #1e293b; border-radius: 24px; padding: 24px; width: 100%; max-width: 800px;
+      position: relative; animation: fadeSlideIn 0.3s ease; max-height: 90vh; overflow-y: auto;
     }
     .modal-close {
-      position: absolute;
-      top: 16px; right: 16px;
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      font-size: 24px;
-      border-radius: 50%;
-      width: 40px; height: 40px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
+      position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.2); border: none;
+      color: white; font-size: 24px; border-radius: 50%; width: 40px; height: 40px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; z-index: 10;
     }
-
-    .multi-select {
-      position: relative;
-      width: 100%;
-    }
+    .multi-select { position: relative; width: 100%; }
     .multi-select-box {
-      padding: 14px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 14px;
-      color: white;
-      font-size: 16px;
-      font-family: 'Cairo', sans-serif;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      min-height: 52px;
+      padding: 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 14px; color: white; font-size: 16px; font-family: 'Cairo', sans-serif; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center; min-height: 52px;
     }
     .multi-select-box:hover { border-color: var(--accent); }
-    .selected-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-    .selected-tag {
-      background: var(--accent);
-      color: white;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .selected-tag button {
-      background: none;
-      border: none;
-      color: white;
-      cursor: pointer;
-      font-size: 14px;
-      padding: 0;
-      margin: 0;
-    }
+    .selected-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .selected-tag { background: var(--accent); color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; display: flex; align-items: center; gap: 4px; }
+    .selected-tag button { background: none; border: none; color: white; cursor: pointer; font-size: 14px; padding: 0; margin: 0; }
     .dropdown-list {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: #1e293b;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 14px;
-      max-height: 200px;
-      overflow-y: auto;
-      z-index: 10;
-      margin-top: 8px;
-      padding: 8px;
+      position: absolute; top: 100%; left: 0; right: 0; background: #1e293b;
+      border: 1px solid rgba(255,255,255,0.2); border-radius: 14px; max-height: 200px;
+      overflow-y: auto; z-index: 10; margin-top: 8px; padding: 8px;
     }
-    .dropdown-item {
-      padding: 10px 14px;
-      cursor: pointer;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .dropdown-item { padding: 10px 14px; cursor: pointer; border-radius: 10px; display: flex; align-items: center; gap: 10px; }
     .dropdown-item:hover { background: rgba(255,255,255,0.1); }
     .dropdown-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
+    .error-message { background: rgba(239,68,68,0.2); border: 1px solid var(--danger); color: #fca5a5; padding: 10px; border-radius: 10px; margin: 10px 0; font-size: 14px; }
+    .video-link { color: var(--accent); text-decoration: underline; cursor: pointer; font-size: 14px; }
+    .fullscreen-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); font-size: 18px; padding: 8px 12px; border-radius: 12px; cursor: pointer; }
 
-    .error-message {
-      background: rgba(239,68,68,0.2);
-      border: 1px solid var(--danger);
-      color: #fca5a5;
-      padding: 10px;
-      border-radius: 10px;
-      margin: 10px 0;
-      font-size: 14px;
+    /* ---- New: smart UI elements ---- */
+    .coach-banner {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: linear-gradient(120deg, rgba(249,115,22,0.18), rgba(249,115,22,0.05));
+      border: 1px solid rgba(249,115,22,0.35);
+      border-radius: 18px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
     }
-    .video-link {
-      color: var(--accent);
-      text-decoration: underline;
-      cursor: pointer;
-      font-size: 14px;
+    .coach-banner .icon { font-size: 26px; line-height: 1; flex-shrink: 0; }
+    .coach-banner .text { font-size: 14.5px; color: var(--text-primary); line-height: 1.6; }
+    .coach-banner .text strong { color: var(--accent-hover); }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700;
     }
-    .fullscreen-btn {
-      background: transparent;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      font-size: 18px;
-      padding: 8px 12px;
-      border-radius: 12px;
-      cursor: pointer;
+    .badge-success { background: var(--success-soft); color: #4ade80; }
+    .badge-warning { background: var(--warning-soft); color: #fde047; }
+    .badge-info { background: rgba(56,189,248,0.15); color: #7dd3fc; }
+    .badge-muted { background: rgba(255,255,255,0.08); color: var(--text-muted); }
+
+    .week-days-row { display: flex; gap: 8px; margin: 14px 0; flex-wrap: wrap; }
+    .day-pill {
+      width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.15);
+      color: var(--text-muted); flex-shrink: 0; transition: all 0.25s ease;
     }
+    .day-pill.done { background: var(--success); border-color: var(--success); color: white; }
+    .day-pill.today { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0; }
+    .stat-box { background: rgba(255,255,255,0.06); border-radius: 14px; padding: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.08); }
+    .stat-box .num { font-size: 22px; font-weight: 800; color: var(--accent); }
+    .stat-box .lbl { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+
+    .chart-wrap { margin: 16px 0; }
+    .bar-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+    .bar-label { width: 56px; font-size: 12px; color: var(--text-muted); flex-shrink: 0; text-align: left; }
+    .bar-track { flex: 1; height: 16px; background: rgba(255,255,255,0.06); border-radius: 10px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 10px; transition: width 0.6s ease; }
+    .bar-fill.easy { background: var(--info); }
+    .bar-fill.just_right { background: var(--success); }
+    .bar-fill.hard { background: var(--danger); }
+
+    .adapt-note {
+      font-size: 12.5px; color: var(--text-muted); background: rgba(255,255,255,0.05);
+      border-radius: 10px; padding: 8px 10px; margin-top: 6px; display: flex; gap: 6px; align-items: flex-start;
+    }
+
+    .set-check {
+      width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25);
+      display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px;
+      color: var(--text-muted); flex-shrink: 0; transition: all 0.2s ease; user-select: none;
+    }
+    .set-check.checked { background: var(--success); border-color: var(--success); color: white; }
+
+    .suggestion-chip {
+      display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 14px;
+      background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.3); color: #7dd3fc;
+      font-size: 13.5px; cursor: pointer; margin: 4px 6px 4px 0; transition: background 0.2s;
+    }
+    .suggestion-chip:hover { background: rgba(56,189,248,0.2); }
+
+    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .filter-chip {
+      padding: 7px 14px; border-radius: 20px; font-size: 13px; cursor: pointer;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+    .filter-chip.active { background: var(--accent); border-color: var(--accent); color: white; font-weight: 700; }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script type="text/babel">
-    const { useState, useEffect, useRef, useCallback } = React;
+    const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
     // ======================== البيانات الثابتة ========================
     const exercises = [
@@ -318,6 +273,12 @@
       { id: 19, name: 'Cat-Cow Stretch', nameAr: 'تمدد القطة والبقرة', muscleGroup: 'stretching', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/kqnua4rHVVA' },
       { id: 20, name: 'Kegel Exercises', nameAr: 'تمارين قاع الحوض', muscleGroup: 'pelvic', difficulty: 'beginner', equipment: ['none'], minAge: 18, maxAge: 100, genderPreference: 'female', videoUrl: 'https://www.youtube.com/embed/10GgQ5IfcMk' },
     ];
+
+    const muscleGroupLabels = {
+      legs: 'أرجل', chest: 'صدر', core: 'بطن', glutes: 'ألوية', calves: 'سمانة',
+      cardio: 'كارديو', shoulders: 'أكتاف', back: 'ظهر', stretching: 'إطالة', pelvic: 'قاع الحوض'
+    };
+    const difficultyLabels = { beginner: 'مبتدئ', intermediate: 'متوسط', advanced: 'متقدم' };
 
     const planTemplates = [
       {
@@ -347,43 +308,29 @@
     ];
 
     // ======================== دوال التخزين والحسابات ========================
-    const STORAGE_KEYS = {
-      users: 'fitness_users',
-      currentSession: 'fitness_session'
-    };
+    const STORAGE_KEYS = { users: 'fitness_users', currentSession: 'fitness_session' };
 
-    const loadUsers = () => {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.users)) || []; } catch { return []; }
-    };
-    const saveUsers = (users) => {
-      localStorage.setItem(STORAGE_KEYS.users, JSON.stringify(users));
-    };
-
-    const getCurrentSession = () => {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.currentSession)); } catch { return null; }
-    };
-    const setCurrentSession = (username) => {
-      localStorage.setItem(STORAGE_KEYS.currentSession, JSON.stringify(username));
-    };
-    const clearCurrentSession = () => {
-      localStorage.removeItem(STORAGE_KEYS.currentSession);
-    };
-
+    const loadUsers = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.users)) || []; } catch { return []; } };
+    const saveUsers = (users) => { localStorage.setItem(STORAGE_KEYS.users, JSON.stringify(users)); };
+    const getCurrentSession = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.currentSession)); } catch { return null; } };
+    const setCurrentSession = (username) => { localStorage.setItem(STORAGE_KEYS.currentSession, JSON.stringify(username)); };
+    const clearCurrentSession = () => { localStorage.removeItem(STORAGE_KEYS.currentSession); };
     const saveUserData = (username, data) => {
       const users = loadUsers();
       const index = users.findIndex(u => u.username === username);
-      if (index >= 0) {
-        users[index] = { ...users[index], ...data };
-      } else {
-        users.push({ username, ...data });
-      }
+      if (index >= 0) users[index] = { ...users[index], ...data };
+      else users.push({ username, ...data });
       saveUsers(users);
     };
+    const getUserData = (username) => loadUsers().find(u => u.username === username) || null;
 
-    const getUserData = (username) => {
-      const users = loadUsers();
-      return users.find(u => u.username === username) || null;
-    };
+    // ---- تحديد المستوى الفعلي بناء على العمر والهدف (كان ثابتاً على beginner سابقاً) ----
+    function computeLevel(age, goal) {
+      if (age < 16) return 'beginner';
+      if (age >= 55) return 'beginner';
+      if (goal === 'muscle_build' && age >= 18 && age < 45) return 'intermediate';
+      return 'beginner';
+    }
 
     function generatePlan(profile) {
       const { age, gender, goal, level, weeklyDays, sessionDuration, equipment } = profile;
@@ -396,7 +343,9 @@
         }
         return true;
       });
+
       let template = planTemplates.find(t => t.goal === goal && t.level === level) || planTemplates.find(t => t.goal === goal) || planTemplates[0];
+
       const weeksData = {};
       Object.keys(template.weeksData).slice(0, template.durationWeeks).forEach((weekKey, idx) => {
         const weekDays = [];
@@ -411,27 +360,73 @@
             }
             return ex || suitableExercises[0];
           });
-          weekDays.push({ exercises: exercisesForDay, reps: dayTemplate.reps, rest: dayTemplate.rest, duration: sessionDuration });
+          weekDays.push({ exercises: exercisesForDay, reps: [...dayTemplate.reps], rest: dayTemplate.rest, duration: sessionDuration });
         }
         weeksData[`week${idx + 1}`] = weekDays;
       });
-      return { startDate: new Date().toISOString().split('T')[0], endDate: new Date(Date.now() + template.durationWeeks*7*24*60*60*1000).toISOString().split('T')[0], weeksData, currentWeek: 1, adaptationLog: [], templateId: template.id };
+
+      return {
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: new Date(Date.now() + template.durationWeeks*7*24*60*60*1000).toISOString().split('T')[0],
+        weeksData, currentWeek: 1, currentDayIndex: 0,
+        adaptationLog: [], templateId: template.id, difficultyMultiplier: 1
+      };
+    }
+
+    // ---- منطق التكيّف: يقرأ آخر جلستين ويعدّل التكرارات/الأسبوع القادم ----
+    function adaptPlan(plan, log) {
+      const recent = log.slice(-2).map(l => l.feedback);
+      if (recent.length < 2) return { plan, note: null };
+
+      const bothHard = recent.every(f => f === 'hard');
+      const bothEasy = recent.every(f => f === 'easy');
+      if (!bothHard && !bothEasy) return { plan, note: null };
+
+      const newPlan = JSON.parse(JSON.stringify(plan));
+      const factor = bothHard ? 0.85 : 1.15;
+      const weekKeys = Object.keys(newPlan.weeksData);
+
+      weekKeys.forEach(wk => {
+        const weekNum = parseInt(wk.replace('week', ''));
+        if (weekNum < newPlan.currentWeek) return; // لا تعدل الأسابيع الماضية
+        newPlan.weeksData[wk].forEach(day => {
+          day.reps = day.reps.map(r => Math.max(5, Math.round(r * factor)));
+          if (bothHard) day.rest = Math.min(90, Math.round(day.rest * 1.15));
+          if (bothEasy) day.rest = Math.max(20, Math.round(day.rest * 0.9));
+        });
+      });
+
+      newPlan.difficultyMultiplier = (newPlan.difficultyMultiplier || 1) * factor;
+      const note = bothHard
+        ? '⬇️ لاحظت أن آخر جلستين كانتا صعبة، فقلّلت التكرارات وزدت وقت الراحة قليلاً حتى تناسبك أكثر.'
+        : '⬆️ أداؤك ممتاز! آخر جلستين كانتا سهلة، فرفعت التكرارات قليلاً لتستمر في التقدم.';
+
+      newPlan.adaptationLog = [...(newPlan.adaptationLog || []), { date: new Date().toISOString().split('T')[0], type: bothHard ? 'decrease' : 'increase', note }];
+      return { plan: newPlan, note };
+    }
+
+    // ---- التقدم للأسبوع التالي عند إكمال كل أيام الأسبوع الحالي ----
+    function maybeAdvanceWeek(plan, log) {
+      const currentWeekKey = `week${plan.currentWeek}`;
+      const daysInWeek = plan.weeksData[currentWeekKey]?.length || 0;
+      const sessionsThisWeek = log.filter(l => l.week === plan.currentWeek).length;
+      const totalWeeks = Object.keys(plan.weeksData).length;
+      if (sessionsThisWeek >= daysInWeek && plan.currentWeek < totalWeeks) {
+        return { ...plan, currentWeek: plan.currentWeek + 1, currentDayIndex: 0 };
+      }
+      return plan;
     }
 
     function MultiSelect({ options, selected, onChange }) {
       const [isOpen, setIsOpen] = useState(false);
       const containerRef = useRef(null);
-
       useEffect(() => {
         const handleClickOutside = (e) => {
-          if (containerRef.current && !containerRef.current.contains(e.target)) {
-            setIsOpen(false);
-          }
+          if (containerRef.current && !containerRef.current.contains(e.target)) setIsOpen(false);
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
       }, []);
-
       const toggleOption = (option) => {
         let newSelected;
         if (option === 'بدون معدات') {
@@ -440,15 +435,11 @@
           onChange(newSelected);
           return;
         }
-        if (selected.includes(option)) {
-          newSelected = selected.filter(s => s !== option);
-        } else {
-          newSelected = [...selected.filter(s => s !== 'بدون معدات'), option];
-        }
+        if (selected.includes(option)) newSelected = selected.filter(s => s !== option);
+        else newSelected = [...selected.filter(s => s !== 'بدون معدات'), option];
         if (newSelected.length === 0) newSelected = ['بدون معدات'];
         onChange(newSelected);
       };
-
       return (
         <div className="multi-select" ref={containerRef}>
           <div className="multi-select-box" onClick={() => setIsOpen(!isOpen)}>
@@ -468,11 +459,7 @@
             <div className="dropdown-list">
               {options.map(option => (
                 <label key={option} className="dropdown-item">
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(option)}
-                    onChange={() => toggleOption(option)}
-                  />
+                  <input type="checkbox" checked={selected.includes(option)} onChange={() => toggleOption(option)} />
                   {option}
                 </label>
               ))}
@@ -487,35 +474,20 @@
       const [username, setUsername] = useState('');
       const [password, setPassword] = useState('');
       const [error, setError] = useState('');
-
       const handleSubmit = (e) => {
         e.preventDefault();
-        if (!username.trim() || !password.trim()) {
-          setError('الرجاء إدخال اسم المستخدم وكلمة المرور');
-          return;
-        }
+        if (!username.trim() || !password.trim()) { setError('الرجاء إدخال اسم المستخدم وكلمة المرور'); return; }
         const existingUser = getUserData(username);
         if (existingUser) {
-          if (existingUser.password === password) {
-            setCurrentSession(username);
-            onLogin(username);
-          } else {
-            setError('كلمة المرور غير صحيحة');
-          }
+          if (existingUser.password === password) { setCurrentSession(username); onLogin(username); }
+          else setError('كلمة المرور غير صحيحة');
         } else {
-          const newUser = {
-            username,
-            password,
-            profile: null,
-            plan: null,
-            log: []
-          };
+          const newUser = { username, password, profile: null, plan: null, log: [] };
           saveUserData(username, newUser);
           setCurrentSession(username);
           onLogin(username);
         }
       };
-
       return (
         <div className="glass-card page-enter">
           <h1 style={{textAlign:'center', color: 'var(--accent)'}}>🏋️ مدربك الذكي</h1>
@@ -532,7 +504,7 @@
       );
     }
 
-    // ======================== باقي المكونات ========================
+    // ======================== الإعداد الأولي ========================
     function Onboarding({ onComplete }) {
       const [name, setName] = useState('');
       const [gender, setGender] = useState('male');
@@ -540,8 +512,9 @@
       const [goal, setGoal] = useState('general_fitness');
       const [weeklyDays, setWeeklyDays] = useState(3);
       const [equipment, setEquipment] = useState(['بدون معدات']);
-
       const ageOptions = Array.from({ length: 88 }, (_, i) => i + 13);
+
+      const previewLevel = computeLevel(Number(age), goal);
 
       const handleSubmit = (e) => {
         e.preventDefault();
@@ -555,7 +528,7 @@
         const mappedEquipment = equipment.map(e => equipmentMap[e] || e);
         onComplete({
           name, gender, age: Number(age), goal,
-          level: age > 55 || age < 18 ? 'beginner' : 'beginner',
+          level: computeLevel(Number(age), goal),
           weeklyDays: Number(weeklyDays),
           sessionDuration: 30,
           equipment: mappedEquipment,
@@ -566,6 +539,10 @@
       return (
         <div className="glass-card page-enter">
           <h1 style={{textAlign:'center', color: 'var(--accent)'}}>🏋️ مدربك الذكي</h1>
+          <div className="coach-banner">
+            <span className="icon">🤖</span>
+            <span className="text">أجب على بعض الأسئلة وسأبني لك خطة تتكيّف تلقائياً مع أدائك أسبوعاً بعد أسبوع.</span>
+          </div>
           <form onSubmit={handleSubmit}>
             <label>الاسم</label>
             <input value={name} onChange={e => setName(e.target.value)} required />
@@ -591,8 +568,73 @@
             </select>
             <label>المعدات المتوفرة</label>
             <MultiSelect options={allEquipmentOptions} selected={equipment} onChange={setEquipment} />
+            <div className="adapt-note">
+              <span>📊</span>
+              <span>المستوى المقترح بناءً على بياناتك: <strong style={{color:'var(--accent-hover)'}}>{difficultyLabels[previewLevel]}</strong> — سيتغيّر تلقائياً إذا لاحظت تقدمك.</span>
+            </div>
             <button type="submit" className="btn" style={{width:'100%', marginTop:'20px'}}>🚀 ابدأ رحلتك</button>
           </form>
+        </div>
+      );
+    }
+
+    // ======================== لوحة تحكم ذكية ========================
+    function coachMessage(profile, plan, log) {
+      if (log.length === 0) {
+        return { icon: '👋', text: `أهلاً ${profile.name}! هذه أول جلسة لك — ابدأ بخطوات بسيطة وسأتابع أداءك لأبني لك خطة تتكيّف معك.` };
+      }
+      const last3 = log.slice(-3);
+      const hardCount = last3.filter(l => l.feedback === 'hard').length;
+      const easyCount = last3.filter(l => l.feedback === 'easy').length;
+      if (hardCount >= 2) {
+        return { icon: '💪', text: 'لاحظت أن التمارين الأخيرة كانت صعبة عليك. لا بأس، الخطة القادمة أخف قليلاً — الاستمرارية أهم من الشدة.' };
+      }
+      if (easyCount >= 2) {
+        return { icon: '🔥', text: 'أداء رائع ومستمر! رفعت مستوى الخطة القادمة قليلاً لتستمر بالتحدي والتقدم.' };
+      }
+      const daysSinceLast = Math.floor((Date.now() - new Date(log[log.length-1].date).getTime()) / 86400000);
+      if (daysSinceLast >= 4) {
+        return { icon: '⏰', text: `مر ${daysSinceLast} أيام منذ آخر جلسة. عودة بسيطة اليوم أفضل من الانتظار لعودة "مثالية".` };
+      }
+      return { icon: '✅', text: `استمرار ممتاز يا ${profile.name}! أكملت ${log.length} جلسة حتى الآن. واصل بنفس الوتيرة.` };
+    }
+
+    function WeekDaysRow({ plan, log }) {
+      const currentWeekKey = `week${plan.currentWeek}`;
+      const daysInWeek = plan.weeksData[currentWeekKey]?.length || 0;
+      const sessionsThisWeek = log.filter(l => l.week === plan.currentWeek).length;
+      return (
+        <div className="week-days-row">
+          {Array.from({ length: daysInWeek }, (_, i) => {
+            const isDone = i < sessionsThisWeek;
+            const isToday = i === sessionsThisWeek;
+            return (
+              <div key={i} className={`day-pill ${isDone ? 'done' : ''} ${isToday && !isDone ? 'today' : ''}`}>
+                {isDone ? '✓' : i + 1}
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    function ProgressChart({ log }) {
+      if (log.length === 0) return null;
+      const recent = log.slice(-8);
+      const feedbackVal = { easy: 33, just_right: 66, hard: 100 };
+      const feedbackLabelShort = { easy: 'سهل', just_right: 'مناسب', hard: 'صعب' };
+      return (
+        <div className="chart-wrap">
+          <label style={{marginTop:0}}>📈 مستوى الشدة في آخر الجلسات</label>
+          {recent.map((l, idx) => (
+            <div className="bar-row" key={idx}>
+              <span className="bar-label">{new Date(l.date).toLocaleDateString('ar-OM', { day:'numeric', month:'short' })}</span>
+              <div className="bar-track">
+                <div className={`bar-fill ${l.feedback}`} style={{ width: `${feedbackVal[l.feedback] || 50}%` }}></div>
+              </div>
+              <span style={{fontSize:'11px', color:'var(--text-muted)', width:'42px'}}>{feedbackLabelShort[l.feedback] || '-'}</span>
+            </div>
+          ))}
         </div>
       );
     }
@@ -601,8 +643,25 @@
       if (!plan) return <div className="glass-card">تحضير الخطة...</div>;
       const totalWeeks = Object.keys(plan.weeksData).length;
       const progressDeg = Math.min((plan.currentWeek / totalWeeks) * 360, 360);
-      const todayWorkout = plan.weeksData[`week${plan.currentWeek}`]?.[0] || null;
+      const currentWeekKey = `week${plan.currentWeek}`;
+      const sessionsThisWeek = log.filter(l => l.week === plan.currentWeek).length;
+      const todayWorkout = plan.weeksData[currentWeekKey]?.[sessionsThisWeek] || null;
       const equipmentLabels = profile.equipmentLabels || [];
+      const msg = coachMessage(profile, plan, log);
+
+      const totalMinutes = log.length * (profile.sessionDuration || 30);
+      const streak = (() => {
+        let s = 0;
+        const sorted = [...log].sort((a,b) => new Date(b.date) - new Date(a.date));
+        let lastDate = null;
+        for (const l of sorted) {
+          const d = new Date(l.date);
+          if (lastDate === null) { s = 1; lastDate = d; continue; }
+          const diffDays = Math.round((lastDate - d) / 86400000);
+          if (diffDays <= 3) { s++; lastDate = d; } else break;
+        }
+        return s;
+      })();
 
       return (
         <div className="glass-card page-enter">
@@ -612,32 +671,62 @@
               <button className="fullscreen-btn" onClick={onFullscreen} title={isFullscreen ? 'إنهاء ملء الشاشة' : 'ملء الشاشة'}>
                 {isFullscreen ? '🗕' : '⛶'}
               </button>
-              <button className="btn btn-outline" style={{padding:'8px 16px'}} onClick={onLogout}>🚪 خروج</button>
+              <button className="btn btn-outline btn-sm" onClick={onLogout}>🚪 خروج</button>
             </div>
           </div>
-          <div style={{display:'flex', alignItems:'center', gap:'20px', margin:'20px 0', flexWrap:'wrap'}}>
+
+          <div className="coach-banner">
+            <span className="icon">{msg.icon}</span>
+            <span className="text">{msg.text}</span>
+          </div>
+
+          <div style={{display:'flex', alignItems:'center', gap:'20px', margin:'16px 0', flexWrap:'wrap'}}>
             <div className="progress-circle" style={{background: `conic-gradient(var(--accent) ${progressDeg}deg, rgba(255,255,255,0.2) 0deg)`}}>
               <div className="progress-inner">{plan.currentWeek}/{totalWeeks}</div>
             </div>
             <div>
               <p>📅 الأسبوع {plan.currentWeek} من {totalWeeks}</p>
-              <p>✅ الجلسات المكتملة: {log.length}</p>
-              {equipmentLabels.length > 0 && <p>🎒 المعدات: {equipmentLabels.join(', ')}</p>}
+              {equipmentLabels.length > 0 && <p style={{marginTop:'4px', fontSize:'13.5px', color:'var(--text-muted)'}}>🎒 {equipmentLabels.join('، ')}</p>}
             </div>
           </div>
+
+          <div className="stat-grid">
+            <div className="stat-box"><div className="num">{log.length}</div><div className="lbl">جلسات مكتملة</div></div>
+            <div className="stat-box"><div className="num">{streak}</div><div className="lbl">سلسلة نشطة</div></div>
+            <div className="stat-box"><div className="num">{totalMinutes}</div><div className="lbl">دقيقة تدريب</div></div>
+          </div>
+
+          <label style={{marginTop:0}}>أيام هذا الأسبوع</label>
+          <WeekDaysRow plan={plan} log={log} />
+
+          {plan.adaptationLog && plan.adaptationLog.length > 0 && (
+            <div className="adapt-note">
+              <span>🧠</span>
+              <span>{plan.adaptationLog[plan.adaptationLog.length - 1].note}</span>
+            </div>
+          )}
+
           {todayWorkout ? (
-            <div>
+            <div style={{marginTop:'16px'}}>
               <h3>🔥 تمرين اليوم</h3>
               {todayWorkout.exercises.map((ex, idx) => (
                 <div key={ex.id} className="exercise-item">
                   <span>{ex.nameAr || ex.name}</span>
-                  <span>{todayWorkout.reps[idx] ? `${todayWorkout.reps[idx]} عدة` : 'حسب الزمن'}</span>
+                  <span className="badge badge-muted">{todayWorkout.reps[idx] ? `${todayWorkout.reps[idx]} عدة` : 'حسب الزمن'}</span>
                 </div>
               ))}
               <button className="btn" style={{width:'100%', marginTop:'16px'}} onClick={onStartSession}>▶️ ابدأ الجلسة</button>
             </div>
-          ) : <p>لا يوجد تمرين اليوم</p>}
-          <div style={{display:'flex', gap:'12px', marginTop:'20px', flexWrap:'wrap'}}>
+          ) : (
+            <div style={{marginTop:'16px', textAlign:'center'}}>
+              <p style={{fontSize:'32px'}}>🎉</p>
+              <p>أكملت كل جلسات هذا الأسبوع! عد غداً لمتابعة الخطة.</p>
+            </div>
+          )}
+
+          <ProgressChart log={log} />
+
+          <div style={{display:'flex', gap:'12px', marginTop:'12px', flexWrap:'wrap'}}>
             <button className="btn btn-outline" style={{flex:1, minWidth:'120px'}} onClick={onLibrary}>📚 المكتبة</button>
             <button className="btn btn-danger" style={{flex:1, minWidth:'120px'}} onClick={onReset}>🗑️ إعادة</button>
           </div>
@@ -645,14 +734,18 @@
       );
     }
 
-    function WorkoutSession({ plan, onFinish, onBack }) {
+    // ======================== جلسة التمرين مع عداد ذكي ========================
+    function WorkoutSession({ plan, log, onFinish, onBack }) {
       const currentWeekKey = `week${plan.currentWeek}`;
       const days = plan.weeksData[currentWeekKey] || [];
-      const today = days[0] || { exercises: [], reps: [], rest: 60 };
+      const sessionsThisWeek = log.filter(l => l.week === plan.currentWeek).length;
+      const today = days[sessionsThisWeek] || days[0] || { exercises: [], reps: [], rest: 60 };
+
       const [step, setStep] = useState(0);
       const [phase, setPhase] = useState('exercise');
       const [restSeconds, setRestSeconds] = useState(today.rest);
       const [feedback, setFeedback] = useState('');
+      const [justCompleted, setJustCompleted] = useState(false);
 
       useEffect(() => {
         if (phase === 'rest' && restSeconds > 0) {
@@ -664,44 +757,78 @@
         }
       }, [phase, restSeconds, step, today.exercises.length]);
 
-      const goToRest = () => { setPhase('rest'); setRestSeconds(today.rest); };
-      const finishSession = () => {
-        onFinish({ date: new Date().toISOString().split('T')[0], exercises: today.exercises.map(ex => ex.id), feedback });
+      const goToRest = () => {
+        setJustCompleted(true);
+        setTimeout(() => setJustCompleted(false), 700);
+        setPhase('rest');
+        setRestSeconds(today.rest);
       };
+
+      const finishSession = () => {
+        onFinish({
+          date: new Date().toISOString().split('T')[0],
+          week: plan.currentWeek,
+          exercises: today.exercises.map(ex => ex.id),
+          feedback
+        });
+      };
+
+      const totalSteps = today.exercises.length;
+      const overallProgress = phase === 'complete' ? 100 : Math.round(((step + (phase === 'rest' ? 1 : 0)) / totalSteps) * 100);
 
       if (phase === 'complete') {
         return (
           <div className="glass-card page-enter">
-            <h3>🎉 أحسنت! الجلسة اكتملت</h3>
+            <div style={{textAlign:'center'}}>
+              <p style={{fontSize:'48px'}} className="pop-in">🎉</p>
+              <h3>أحسنت! الجلسة اكتملت</h3>
+            </div>
             <label>كيف كانت الشدة؟</label>
             <select value={feedback} onChange={e => setFeedback(e.target.value)}>
-              <option value="">اختر...</option> <option value="easy">سهل</option> <option value="just_right">مناسب</option> <option value="hard">صعب</option>
+              <option value="">اختر...</option>
+              <option value="easy">سهل</option>
+              <option value="just_right">مناسب</option>
+              <option value="hard">صعب</option>
             </select>
-            <button className="btn" style={{width:'100%'}} disabled={!feedback} onClick={finishSession}>💾 حفظ وإنهاء</button>
+            <div className="adapt-note">
+              <span>🧠</span>
+              <span>تقييمك يساعدني على تعديل التكرارات ووقت الراحة تلقائياً في الجلسات القادمة.</span>
+            </div>
+            <button className="btn" style={{width:'100%', marginTop:'12px'}} disabled={!feedback} onClick={finishSession}>💾 حفظ وإنهاء</button>
             <button className="btn btn-outline" style={{width:'100%', marginTop:'10px'}} onClick={onBack}>رجوع دون حفظ</button>
           </div>
         );
       }
 
       const currentEx = today.exercises[step];
+
       return (
         <div className="glass-card page-enter">
+          <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px'}}>
+            <span className="badge badge-info">تمرين {step + 1} من {totalSteps}</span>
+            <div className="bar-track" style={{width:'50%'}}>
+              <div className="bar-fill just_right" style={{width:`${overallProgress}%`}}></div>
+            </div>
+          </div>
           {phase === 'exercise' && currentEx && (
             <>
               <h3>🏃 {currentEx.nameAr || currentEx.name}</h3>
               <div className="video-container">
                 <iframe src={currentEx.videoUrl} title={currentEx.name} allowFullScreen></iframe>
               </div>
-              <p>التكرارات: {today.reps[step] || 'حسب الإحساس'}</p>
-              <button className="btn" style={{width:'100%'}} onClick={goToRest}>✅ تم الإنتهاء، راحة</button>
+              <p>التكرارات: <strong>{today.reps[step] || 'حسب الإحساس'}</strong></p>
+              <button className={`btn ${justCompleted ? 'pulse-once' : ''}`} style={{width:'100%', marginTop:'10px'}} onClick={goToRest}>✅ تم الإنتهاء، راحة</button>
             </>
           )}
           {phase === 'rest' && (
             <div className="rest-timer">
               <h3>⏳ راحة</h3>
               <div className="timer-number">{restSeconds}</div>
-              <p>ثانية</p>
-              <button className="btn" style={{width:'100%'}} onClick={() => setRestSeconds(0)}>⏩ تخطي الراحة</button>
+              <p style={{color:'var(--text-muted)'}}>ثانية</p>
+              {step + 1 < today.exercises.length && (
+                <p style={{marginTop:'8px', fontSize:'13.5px', color:'var(--text-secondary)'}}>التالي: {today.exercises[step+1].nameAr || today.exercises[step+1].name}</p>
+              )}
+              <button className="btn" style={{width:'100%', marginTop:'10px'}} onClick={() => setRestSeconds(0)}>⏩ تخطي الراحة</button>
             </div>
           )}
           <button className="btn btn-outline" style={{width:'100%', marginTop:'12px'}} onClick={onBack}>🚪 إنهاء مبكراً</button>
@@ -709,34 +836,75 @@
       );
     }
 
-    // المكتبة مع فيديو منبثق في الأعلى
-    function Library({ onBack }) {
+    // ======================== المكتبة مع فلاتر ذكية ========================
+    function Library({ onBack, profile }) {
       const [selectedVideo, setSelectedVideo] = useState(null);
+      const [selectedExName, setSelectedExName] = useState('');
+      const [filterGroup, setFilterGroup] = useState('all');
 
-      const openVideo = (url) => {
-        setSelectedVideo(url);
-      };
+      const openVideo = (url, name) => { setSelectedVideo(url); setSelectedExName(name); };
+      const closeVideo = () => { setSelectedVideo(null); setSelectedExName(''); };
 
-      const closeVideo = () => {
-        setSelectedVideo(null);
+      const relevantExercises = useMemo(() => {
+        return exercises.filter(ex => {
+          if (profile) {
+            if (ex.minAge && profile.age < ex.minAge) return false;
+            if (ex.maxAge && profile.age > ex.maxAge) return false;
+            if (ex.genderPreference !== 'all' && ex.genderPreference !== profile.gender) return false;
+          }
+          return true;
+        });
+      }, [profile]);
+
+      const groups = useMemo(() => {
+        const set = new Set(relevantExercises.map(e => e.muscleGroup));
+        return ['all', ...Array.from(set)];
+      }, [relevantExercises]);
+
+      const filtered = filterGroup === 'all' ? relevantExercises : relevantExercises.filter(e => e.muscleGroup === filterGroup);
+
+      const alternativesFor = (ex) => {
+        return relevantExercises.filter(e => e.id !== ex.id && e.muscleGroup === ex.muscleGroup).slice(0, 2);
       };
 
       return (
         <div className="glass-card page-enter">
-          <button className="btn btn-outline" style={{marginBottom:'16px'}} onClick={onBack}>⬅️ رجوع</button>
+          <button className="btn btn-outline btn-sm" style={{marginBottom:'16px'}} onClick={onBack}>⬅️ رجوع</button>
           <h2>📚 مكتبة التمارين</h2>
-          {exercises.map(ex => (
+          <p style={{color:'var(--text-muted)', fontSize:'13.5px', margin:'6px 0 14px'}}>
+            {profile ? 'مفلترة حسب عمرك وجنسك تلقائياً' : 'كل التمارين المتاحة'}
+          </p>
+          <div className="filter-row">
+            {groups.map(g => (
+              <span key={g} className={`filter-chip ${filterGroup === g ? 'active' : ''}`} onClick={() => setFilterGroup(g)}>
+                {g === 'all' ? 'الكل' : (muscleGroupLabels[g] || g)}
+              </span>
+            ))}
+          </div>
+          {filtered.map(ex => (
             <div key={ex.id} className="exercise-item" style={{flexDirection:'column', alignItems:'flex-start'}}>
-              <strong>{ex.nameAr || ex.name}</strong>
-              <small>العضلة: {ex.muscleGroup} | المستوى: {ex.difficulty}</small>
-              <button className="btn" style={{marginTop:'8px', padding:'8px 16px'}} onClick={() => openVideo(ex.videoUrl)}>▶️ شاهد الفيديو</button>
+              <div style={{display:'flex', justifyContent:'space-between', width:'100%', alignItems:'center', flexWrap:'wrap', gap:'6px'}}>
+                <strong>{ex.nameAr || ex.name}</strong>
+                <span className="badge badge-info">{muscleGroupLabels[ex.muscleGroup] || ex.muscleGroup}</span>
+              </div>
+              <small style={{color:'var(--text-muted)'}}>المستوى: {difficultyLabels[ex.difficulty] || ex.difficulty}</small>
+              <button className="btn btn-sm" style={{marginTop:'8px'}} onClick={() => openVideo(ex.videoUrl, ex.nameAr || ex.name)}>▶️ شاهد الفيديو</button>
+              {alternativesFor(ex).length > 0 && (
+                <div style={{marginTop:'8px'}}>
+                  {alternativesFor(ex).map(alt => (
+                    <span key={alt.id} className="suggestion-chip" onClick={() => openVideo(alt.videoUrl, alt.nameAr || alt.name)}>
+                      🔄 بديل: {alt.nameAr || alt.name}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
-
           {selectedVideo && (
             <div className="modal-overlay" onClick={closeVideo}>
               <div className="modal-content" onClick={e => e.stopPropagation()}>
                 <button className="modal-close" onClick={closeVideo}>✖️</button>
+                <h3 style={{marginBottom:'10px'}}>{selectedExName}</h3>
                 <div className="video-container">
                   <iframe src={selectedVideo} title="تمرين" allowFullScreen></iframe>
                 </div>
@@ -763,16 +931,12 @@
         if (!document.fullscreenElement) {
           document.documentElement.requestFullscreen().then(() => setIsFullscreen(true)).catch(err => console.warn(err));
         } else {
-          if (document.exitFullscreen) {
-            document.exitFullscreen().then(() => setIsFullscreen(false));
-          }
+          if (document.exitFullscreen) document.exitFullscreen().then(() => setIsFullscreen(false));
         }
       }, []);
 
       useEffect(() => {
-        const handleFullscreenChange = () => {
-          setIsFullscreen(!!document.fullscreenElement);
-        };
+        const handleFullscreenChange = () => setIsFullscreen(!!document.fullscreenElement);
         document.addEventListener('fullscreenchange', handleFullscreenChange);
         return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
       }, []);
@@ -833,6 +997,17 @@
         }
       };
 
+      const handleSessionFinish = (sessionData) => {
+        const newLog = [...log, sessionData];
+        setLog(newLog);
+        // تطبيق منطق التكيف بناء على آخر جلستين
+        const { plan: adaptedPlan } = adaptPlan(plan, newLog);
+        // التقدم للأسبوع التالي إذا اكتملت كل أيام الأسبوع الحالي
+        const advancedPlan = maybeAdvanceWeek(adaptedPlan, newLog);
+        setPlan(advancedPlan);
+        setScreen('dashboard');
+      };
+
       if (loading) {
         return (
           <div style={{display:'flex', justifyContent:'center', alignItems:'center', height:'100%'}}>
@@ -842,19 +1017,11 @@
       }
 
       if (!currentUser) {
-        return (
-          <div className="app">
-            <LoginScreen onLogin={handleLogin} />
-          </div>
-        );
+        return <div className="app"><LoginScreen onLogin={handleLogin} /></div>;
       }
 
       if (!profile) {
-        return (
-          <div className="app">
-            <Onboarding onComplete={handleOnboardingComplete} />
-          </div>
-        );
+        return <div className="app"><Onboarding onComplete={handleOnboardingComplete} /></div>;
       }
 
       return (
@@ -875,15 +1042,13 @@
           {screen === 'session' && (
             <WorkoutSession
               plan={plan}
-              onFinish={(sessionData) => {
-                setLog(prev => [...prev, sessionData]);
-                setScreen('dashboard');
-              }}
+              log={log}
+              onFinish={handleSessionFinish}
               onBack={() => setScreen('dashboard')}
             />
           )}
           {screen === 'library' && (
-            <Library onBack={() => setScreen('dashboard')} />
+            <Library onBack={() => setScreen('dashboard')} profile={profile} />
           )}
         </div>
       );
