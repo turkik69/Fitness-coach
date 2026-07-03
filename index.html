@@ -331,7 +331,6 @@
       localStorage.removeItem(STORAGE_KEYS.currentSession);
     };
 
-    // حفظ بيانات مستخدم معين في قائمة المستخدمين
     const saveUserData = (username, data) => {
       const users = loadUsers();
       const index = users.findIndex(u => u.username === username);
@@ -343,16 +342,9 @@
       saveUsers(users);
     };
 
-    // استرجاع بيانات مستخدم
     const getUserData = (username) => {
       const users = loadUsers();
       return users.find(u => u.username === username) || null;
-    };
-
-    // التحقق من كلمة المرور
-    const checkPassword = (username, password) => {
-      const user = getUserData(username);
-      return user && user.password === password;
     };
 
     function generatePlan(profile) {
@@ -388,7 +380,6 @@
       return { startDate: new Date().toISOString().split('T')[0], endDate: new Date(Date.now() + template.durationWeeks*7*24*60*60*1000).toISOString().split('T')[0], weeksData, currentWeek: 1, adaptationLog: [], templateId: template.id };
     }
 
-    // مكون القائمة المنسدلة المتعددة
     function MultiSelect({ options, selected, onChange }) {
       const [isOpen, setIsOpen] = useState(false);
       const containerRef = useRef(null);
@@ -453,7 +444,7 @@
       );
     }
 
-    // ======================== شاشة تسجيل الدخول / إنشاء حساب ========================
+    // ======================== شاشة تسجيل الدخول ========================
     function LoginScreen({ onLogin }) {
       const [username, setUsername] = useState('');
       const [password, setPassword] = useState('');
@@ -467,7 +458,6 @@
         }
         const existingUser = getUserData(username);
         if (existingUser) {
-          // مستخدم موجود، تحقق من كلمة المرور
           if (existingUser.password === password) {
             setCurrentSession(username);
             onLogin(username);
@@ -475,7 +465,6 @@
             setError('كلمة المرور غير صحيحة');
           }
         } else {
-          // مستخدم جديد، إنشاء حساب
           const newUser = {
             username,
             password,
@@ -542,38 +531,28 @@
           <form onSubmit={handleSubmit}>
             <label>الاسم</label>
             <input value={name} onChange={e => setName(e.target.value)} required />
-
             <label>الجنس</label>
             <select value={gender} onChange={e => setGender(e.target.value)}>
               <option value="male">ذكر</option>
               <option value="female">أنثى</option>
               <option value="other">آخر</option>
             </select>
-
             <label>العمر</label>
             <select value={age} onChange={e => setAge(e.target.value)}>
               {ageOptions.map(a => <option key={a} value={a}>{a} سنة</option>)}
             </select>
-
             <label>الهدف</label>
             <select value={goal} onChange={e => setGoal(e.target.value)}>
               <option value="general_fitness">لياقة عامة</option>
               <option value="weight_loss">خسارة وزن</option>
               <option value="muscle_build">بناء عضلات</option>
             </select>
-
             <label>أيام التمرين في الأسبوع</label>
             <select value={weeklyDays} onChange={e => setWeeklyDays(e.target.value)}>
               {[2,3,4,5,6].map(d => <option key={d} value={d}>{d}</option>)}
             </select>
-
             <label>المعدات المتوفرة</label>
-            <MultiSelect
-              options={allEquipmentOptions}
-              selected={equipment}
-              onChange={setEquipment}
-            />
-
+            <MultiSelect options={allEquipmentOptions} selected={equipment} onChange={setEquipment} />
             <button type="submit" className="btn" style={{width:'100%', marginTop:'20px'}}>🚀 ابدأ رحلتك</button>
           </form>
         </div>
@@ -687,8 +666,18 @@
       );
     }
 
+    // تم إصلاح مكون المكتبة لجعل الفيديو يفتح في النافذة المنبثقة
     function Library({ onBack }) {
       const [selectedVideo, setSelectedVideo] = useState(null);
+
+      const openVideo = (url) => {
+        setSelectedVideo(url);
+      };
+
+      const closeVideo = () => {
+        setSelectedVideo(null);
+      };
+
       return (
         <div className="glass-card page-enter">
           <button className="btn btn-outline" style={{marginBottom:'16px'}} onClick={onBack}>⬅️ رجوع</button>
@@ -697,13 +686,13 @@
             <div key={ex.id} className="exercise-item" style={{flexDirection:'column', alignItems:'flex-start'}}>
               <strong>{ex.nameAr || ex.name}</strong>
               <small>العضلة: {ex.muscleGroup} | المستوى: {ex.difficulty}</small>
-              <button className="btn" style={{marginTop:'8px', padding:'8px 16px'}} onClick={() => setSelectedVideo(ex.videoUrl)}>▶️ شاهد الفيديو</button>
+              <button className="btn" style={{marginTop:'8px', padding:'8px 16px'}} onClick={() => openVideo(ex.videoUrl)}>▶️ شاهد الفيديو</button>
             </div>
           ))}
           {selectedVideo && (
-            <div className="modal-overlay" onClick={() => setSelectedVideo(null)}>
+            <div className="modal-overlay" onClick={closeVideo}>
               <div className="modal-content" onClick={e => e.stopPropagation()}>
-                <button className="modal-close" onClick={() => setSelectedVideo(null)}>✖️</button>
+                <button className="modal-close" onClick={closeVideo}>✖️</button>
                 <div className="video-container">
                   <iframe src={selectedVideo} title="تمرين" allowFullScreen></iframe>
                 </div>
@@ -715,14 +704,13 @@
     }
 
     function App() {
-      const [currentUser, setCurrentUser] = useState(null); // اسم المستخدم الحالي
+      const [currentUser, setCurrentUser] = useState(null);
       const [profile, setProfile] = useState(null);
       const [plan, setPlan] = useState(null);
       const [log, setLog] = useState([]);
       const [screen, setScreen] = useState('dashboard');
       const [loading, setLoading] = useState(true);
 
-      // عند التحميل، تحقق من وجود جلسة نشطة
       useEffect(() => {
         const sessionUser = getCurrentSession();
         if (sessionUser) {
@@ -737,7 +725,6 @@
         setLoading(false);
       }, []);
 
-      // حفظ بيانات المستخدم تلقائياً عند تغييرها
       useEffect(() => {
         if (currentUser && profile !== null) {
           saveUserData(currentUser, { profile, plan, log });
@@ -784,12 +771,10 @@
         return <div className="glass-card">جاري التحميل...</div>;
       }
 
-      // إذا لم يكن هناك مستخدم حالي، اعرض شاشة الدخول
       if (!currentUser) {
         return <LoginScreen onLogin={handleLogin} />;
       }
 
-      // إذا كان المستخدم موجوداً ولكن لا يملك بروفايل، اعرض شاشة الإعدادات الأولية
       if (!profile) {
         return <Onboarding onComplete={handleOnboardingComplete} />;
       }
