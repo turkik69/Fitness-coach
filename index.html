@@ -7,33 +7,220 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      --card-bg: rgba(255,255,255,0.08);
+      --card-border: rgba(255,255,255,0.15);
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --accent: #f97316;
+      --accent-hover: #fb923c;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --button-bg: rgba(249,115,22,0.9);
+      --button-hover: #fb923c;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; display: flex; justify-content: center; padding: 20px; }
-    #root { width: 100%; max-width: 600px; }
-    .app > div { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    label { display: block; margin: 12px 0 5px; font-weight: bold; color: #2c3e50; }
-    input, select, button { width: 100%; padding: 12px; margin: 5px 0 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
-    button { background: #3498db; color: white; border: none; cursor: pointer; font-weight: bold; transition: background 0.3s; }
-    button:hover { background: #2980b9; }
-    button:disabled { background: #95a5a6; cursor: not-allowed; }
-    fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 15px 0; }
-    legend { font-weight: bold; padding: 0 10px; }
-    .exercise-item { display: flex; justify-content: space-between; align-items: center; background: #e8f0fe; padding: 10px; border-radius: 8px; margin: 10px 0; }
-    .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; margin: 15px 0; border-radius: 8px; }
-    .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-    .dashboard h2, .dashboard h3 { margin-bottom: 10px; color: #2c3e50; }
-    .actions { display: flex; gap: 10px; margin-top: 20px; }
-    .actions button { flex: 1; }
-    .session-finish select { margin: 10px 0; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      direction: rtl;
+    }
+    #root {
+      width: 100%;
+      max-width: 600px;
+    }
+    .app {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    /* تأثير الزجاج */
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+    }
+    /* أزرار */
+    .btn {
+      background: var(--button-bg);
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+      font-family: 'Cairo', sans-serif;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(249,115,22,0.3);
+    }
+    .btn:hover { background: var(--button-hover); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(249,115,22,0.5); }
+    .btn:active { transform: scale(0.96); }
+    .btn:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      box-shadow: none;
+    }
+    .btn-outline:hover { background: rgba(249,115,22,0.15); }
+    .btn-danger { background: var(--danger); box-shadow: 0 4px 15px rgba(239,68,68,0.3); }
+    .btn-danger:hover { background: #f87171; }
+
+    label { display: block; margin: 16px 0 6px; font-weight: 600; color: var(--text-secondary); }
+    input, select {
+      width: 100%;
+      padding: 14px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 14px;
+      color: white;
+      font-size: 16px;
+      font-family: 'Cairo', sans-serif;
+      transition: border 0.2s;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--accent); }
+    fieldset {
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 16px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    legend { color: var(--text-secondary); font-weight: 600; }
+    .checkbox-label { display: flex; align-items: center; gap: 10px; color: var(--text-primary); }
+    .checkbox-label input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); }
+
+    /* تمرين */
+    .exercise-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,0.06);
+      padding: 12px 16px;
+      border-radius: 14px;
+      margin: 8px 0;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: background 0.2s;
+    }
+    .exercise-item:hover { background: rgba(255,255,255,0.12); }
+
+    /* فيديو */
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 16px;
+      margin: 16px 0;
+    }
+    .video-container iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      border-radius: 16px;
+    }
+
+    /* مؤقت الراحة */
+    .rest-timer {
+      background: rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      margin: 20px 0;
+    }
+    .timer-number {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* تقدم دائري بسيط */
+    .progress-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: conic-gradient(var(--accent) 0deg, rgba(255,255,255,0.2) 0deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+    }
+    .progress-inner {
+      width: 64px;
+      height: 64px;
+      background: #1e293b;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    /* حركات انتقالية */
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .page-enter { animation: fadeSlideIn 0.4s ease forwards; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .modal-content {
+      background: #1e293b;
+      border-radius: 24px;
+      padding: 24px;
+      width: 100%;
+      max-width: 600px;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 16px; right: 16px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      font-size: 24px;
+      border-radius: 50%;
+      width: 40px; height: 40px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    const { useState, useEffect, useCallback } = React;
 
-    // ======================== البيانات الثابتة ========================
+    // ======================== البيانات ========================
     const exercises = [
       { id: 1, name: 'Squats', nameAr: 'القرفصاء', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/aclHkVaku9U' },
       { id: 2, name: 'Lunges', nameAr: 'الاندفاع', muscleGroup: 'legs', difficulty: 'beginner', equipment: ['none'], minAge: 13, maxAge: 100, genderPreference: 'all', videoUrl: 'https://www.youtube.com/embed/QOVaHwm-Q6U' },
@@ -59,70 +246,31 @@
 
     const planTemplates = [
       {
-        id: 1,
-        name: 'Full Body Beginner',
-        goal: 'general_fitness',
-        level: 'beginner',
-        durationWeeks: 4,
+        id: 1, name: 'Full Body Beginner', goal: 'general_fitness', level: 'beginner', durationWeeks: 4,
         weeksData: {
-          week1: [
-            { exerciseIds: [1,4,5,8,18], reps: [10,8,30,30,30], rest: 60 },
-            { exerciseIds: [2,15,7,9,19], reps: [8,10,12,30,30], rest: 60 },
-          ],
-          week2: [
-            { exerciseIds: [1,3,5,8,18], reps: [12,8,35,35,30], rest: 55 },
-            { exerciseIds: [2,6,7,9,19], reps: [10,12,12,30,30], rest: 55 },
-          ],
-          week3: [
-            { exerciseIds: [1,4,5,14,8], reps: [12,10,40,30,40], rest: 50 },
-            { exerciseIds: [2,15,7,9,13], reps: [10,12,15,40,20], rest: 50 },
-          ],
-          week4: [
-            { exerciseIds: [1,3,5,14,9], reps: [15,10,45,35,45], rest: 45 },
-            { exerciseIds: [2,6,7,13,19], reps: [12,15,15,25,30], rest: 45 },
-          ],
-        },
+          week1: [ { exerciseIds: [1,4,5,8,18], reps: [10,8,30,30,30], rest: 60 }, { exerciseIds: [2,15,7,9,19], reps: [8,10,12,30,30], rest: 60 } ],
+          week2: [ { exerciseIds: [1,3,5,8,18], reps: [12,8,35,35,30], rest: 55 }, { exerciseIds: [2,6,7,9,19], reps: [10,12,12,30,30], rest: 55 } ],
+          week3: [ { exerciseIds: [1,4,5,14,8], reps: [12,10,40,30,40], rest: 50 }, { exerciseIds: [2,15,7,9,13], reps: [10,12,15,40,20], rest: 50 } ],
+          week4: [ { exerciseIds: [1,3,5,14,9], reps: [15,10,45,35,45], rest: 45 }, { exerciseIds: [2,6,7,13,19], reps: [12,15,15,25,30], rest: 45 } ],
+        }
       },
       {
-        id: 2,
-        name: 'Strength Intermediate',
-        goal: 'muscle_build',
-        level: 'intermediate',
-        durationWeeks: 4,
+        id: 2, name: 'Strength Intermediate', goal: 'muscle_build', level: 'intermediate', durationWeeks: 4,
         weeksData: {
-          week1: [
-            { exerciseIds: [10,11,12,13], reps: [10,10,8,15], rest: 45 },
-            { exerciseIds: [10,11,6,13], reps: [10,10,12,15], rest: 45 },
-          ],
-          week2: [
-            { exerciseIds: [10,11,12,5], reps: [12,12,10,40], rest: 40 },
-            { exerciseIds: [10,11,3,13], reps: [12,12,10,20], rest: 40 },
-          ],
-          week3: [
-            { exerciseIds: [10,11,12,13], reps: [14,14,12,20], rest: 35 },
-            { exerciseIds: [10,11,6,5], reps: [14,14,15,45], rest: 35 },
-          ],
-          week4: [
-            { exerciseIds: [10,11,12,13], reps: [16,16,14,25], rest: 30 },
-            { exerciseIds: [10,11,3,5], reps: [16,16,12,50], rest: 30 },
-          ],
-        },
-      },
+          week1: [ { exerciseIds: [10,11,12,13], reps: [10,10,8,15], rest: 45 }, { exerciseIds: [10,11,6,13], reps: [10,10,12,15], rest: 45 } ],
+          week2: [ { exerciseIds: [10,11,12,5], reps: [12,12,10,40], rest: 40 }, { exerciseIds: [10,11,3,13], reps: [12,12,10,20], rest: 40 } ],
+          week3: [ { exerciseIds: [10,11,12,13], reps: [14,14,12,20], rest: 35 }, { exerciseIds: [10,11,6,5], reps: [14,14,15,45], rest: 35 } ],
+          week4: [ { exerciseIds: [10,11,12,13], reps: [16,16,14,25], rest: 30 }, { exerciseIds: [10,11,3,5], reps: [16,16,12,50], rest: 30 } ],
+        }
+      }
     ];
 
-    // ======================== دوال التخزين المحلي ========================
-    const PROFILE_KEY = 'fitness_profile';
-    const PLAN_KEY = 'fitness_user_plan';
-    const LOG_KEY = 'fitness_workout_log';
+    // ======================== التخزين المحلي ========================
+    const PROFILE_KEY = 'fitness_profile', PLAN_KEY = 'fitness_user_plan', LOG_KEY = 'fitness_workout_log';
+    const loadLocal = (k, fb=null) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } };
+    const saveLocal = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
 
-    function loadLocal(key, fallback = null) {
-      try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch { return fallback; }
-    }
-    function saveLocal(key, value) {
-      try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
-    }
-
-    // ======================== دالة توليد الخطة ========================
+    // ======================== توليد الخطة ========================
     function generatePlan(profile) {
       const { age, gender, goal, level, weeklyDays, sessionDuration, equipment } = profile;
       const suitableExercises = exercises.filter(ex => {
@@ -134,11 +282,9 @@
         }
         return true;
       });
-      let template = planTemplates.find(t => t.goal === goal && t.level === level);
-      if (!template) template = planTemplates.find(t => t.goal === goal) || planTemplates[0];
+      let template = planTemplates.find(t => t.goal === goal && t.level === level) || planTemplates.find(t => t.goal === goal) || planTemplates[0];
       const weeksData = {};
-      const weekKeys = Object.keys(template.weeksData).slice(0, template.durationWeeks);
-      weekKeys.forEach((weekKey, idx) => {
+      Object.keys(template.weeksData).slice(0, template.durationWeeks).forEach((weekKey, idx) => {
         const weekDays = [];
         const daysData = template.weeksData[weekKey];
         for (let i = 0; i < weeklyDays; i++) {
@@ -155,192 +301,173 @@
         }
         weeksData[`week${idx + 1}`] = weekDays;
       });
-      return {
-        startDate: new Date().toISOString().split('T')[0],
-        endDate: new Date(Date.now() + template.durationWeeks * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        weeksData,
-        currentWeek: 1,
-        adaptationLog: []
-      };
+      return { startDate: new Date().toISOString().split('T')[0], endDate: new Date(Date.now() + template.durationWeeks*7*24*60*60*1000).toISOString().split('T')[0], weeksData, currentWeek: 1, adaptationLog: [], templateId: template.id };
     }
 
-    // ======================== المكونات ========================
+    // ======================== مكونات ========================
     function Onboarding({ onComplete }) {
-      const [name, setName] = useState('');
-      const [gender, setGender] = useState('male');
-      const [age, setAge] = useState(25);
-      const [goal, setGoal] = useState('general_fitness');
-      const [weeklyDays, setWeeklyDays] = useState(3);
-      const [equipment, setEquipment] = useState(['none']);
+      const [name, setName] = useState(''); const [gender, setGender] = useState('male'); const [age, setAge] = useState(25); const [goal, setGoal] = useState('general_fitness'); const [weeklyDays, setWeeklyDays] = useState(3); const [equipment, setEquipment] = useState(['none']);
 
       const toggleEquipment = (item) => {
         setEquipment(prev => {
-          if (prev.includes(item)) {
-            const next = prev.filter(e => e !== item);
-            return next.length === 0 ? ['none'] : next;
-          } else {
-            return [...prev.filter(e => e !== 'none'), item];
-          }
+          if (item === 'none') return ['none'];
+          let next = prev.includes(item) ? prev.filter(e => e !== item) : [...prev.filter(e => e !== 'none'), item];
+          if (next.length === 0) next = ['none'];
+          return next;
         });
       };
 
       const handleSubmit = (e) => {
         e.preventDefault();
-        const profile = {
-          name,
-          gender,
-          age: Number(age),
-          goal,
-          level: age > 55 || age < 18 ? 'beginner' : 'beginner',
-          weeklyDays: Number(weeklyDays),
-          sessionDuration: 30,
-          equipment,
-        };
-        onComplete(profile);
+        onComplete({ name, gender, age: Number(age), goal, level: age > 55 || age < 18 ? 'beginner' : 'beginner', weeklyDays: Number(weeklyDays), sessionDuration: 30, equipment });
       };
 
       return (
-        <div className="onboarding-container">
-          <h1>مرحباً بك في مدربك الذكي</h1>
+        <div className="glass-card page-enter">
+          <h1 style={{textAlign:'center', color: 'var(--accent)'}}>🏋️ مدربك الذكي</h1>
           <form onSubmit={handleSubmit}>
-            <label>الاسم</label>
-            <input value={name} onChange={e => setName(e.target.value)} required />
-            <label>الجنس</label>
-            <select value={gender} onChange={e => setGender(e.target.value)}>
-              <option value="male">ذكر</option>
-              <option value="female">أنثى</option>
-              <option value="other">آخر</option>
-            </select>
-            <label>العمر</label>
-            <input type="number" value={age} onChange={e => setAge(e.target.value)} min="13" max="100" />
-            <label>الهدف</label>
-            <select value={goal} onChange={e => setGoal(e.target.value)}>
-              <option value="general_fitness">لياقة عامة</option>
-              <option value="weight_loss">خسارة وزن</option>
-              <option value="muscle_build">بناء عضلات</option>
-            </select>
-            <label>أيام التمرين في الأسبوع</label>
-            <select value={weeklyDays} onChange={e => setWeeklyDays(e.target.value)}>
-              {[2,3,4,5,6].map(d => <option key={d} value={d}>{d}</option>)}
-            </select>
-            <fieldset>
-              <legend>المعدات المتوفرة</legend>
-              <label><input type="checkbox" checked={equipment.includes('none')} onChange={() => toggleEquipment('none')} /> بدون معدات</label>
-              <label><input type="checkbox" checked={equipment.includes('dumbbell')} onChange={() => toggleEquipment('dumbbell')} /> دمبل</label>
-              <label><input type="checkbox" checked={equipment.includes('mat')} onChange={() => toggleEquipment('mat')} /> سجادة</label>
-              <label><input type="checkbox" checked={equipment.includes('resistance_band')} onChange={() => toggleEquipment('resistance_band')} /> شريط مقاومة</label>
+            <label>الاسم</label> <input value={name} onChange={e => setName(e.target.value)} required />
+            <label>الجنس</label> <select value={gender} onChange={e => setGender(e.target.value)}> <option value="male">ذكر</option> <option value="female">أنثى</option> <option value="other">آخر</option> </select>
+            <label>العمر</label> <input type="number" value={age} onChange={e => setAge(e.target.value)} min="13" max="100" />
+            <label>الهدف</label> <select value={goal} onChange={e => setGoal(e.target.value)}> <option value="general_fitness">لياقة عامة</option> <option value="weight_loss">خسارة وزن</option> <option value="muscle_build">بناء عضلات</option> </select>
+            <label>أيام التمرين</label> <select value={weeklyDays} onChange={e => setWeeklyDays(e.target.value)}> {[2,3,4,5,6].map(d => <option key={d} value={d}>{d}</option>)} </select>
+            <fieldset> <legend>المعدات المتوفرة</legend>
+              <label className="checkbox-label"><input type="checkbox" checked={equipment.includes('none')} onChange={() => toggleEquipment('none')} /> بدون معدات</label>
+              <label className="checkbox-label"><input type="checkbox" checked={equipment.includes('dumbbell')} onChange={() => toggleEquipment('dumbbell')} /> دمبل</label>
+              <label className="checkbox-label"><input type="checkbox" checked={equipment.includes('mat')} onChange={() => toggleEquipment('mat')} /> سجادة</label>
+              <label className="checkbox-label"><input type="checkbox" checked={equipment.includes('resistance_band')} onChange={() => toggleEquipment('resistance_band')} /> شريط مقاومة</label>
             </fieldset>
-            <button type="submit">ابدأ رحلتك</button>
+            <button type="submit" className="btn" style={{width:'100%'}}>🚀 ابدأ رحلتك</button>
           </form>
         </div>
       );
     }
 
     function Dashboard({ profile, plan, log, onStartSession, onLibrary, onReset }) {
-      if (!plan) return <div className="loading">جاري تحضير خطتك...</div>;
-
-      const currentWeek = plan.currentWeek;
-      const weekKey = `week${currentWeek}`;
-      const daysThisWeek = plan.weeksData[weekKey] || [];
-      const todayWorkout = daysThisWeek.length > 0 ? daysThisWeek[0] : null;
+      if (!plan) return <div className="glass-card">تحضير الخطة...</div>;
+      const totalWeeks = Object.keys(plan.weeksData).length;
+      const progressDeg = (plan.currentWeek / totalWeeks) * 360;
+      const todayWorkout = plan.weeksData[`week${plan.currentWeek}`]?.[0] || null;
 
       return (
-        <div className="dashboard">
-          <h2>مرحباً {profile.name}!</h2>
-          <p>الأسبوع {currentWeek} من {Object.keys(plan.weeksData).length} أسابيع</p>
-          <p>الجلسات المكتملة: {log.length}</p>
+        <div className="glass-card page-enter">
+          <h2 style={{color:'var(--accent)'}}>👋 مرحباً {profile.name}!</h2>
+          <div style={{display:'flex', alignItems:'center', gap:'20px', margin:'20px 0'}}>
+            <div className="progress-circle" style={{background: `conic-gradient(var(--accent) ${progressDeg}deg, rgba(255,255,255,0.2) 0deg)`}}>
+              <div className="progress-inner">{plan.currentWeek}/{totalWeeks}</div>
+            </div>
+            <div>
+              <p>📅 الأسبوع {plan.currentWeek} من {totalWeeks}</p>
+              <p>✅ الجلسات المكتملة: {log.length}</p>
+            </div>
+          </div>
           {todayWorkout ? (
             <div>
-              <h3>تمرين اليوم</h3>
+              <h3>🔥 تمرين اليوم</h3>
               {todayWorkout.exercises.map((ex, idx) => (
                 <div key={ex.id} className="exercise-item">
                   <span>{ex.nameAr || ex.name}</span>
                   <span>{todayWorkout.reps[idx] ? `${todayWorkout.reps[idx]} عدة` : 'حسب الزمن'}</span>
                 </div>
               ))}
-              <button onClick={onStartSession}>ابدأ الجلسة</button>
+              <button className="btn" style={{width:'100%', marginTop:'16px'}} onClick={onStartSession}>▶️ ابدأ الجلسة</button>
             </div>
-          ) : <p>لا يوجد تمرين اليوم.</p>}
-          <div className="actions">
-            <button onClick={onLibrary}>مكتبة التمارين</button>
-            <button onClick={onReset}>تغيير الخطة (حذف البيانات)</button>
+          ) : <p>لا يوجد تمرين اليوم</p>}
+          <div style={{display:'flex', gap:'12px', marginTop:'20px'}}>
+            <button className="btn btn-outline" style={{flex:1}} onClick={onLibrary}>📚 المكتبة</button>
+            <button className="btn btn-danger" style={{flex:1}} onClick={onReset}>🗑️ إعادة</button>
           </div>
         </div>
       );
     }
 
     function WorkoutSession({ plan, onFinish, onBack }) {
-      const currentWeek = `week${plan.currentWeek}`;
-      const dayWorkout = plan.weeksData[currentWeek]?.[0] || { exercises: [], reps: [] };
-      const exercisesList = dayWorkout.exercises;
-      const [currentStep, setCurrentStep] = useState(0);
+      const currentWeekKey = `week${plan.currentWeek}`;
+      const days = plan.weeksData[currentWeekKey] || [];
+      const today = days[0] || { exercises: [], reps: [], rest: 60 };
+      const [step, setStep] = useState(0);
+      const [phase, setPhase] = useState('exercise'); // 'exercise' | 'rest' | 'complete'
+      const [restSeconds, setRestSeconds] = useState(today.rest);
       const [feedback, setFeedback] = useState('');
-      const [completed, setCompleted] = useState(false);
 
-      const currentExercise = exercisesList[currentStep];
+      useEffect(() => {
+        if (phase === 'rest' && restSeconds > 0) {
+          const timer = setTimeout(() => setRestSeconds(s => s - 1), 1000);
+          return () => clearTimeout(timer);
+        } else if (phase === 'rest' && restSeconds === 0) {
+          if (step + 1 < today.exercises.length) { setStep(s => s + 1); setPhase('exercise'); }
+          else { setPhase('complete'); }
+        }
+      }, [phase, restSeconds, step, today.exercises.length]);
 
-      const next = () => {
-        if (currentStep < exercisesList.length - 1) setCurrentStep(currentStep + 1);
-        else setCompleted(true);
+      const goToRest = () => { setPhase('rest'); setRestSeconds(today.rest); };
+      const finishSession = () => {
+        onFinish({ date: new Date().toISOString().split('T')[0], exercises: today.exercises.map(ex => ex.id), feedback });
       };
 
-      const finish = () => {
-        onFinish({
-          date: new Date().toISOString().split('T')[0],
-          exercises: exercisesList.map(ex => ex.id),
-          feedback,
-        });
-      };
-
-      if (completed) {
+      if (phase === 'complete') {
         return (
-          <div className="session-finish">
-            <h3>أحسنت! لقد أكملت التمرين.</h3>
-            <p>كيف كانت شدة التمرين؟</p>
+          <div className="glass-card page-enter">
+            <h3>🎉 أحسنت! الجلسة اكتملت</h3>
+            <label>كيف كانت الشدة؟</label>
             <select value={feedback} onChange={e => setFeedback(e.target.value)}>
-              <option value="">اختر...</option>
-              <option value="easy">سهل</option>
-              <option value="just_right">مناسب</option>
-              <option value="hard">صعب</option>
+              <option value="">اختر...</option> <option value="easy">سهل</option> <option value="just_right">مناسب</option> <option value="hard">صعب</option>
             </select>
-            <button onClick={finish} disabled={!feedback}>إنهاء وحفظ</button>
-            <button onClick={onBack}>رجوع دون حفظ</button>
+            <button className="btn" style={{width:'100%'}} disabled={!feedback} onClick={finishSession}>💾 حفظ وإنهاء</button>
+            <button className="btn btn-outline" style={{width:'100%', marginTop:'10px'}} onClick={onBack}>رجوع دون حفظ</button>
           </div>
         );
       }
 
+      const currentEx = today.exercises[step];
       return (
-        <div className="session">
-          <h2>جلسة التمرين</h2>
-          {currentExercise && (
-            <div>
-              <h3>{currentExercise.nameAr || currentExercise.name}</h3>
+        <div className="glass-card page-enter">
+          {phase === 'exercise' && currentEx && (
+            <>
+              <h3>🏃 {currentEx.nameAr || currentEx.name}</h3>
               <div className="video-container">
-                <iframe src={currentExercise.videoUrl} title={currentExercise.name} allowFullScreen></iframe>
+                <iframe src={currentEx.videoUrl} title={currentEx.name} allowFullScreen></iframe>
               </div>
-              <p>التكرارات: {dayWorkout.reps[currentStep] || 'حسب الإحساس'}</p>
-              <button onClick={next}>
-                {currentStep < exercisesList.length - 1 ? 'التمرين التالي' : 'إنهاء الجلسة'}
-              </button>
+              <p>التكرارات: {today.reps[step] || 'حسب الإحساس'}</p>
+              <button className="btn" style={{width:'100%'}} onClick={goToRest}>✅ تم الإنتهاء، راحة</button>
+            </>
+          )}
+          {phase === 'rest' && (
+            <div className="rest-timer">
+              <h3>⏳ راحة</h3>
+              <div className="timer-number">{restSeconds}</div>
+              <p>ثانية</p>
+              <button className="btn" style={{width:'100%'}} onClick={() => setRestSeconds(0)}>⏩ تخطي الراحة</button>
             </div>
           )}
-          <button onClick={onBack}>إنهاء مبكراً</button>
+          <button className="btn btn-outline" style={{width:'100%', marginTop:'12px'}} onClick={onBack}>🚪 إنهاء مبكراً</button>
         </div>
       );
     }
 
     function Library({ onBack }) {
+      const [selectedVideo, setSelectedVideo] = useState(null);
       return (
-        <div className="library">
-          <button onClick={onBack}>رجوع</button>
-          <h2>مكتبة التمارين</h2>
+        <div className="glass-card page-enter">
+          <button className="btn btn-outline" style={{marginBottom:'16px'}} onClick={onBack}>⬅️ رجوع</button>
+          <h2>📚 مكتبة التمارين</h2>
           {exercises.map(ex => (
-            <div key={ex.id} className="exercise-item" style={{flexDirection: 'column', alignItems: 'flex-start'}}>
+            <div key={ex.id} className="exercise-item" style={{flexDirection:'column', alignItems:'flex-start'}}>
               <strong>{ex.nameAr || ex.name}</strong>
               <small>العضلة: {ex.muscleGroup} | المستوى: {ex.difficulty}</small>
-              <a href={ex.videoUrl} target="_blank" rel="noopener noreferrer">شاهد الفيديو</a>
+              <button className="btn" style={{marginTop:'8px', padding:'8px 16px'}} onClick={() => setSelectedVideo(ex.videoUrl)}>▶️ شاهد الفيديو</button>
             </div>
           ))}
+          {selectedVideo && (
+            <div className="modal-overlay" onClick={() => setSelectedVideo(null)}>
+              <div className="modal-content" onClick={e => e.stopPropagation()}>
+                <button className="modal-close" onClick={() => setSelectedVideo(null)}>✖️</button>
+                <div className="video-container">
+                  <iframe src={selectedVideo} title="تمرين" allowFullScreen></iframe>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       );
     }
@@ -363,53 +490,52 @@
         }
       }, [profile, plan]);
 
-      const handleCompleteOnboarding = (newProfile) => {
-        setProfile(newProfile);
-        setPlan(null);
-        setLog([]);
+      const handleOnboarding = (newProfile) => { setProfile(newProfile); setPlan(null); setLog([]); setScreen('dashboard'); };
+      const startSession = () => setScreen('session');
+      const finishSession = (sessionData) => {
+        const newLog = [...log, sessionData];
+        setLog(newLog);
+
+        // تكيف بسيط: إذا انتهى الأسبوع وكانت معظم الجلسات سهلة، نزيد الشدة
+        const currentWeekKey = `week${plan.currentWeek}`;
+        const daysInWeek = plan.weeksData[currentWeekKey]?.length || 1;
+        const sessionsThisWeek = newLog.filter(l => l.date >= plan.startDate).length; // تقريبي
+        if (sessionsThisWeek >= daysInWeek && plan.currentWeek < Object.keys(plan.weeksData).length) {
+          const easyCount = newLog.filter(l => l.feedback === 'easy').length;
+          const updatedPlan = { ...plan };
+          if (easyCount >= daysInWeek * 0.8) {
+            // زيادة التكرارات بنسبة 15% للأسبوع القادم
+            const nextWeekKey = `week${plan.currentWeek + 1}`;
+            if (updatedPlan.weeksData[nextWeekKey]) {
+              updatedPlan.weeksData[nextWeekKey] = updatedPlan.weeksData[nextWeekKey].map(day => ({
+                ...day,
+                reps: day.reps.map(r => Math.floor(r * 1.15))
+              }));
+              updatedPlan.adaptationLog = [...(updatedPlan.adaptationLog || []), { week: plan.currentWeek+1, change: 'increased reps' }];
+            }
+          }
+          updatedPlan.currentWeek = plan.currentWeek + 1;
+          setPlan(updatedPlan);
+          saveLocal(PLAN_KEY, updatedPlan);
+        }
         setScreen('dashboard');
       };
 
-      const startSession = () => setScreen('session');
-      const finishSession = (sessionData) => {
-        setLog(prev => [...prev, sessionData]);
-        setScreen('dashboard');
-      };
-      const showLibrary = () => setScreen('library');
-      const backToDashboard = () => setScreen('dashboard');
       const resetAll = () => {
-        if (confirm('هل أنت متأكد من حذف جميع البيانات والبدء من جديد؟')) {
-          setProfile(null);
-          setPlan(null);
-          setLog([]);
-          localStorage.removeItem(PROFILE_KEY);
-          localStorage.removeItem(PLAN_KEY);
-          localStorage.removeItem(LOG_KEY);
+        if (confirm('حذف كل البيانات؟')) {
+          setProfile(null); setPlan(null); setLog([]);
+          localStorage.removeItem(PROFILE_KEY); localStorage.removeItem(PLAN_KEY); localStorage.removeItem(LOG_KEY);
+          setScreen('dashboard');
         }
       };
 
-      if (!profile) {
-        return <Onboarding onComplete={handleCompleteOnboarding} />;
-      }
+      if (!profile) return <Onboarding onComplete={handleOnboarding} />;
 
       return (
         <div className="app">
-          {screen === 'dashboard' && (
-            <Dashboard
-              profile={profile}
-              plan={plan}
-              log={log}
-              onStartSession={startSession}
-              onLibrary={showLibrary}
-              onReset={resetAll}
-            />
-          )}
-          {screen === 'session' && (
-            <WorkoutSession plan={plan} onFinish={finishSession} onBack={backToDashboard} />
-          )}
-          {screen === 'library' && (
-            <Library onBack={backToDashboard} />
-          )}
+          {screen === 'dashboard' && <Dashboard profile={profile} plan={plan} log={log} onStartSession={startSession} onLibrary={() => setScreen('library')} onReset={resetAll} />}
+          {screen === 'session' && <WorkoutSession plan={plan} onFinish={finishSession} onBack={() => setScreen('dashboard')} />}
+          {screen === 'library' && <Library onBack={() => setScreen('dashboard')} />}
         </div>
       );
     }
