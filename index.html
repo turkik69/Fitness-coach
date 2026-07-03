@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>مدرب اللياقة الذكي</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>مدرب اللياقة الذكي - Fullscreen</title>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -23,19 +23,34 @@
       --button-hover: #fb923c;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root {
+      height: 100%;
+      width: 100%;
+      overflow-x: hidden;
+    }
     body {
       font-family: 'Cairo', sans-serif;
       background: var(--bg-gradient);
       color: var(--text-primary);
-      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding: 20px;
       direction: rtl;
     }
-    #root { width: 100%; max-width: 600px; }
-    .app { display: flex; flex-direction: column; gap: 20px; }
+    #root {
+      width: 100%;
+      max-width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+    .app {
+      width: 100%;
+      max-width: 800px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
     .glass-card {
       background: var(--card-bg);
       backdrop-filter: blur(12px);
@@ -45,6 +60,7 @@
       padding: 24px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.3);
       transition: all 0.3s ease;
+      width: 100%;
     }
     .btn {
       background: var(--button-bg);
@@ -95,6 +111,7 @@
       border-radius: 14px;
       margin: 8px 0;
       border: 1px solid rgba(255,255,255,0.1);
+      flex-wrap: wrap;
     }
     .video-container {
       position: relative;
@@ -250,12 +267,27 @@
       margin: 10px 0;
       font-size: 14px;
     }
+    .video-link {
+      color: var(--accent);
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .fullscreen-btn {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: 18px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+    const { useState, useEffect, useRef, useCallback } = React;
 
     // ======================== البيانات الثابتة ========================
     const exercises = [
@@ -559,7 +591,7 @@
       );
     }
 
-    function Dashboard({ profile, plan, log, onStartSession, onLibrary, onReset, onLogout }) {
+    function Dashboard({ profile, plan, log, onStartSession, onLibrary, onReset, onLogout, onFullscreen, isFullscreen }) {
       if (!plan) return <div className="glass-card">تحضير الخطة...</div>;
       const totalWeeks = Object.keys(plan.weeksData).length;
       const progressDeg = Math.min((plan.currentWeek / totalWeeks) * 360, 360);
@@ -568,11 +600,16 @@
 
       return (
         <div className="glass-card page-enter">
-          <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+          <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:'10px'}}>
             <h2 style={{color:'var(--accent)'}}>👋 مرحباً {profile.name}!</h2>
-            <button className="btn btn-outline" style={{padding:'8px 16px'}} onClick={onLogout}>🚪 خروج</button>
+            <div style={{display:'flex', gap:'8px'}}>
+              <button className="fullscreen-btn" onClick={onFullscreen} title={isFullscreen ? 'إنهاء ملء الشاشة' : 'ملء الشاشة'}>
+                {isFullscreen ? '🗕' : '⛶'}
+              </button>
+              <button className="btn btn-outline" style={{padding:'8px 16px'}} onClick={onLogout}>🚪 خروج</button>
+            </div>
           </div>
-          <div style={{display:'flex', alignItems:'center', gap:'20px', margin:'20px 0'}}>
+          <div style={{display:'flex', alignItems:'center', gap:'20px', margin:'20px 0', flexWrap:'wrap'}}>
             <div className="progress-circle" style={{background: `conic-gradient(var(--accent) ${progressDeg}deg, rgba(255,255,255,0.2) 0deg)`}}>
               <div className="progress-inner">{plan.currentWeek}/{totalWeeks}</div>
             </div>
@@ -594,9 +631,9 @@
               <button className="btn" style={{width:'100%', marginTop:'16px'}} onClick={onStartSession}>▶️ ابدأ الجلسة</button>
             </div>
           ) : <p>لا يوجد تمرين اليوم</p>}
-          <div style={{display:'flex', gap:'12px', marginTop:'20px'}}>
-            <button className="btn btn-outline" style={{flex:1}} onClick={onLibrary}>📚 المكتبة</button>
-            <button className="btn btn-danger" style={{flex:1}} onClick={onReset}>🗑️ إعادة</button>
+          <div style={{display:'flex', gap:'12px', marginTop:'20px', flexWrap:'wrap'}}>
+            <button className="btn btn-outline" style={{flex:1, minWidth:'120px'}} onClick={onLibrary}>📚 المكتبة</button>
+            <button className="btn btn-danger" style={{flex:1, minWidth:'120px'}} onClick={onReset}>🗑️ إعادة</button>
           </div>
         </div>
       );
@@ -666,16 +703,9 @@
       );
     }
 
-    // تم إصلاح مكون المكتبة لجعل الفيديو يفتح في النافذة المنبثقة
     function Library({ onBack }) {
-      const [selectedVideo, setSelectedVideo] = useState(null);
-
       const openVideo = (url) => {
-        setSelectedVideo(url);
-      };
-
-      const closeVideo = () => {
-        setSelectedVideo(null);
+        window.open(url, '_blank');
       };
 
       return (
@@ -687,18 +717,11 @@
               <strong>{ex.nameAr || ex.name}</strong>
               <small>العضلة: {ex.muscleGroup} | المستوى: {ex.difficulty}</small>
               <button className="btn" style={{marginTop:'8px', padding:'8px 16px'}} onClick={() => openVideo(ex.videoUrl)}>▶️ شاهد الفيديو</button>
-            </div>
-          ))}
-          {selectedVideo && (
-            <div className="modal-overlay" onClick={closeVideo}>
-              <div className="modal-content" onClick={e => e.stopPropagation()}>
-                <button className="modal-close" onClick={closeVideo}>✖️</button>
-                <div className="video-container">
-                  <iframe src={selectedVideo} title="تمرين" allowFullScreen></iframe>
-                </div>
+              <div className="video-link" onClick={() => openVideo(ex.videoUrl.replace('embed/', 'watch?v='))}>
+                إذا لم يعمل الفيديو، شاهد على يوتيوب
               </div>
             </div>
-          )}
+          ))}
         </div>
       );
     }
@@ -710,6 +733,25 @@
       const [log, setLog] = useState([]);
       const [screen, setScreen] = useState('dashboard');
       const [loading, setLoading] = useState(true);
+      const [isFullscreen, setIsFullscreen] = useState(false);
+
+      const toggleFullscreen = useCallback(() => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().then(() => setIsFullscreen(true)).catch(err => console.warn(err));
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen().then(() => setIsFullscreen(false));
+          }
+        }
+      }, []);
+
+      useEffect(() => {
+        const handleFullscreenChange = () => {
+          setIsFullscreen(!!document.fullscreenElement);
+        };
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      }, []);
 
       useEffect(() => {
         const sessionUser = getCurrentSession();
@@ -768,15 +810,27 @@
       };
 
       if (loading) {
-        return <div className="glass-card">جاري التحميل...</div>;
+        return (
+          <div style={{display:'flex', justifyContent:'center', alignItems:'center', height:'100%'}}>
+            <div className="glass-card">جاري التحميل...</div>
+          </div>
+        );
       }
 
       if (!currentUser) {
-        return <LoginScreen onLogin={handleLogin} />;
+        return (
+          <div className="app">
+            <LoginScreen onLogin={handleLogin} />
+          </div>
+        );
       }
 
       if (!profile) {
-        return <Onboarding onComplete={handleOnboardingComplete} />;
+        return (
+          <div className="app">
+            <Onboarding onComplete={handleOnboardingComplete} />
+          </div>
+        );
       }
 
       return (
@@ -790,6 +844,8 @@
               onLibrary={() => setScreen('library')}
               onReset={handleReset}
               onLogout={handleLogout}
+              onFullscreen={toggleFullscreen}
+              isFullscreen={isFullscreen}
             />
           )}
           {screen === 'session' && (
