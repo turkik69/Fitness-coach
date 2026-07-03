@@ -4,16 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>مدرب اللياقة الذكي</title>
-
   <!-- React -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <!-- Firebase -->
+  <!-- Firebase (اختياري) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; display: flex; justify-content: center; padding: 20px; }
@@ -34,27 +31,37 @@
     .actions button { flex: 1; }
     .session-finish select { margin: 10px 0; }
     .loading { text-align: center; padding: 40px; font-size: 18px; }
+    .error-message { background: #ffe0e0; color: #c0392b; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
   </style>
 </head>
 <body>
   <div id="root"></div>
-
   <script type="text/babel">
-    const { useState, useEffect, useCallback } = React;
+    const { useState, useEffect } = React;
 
-    // ==================== Firebase Config (استبدلها بقيمك) ====================
-    const firebaseConfig = {
-      apiKey: "AIzaSy...",                // مفتاح API من Firebase
-      authDomain: "fitness-coach-21b40.firebaseapp.com",
-      databaseURL: "https://fitness-coach-21b40-default-rtdb.firebaseio.com",
-      projectId: "fitness-coach-21b40",
-      storageBucket: "fitness-coach-21b40.appspot.com",
-      messagingSenderId: "...",
-      appId: "..."
-    };
+    // ==================== محاولة تهيئة Firebase (اختياري) ====================
+    let db = null;
+    let firebaseAvailable = false;
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    try {
+      // استبدل هذه القيم بقيم مشروعك الحقيقية إن أردت استخدام Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSy...",
+        authDomain: "fitness-coach-21b40.firebaseapp.com",
+        databaseURL: "https://fitness-coach-21b40-default-rtdb.firebaseio.com",
+        projectId: "fitness-coach-21b40",
+        storageBucket: "fitness-coach-21b40.appspot.com",
+        messagingSenderId: "...",
+        appId: "..."
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.database();
+      firebaseAvailable = true;
+      console.log("✅ Firebase متصل");
+    } catch (e) {
+      console.warn("⚠️ Firebase غير متاح، سيتم استخدام التخزين المحلي فقط:", e.message);
+    }
 
     // ======================== البيانات الثابتة ========================
     const exercises = [
@@ -133,7 +140,25 @@
       },
     ];
 
-    // ======================== دوال التوليد ========================
+    // ======================== دوال التخزين المحلي ========================
+    const LOCAL_KEYS = {
+      profile: 'fitness_profile',
+      plan: 'fitness_user_plan',
+      log: 'fitness_workout_log'
+    };
+
+    function loadLocal(key, fallback = null) {
+      try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : fallback;
+      } catch { return fallback; }
+    }
+
+    function saveLocal(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { console.warn("تعذر الحفظ محلياً"); }
+    }
+
+    // ======================== دالة توليد الخطة ========================
     function generatePlan(profile) {
       const { age, gender, goal, level, weeklyDays, sessionDuration, equipment } = profile;
       const suitableExercises = exercises.filter(ex => {
@@ -365,27 +390,80 @@
       const [log, setLog] = useState([]);
       const [screen, setScreen] = useState('dashboard');
       const [loading, setLoading] = useState(true);
+      const [useFirebase, setUseFirebase] = useState(false); // هل نستخدم Firebase بنجاح
 
-      // تحميل بيانات المستخدم من Firebase عند بدء التطبيق
+      // محاولة تحميل البيانات من Firebase أو المحلية
       useEffect(() => {
-        const userRef = db.ref('currentUser'); // مسار واحد لتخزين بيانات المستخدم الحالي (نفترض مستخدم واحد للجهاز)
-        userRef.once('value', (snapshot) => {
-          const data = snapshot.val();
-          if (data) {
-            setProfile(data.profile || null);
-            setPlan(data.plan || null);
-            setLog(data.log || []);
+        let isCancelled = false;
+
+        async function loadData() {
+          // إذا Firebase متاح، نجرب جلبه
+          if (firebaseAvailable && db) {
+            try {
+              const snapshot = await db.ref('currentUser').once('value');
+              const data = snapshot.val();
+              if (data && !isCancelled) {
+                setProfile(data.profile || null);
+                setPlan(data.plan || null);
+                setLog(data.log || []);
+                setUseFirebase(true);
+                console.log("✅ تم التحميل من Firebase");
+                setLoading(false);
+                return;
+              }
+            } catch (e) {
+              console.warn("⚠️ فشل الاتصال بـ Firebase، العودة للمحلي:", e.message);
+            }
           }
-          setLoading(false);
-        });
+          // العودة للتخزين المحلي
+          const localProfile = loadLocal(LOCAL_KEYS.profile);
+          const localPlan = loadLocal(LOCAL_KEYS.plan);
+          const localLog = loadLocal(LOCAL_KEYS.log, []);
+          if (!isCancelled) {
+            setProfile(localProfile);
+            setPlan(localPlan);
+            setLog(localLog);
+            setUseFirebase(false);
+            console.log("✅ تم التحميل من التخزين المحلي");
+            setLoading(false);
+          }
+        }
+
+        // مهلة 5 ثوانٍ كحد أقصى لانتظار Firebase
+        const timeout = setTimeout(() => {
+          if (loading && !isCancelled) {
+            console.warn("⚠️ انتهت مهلة الاتصال، استخدام المحلي");
+            const localProfile = loadLocal(LOCAL_KEYS.profile);
+            const localPlan = loadLocal(LOCAL_KEYS.plan);
+            const localLog = loadLocal(LOCAL_KEYS.log, []);
+            setProfile(localProfile);
+            setPlan(localPlan);
+            setLog(localLog);
+            setUseFirebase(false);
+            setLoading(false);
+          }
+        }, 5000);
+
+        loadData();
+
+        return () => {
+          isCancelled = true;
+          clearTimeout(timeout);
+        };
       }, []);
 
-      // حفظ البيانات في Firebase عند أي تغيير
+      // حفظ البيانات في المكان المناسب
       useEffect(() => {
-        if (profile !== null) {
-          db.ref('currentUser').set({ profile, plan, log });
+        if (profile === null) return;
+
+        if (useFirebase && db) {
+          db.ref('currentUser').set({ profile, plan, log }).catch(e => console.warn("فشل حفظ Firebase:", e));
         }
-      }, [profile, plan, log]);
+        // دائماً نحتفظ بنسخة محلية كاحتياط
+        saveLocal(LOCAL_KEYS.profile, profile);
+        saveLocal(LOCAL_KEYS.plan, plan);
+        saveLocal(LOCAL_KEYS.log, log);
+      }, [profile, plan, log, useFirebase]);
 
       const handleCompleteOnboarding = (newProfile) => {
         const newPlan = generatePlan(newProfile);
@@ -408,12 +486,20 @@
           setPlan(null);
           setLog([]);
           setScreen('dashboard');
-          db.ref('currentUser').remove(); // حذف من Firebase
+          if (db && useFirebase) db.ref('currentUser').remove();
+          localStorage.removeItem(LOCAL_KEYS.profile);
+          localStorage.removeItem(LOCAL_KEYS.plan);
+          localStorage.removeItem(LOCAL_KEYS.log);
         }
       };
 
       if (loading) {
-        return <div className="loading">جاري تحميل بياناتك...</div>;
+        return (
+          <div className="loading">
+            <p>جاري تحميل بياناتك...</p>
+            <p style={{fontSize: '14px', color: '#666'}}>في حال استمرار التحميل، الرجاء تحديث الصفحة</p>
+          </div>
+        );
       }
 
       if (!profile) {
